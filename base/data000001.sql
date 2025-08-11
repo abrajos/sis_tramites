@@ -1,0 +1,66 @@
+/********************************************I-DAT-JRR-SIAT-0-16/01/2019********************************************/
+
+
+
+INSERT INTO segu.tsubsistema ( codigo, nombre, fecha_reg, prefijo, estado_reg, nombre_carpeta, id_subsis_orig)
+VALUES ('SIAT', 'Sistema SIAT', '2009-11-02', 'SIA', 'activo', 'siat', NULL);
+
+
+select pxp.f_insert_tgui ('SISTEMA SIAT', '', 'SIAT', 'si', 1, '', 1, '', '', 'SIAT');
+select pxp.f_insert_tgui ('Sincronizacion', 'Sincronizacion', 'SIASINC', 'si', 1, '', 2, '', '', 'SIAT');
+select pxp.f_insert_tgui ('Productos', 'Productos', 'SIAPROD', 'si', 1, 'sis_siat/vista/producto/Producto.php', 3, '', 'Producto', 'SIAT');
+
+
+/********************************************F-DAT-JRR-SIAT-0-16/01/2019********************************************/
+
+/********************************************I-DAT-AVQ-SIAT-0-21/01/2019********************************************/
+select pxp.f_insert_tgui ('Servicio', 'Servicios', 'SERSIA', 'si', 2, 'sis_siat/vista/servicio/Servicio.php', 3, '', 'Servicio', 'SIAT');
+select pxp.f_insert_tgui ('Evento', 'Evento', 'EVESIA', 'si', 3, 'sis_siat/vista/evento/Evento.php', 3, '', 'Evento', 'SIAT');
+select pxp.f_insert_tgui ('Pais', 'Pais', 'PAISIA', 'si', 4, 'sis_siat/vista/pais/Pais.php', 3, '', 'Pais', 'SIAT');
+select pxp.f_insert_tgui ('Tipo Moneda', 'Tipo Moneda', 'MONSIA', 'si', 4, 'sis_siat/vista/tipo_moneda/TipoMoneda.php', 3, '', 'TipoMoneda', 'SIAT');
+select pxp.f_insert_tgui ('Modalidad', 'Modalidad', 'MODSIA', 'si', 8, 'sis_siat/vista/modalidad/Modalidad.php', 3, '', 'Modalidad', 'SIAT');
+select pxp.f_insert_tgui ('Metodo Pago', 'Metodo Pago', 'MEPSIA', 'si', 9, 'sis_siat/vista/metodo_pago/MetodoPago.php', 3, '', 'MetodoPago', 'SIAT');
+select pxp.f_insert_tgui ('Tipo Documento', 'Tipo Documento', 'TIDSIA', 'si', 10, 'sis_siat/vista/tipo_documento_siat/TipoDocumentoSiat.php', 3, '', 'TipoDocumentoSiat', 'SIAT');
+select pxp.f_insert_tgui ('Mensaje SOAP', 'Mensaje SOAP', 'MESSIA', 'si', 11, 'sis_siat/vista/mensaje_soap/MensajeSoap.php', 3, '', 'MensajeSoap', 'SIAT');
+select pxp.f_insert_tgui ('Ambiente', 'Ambiente', 'AMBSIA', 'si', 12, 'sis_siat/vista/ambiente/Ambiente.php', 4, '', 'Ambiente', 'SIAT');
+select pxp.f_insert_tgui ('Tipo Emision', 'Tipo Emision', 'TIPEMSIA', 'si', 12, 'sis_siat/vista/tipo_emision/TipoEmision.php', 3, '', 'TipoEmision', 'SIAT');
+
+/********************************************F-DAT-AVQ-SIAT-0-21/01/2019********************************************/
+
+/********************************************I-DAT-JMH-SIAT-0-05/02/2019********************************************/
+select pxp.f_insert_tgui ('CUF', 'CUF', 'CUF', 'si', 5, 'sis_siat/vista/cuf/Cuf.php', 2, '', 'Cuf', 'SIAT');
+select pxp.f_insert_tgui ('CUIS', 'CUIS', 'CUIS', 'si', 6, 'sis_siat/vista/cuis/Cuis.php', 2, '', 'Cuis', 'SIAT');
+select pxp.f_insert_tgui ('SISTEMA SIAT', '', 'SIAT', 'si', 1, '', 1, '', '', 'SIAT');
+select pxp.f_insert_tgui ('Sincronizacion', 'Sincronizacion', 'SIASINC', 'si', 1, '', 2, '', '', 'SIAT');
+select pxp.f_insert_tgui ('Productos', 'Productos', 'SIAPROD', 'si', 1, 'sis_siat/vista/producto/Producto.php', 3, '', 'Producto', 'SIAT');
+/********************************************F-DAT-JMH-SIAT-0-05/02/2019********************************************/
+
+/********************************************I-DAT-AVQ-SIAT-0-25/02/2019********************************************/
+select pxp.f_insert_tgui ('Motivo Anulacion', 'Motivos de Anulación', 'MOTANU', 'si', 11, 'sis_siat/vista/motivo_anulacion/MotivoAnulacion.php', 3, '', 'MotivoAnulacion', 'SIAT');
+/********************************************F-DAT-AVQ-SIAT-0-25/02/2019********************************************/
+
+/********************************************I-DAT-FPT-SIAT-0-14/03/2019********************************************/
+
+select pxp.f_insert_tgui ('Reportes', 'Reportes', 'SIAREP', 'si', 2, '', 2, '', '', 'SIAT');
+select pxp.f_insert_tgui ('Eventos Significativos', 'Eventos Significativos', 'SIAEVESIG', 'si', 1, 'sis_siat/vista/Reportes/EventosSignificativos.php', 3, '', 'EventosSignificativos', 'SIAT');
+select pxp.f_insert_tgui ('Salud del Sistema', 'Salud del Sistema', 'SADSIS', 'si', 2, 'sis_siat/vista/Reportes/FormSaludSistema.php', 3, '', 'FormSaludSistema', 'SIAT');
+select pxp.f_insert_tgui ('Doc. Fiscales Emitidos', 'Doc. Fiscales Emitidos', 'SIADFISEMI', 'si', 1, 'sis_siat/vista/Reportes/FormDocFiscalesEmitidos.php', 3, '', 'FormDocFiscalesEmitidos', 'SIAT');
+select pxp.f_insert_tgui ('Doc. Fiscales Anulados', 'Doc. Fiscales Anulados', 'SIADFISANU', 'si', 1, 'sis_siat/vista/Reportes/FormDocFiscalesAnuladas.php', 3, '', 'FormDocFiscalesAnuladas', 'SIAT');
+select pxp.f_insert_tgui ('Estado de Envio de Doc. Fiscales', 'Estado de Envio de DoC. Fiscales', 'SIAESENDOCFIS', 'si', 1, 'sis_siat/vista/Reportes/FormEstadoEnvioDocFiscales.php', 3, '', 'FormEstadoEnvioDocFiscales', 'SIAT');
+
+/********************************************F-DAT-FPT-SIAT-0-14/03/2019********************************************/
+
+/********************************************I-DAT-HPG-SIAT-0-14/03/2019********************************************/
+select pxp.f_insert_tgui ('Reportes', 'Reportes', 'DIRSIATREP', 'si', 3, '', 2, '', '', 'SIAT');
+select pxp.f_insert_tgui ('Reportes Estadísticos', 'Reportes Estadísticos', 'SIATREP', 'si', 1, 'sis_siat/vista/Reportes/ReporteEstadistico.php', 3, '', 'SIATREP', 'SIAT');
+/********************************************F-DAT-HPG-SIAT-0-14/03/2019********************************************/
+/********************************************I-DAT-FPT-SIAT-0-20/05/2019********************************************/
+
+select pxp.f_insert_tgui ('Reportes', 'Reportes', 'SIAREP', 'si', 2, '', 2, '', '', 'SIAT');
+select pxp.f_insert_tgui ('Eventos Significativos', 'Eventos Significativos', 'SIAEVESIG', 'si', 1, 'sis_siat/vista/Reportes/EventosSignificativos.php', 3, '', 'EventosSignificativos', 'SIAT');
+select pxp.f_insert_tgui ('Salud del Sistema', 'Salud del Sistema', 'SADSIS', 'si', 2, 'sis_siat/vista/Reportes/FormSaludSistema.php', 3, '', 'FormSaludSistema', 'SIAT');
+select pxp.f_insert_tgui ('Doc. Fiscales Emitidos', 'Doc. Fiscales Emitidos', 'SIADFISEMI', 'si', 1, 'sis_siat/vista/Reportes/FormDocFiscalesEmitidos.php', 3, '', 'FormDocFiscalesEmitidos', 'SIAT');
+select pxp.f_insert_tgui ('Doc. Fiscales Anulados', 'Doc. Fiscales Anulados', 'SIADFISANU', 'si', 1, 'sis_siat/vista/Reportes/FormDocFiscalesAnuladas.php', 3, '', 'FormDocFiscalesAnuladas', 'SIAT');
+select pxp.f_insert_tgui ('Estado de Envio de Doc. Fiscales', 'Estado de Envio de DoC. Fiscales', 'SIAESENDOCFIS', 'si', 1, 'sis_siat/vista/Reportes/FormEstadoEnvioDocFiscales.php', 3, '', 'FormEstadoEnvioDocFiscales', 'SIAT');
+
+/********************************************F-DAT-FPT-SIAT-0-20/05/2019********************************************/

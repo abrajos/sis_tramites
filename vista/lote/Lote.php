@@ -43,7 +43,7 @@ Phx.vista.Lote=Ext.extend(Phx.gridInterfaz,{
 			config:{
 					labelSeparator:'',
 					inputType:'hidden',
-					name: 'id_tramite'
+					name: 'id_tramite_detalle'
 			},
 			type:'Field',
 			form:true 
@@ -228,7 +228,7 @@ Phx.vista.Lote=Ext.extend(Phx.gridInterfaz,{
 		{name:'tipo_cesion', type: 'string'},
 		{name:'superficie', type: 'numeric'},
 		{name:'nombre', type: 'string'},
-		{name:'id_tramite', type: 'numeric'},
+		{name:'id_tramite_detalle', type: 'numeric'},
 		{name:'estado_reg', type: 'string'},
 		{name:'lote', type: 'string'},
 		{name:'id_usuario_ai', type: 'numeric'},
@@ -249,17 +249,17 @@ Phx.vista.Lote=Ext.extend(Phx.gridInterfaz,{
 	bsave:true,
 	onButtonNew: function () {
         Phx.vista.Lote.superclass.onButtonNew.call(this);
-        this.getComponente('id_tramite').setValue(this.maestro.id_tramite);
+        this.getComponente('id_tramite_detalle').setValue(this.maestro.id_tramite_detalle);
     },
     onReloadPage: function (m) {
         this.maestro = m;
         console.log(this.maestro);
-        this.store.baseParams = {id_tramite: this.maestro.id_tramite};
+        this.store.baseParams = {id_tramite_detalle: this.maestro.id_tramite_detalle};
         this.load({params: {start: 0, limit: 50}})
     },
 	loadValoresIniciales:function(){
         Phx.vista.Lote.superclass.loadValoresIniciales.call(this);
-        this.Cmp.id_tramite.setValue(this.maestro.id_tramite);
+        this.Cmp.id_tramite_detalle.setValue(this.maestro.id_tramite_detalle);
     },
 	}
 )

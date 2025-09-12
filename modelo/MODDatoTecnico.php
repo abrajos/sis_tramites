@@ -24,7 +24,7 @@ class MODDatoTecnico extends MODbase{
 		$this->captura('super_escritura','numeric');
 		$this->captura('tipo_calle','varchar');
 		$this->captura('super_mensura','numeric');
-		$this->captura('id_tramite','int4');
+		$this->captura('id_tramite_detalle','int4');
 		$this->captura('avenida','varchar');
 		$this->captura('alcantarillado','varchar');
 		$this->captura('telefonia','varchar');
@@ -54,7 +54,8 @@ class MODDatoTecnico extends MODbase{
 		$this->captura('id_usuario_mod','int4');
 		$this->captura('usr_reg','varchar');
 		$this->captura('usr_mod','varchar');
-		
+		$this->captura('super_excedente','numeric');
+		$this->captura('super_inexistente','numeric');
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
@@ -73,7 +74,7 @@ class MODDatoTecnico extends MODbase{
 		$this->setParametro('super_escritura','super_escritura','numeric');
 		$this->setParametro('tipo_calle','tipo_calle','varchar');
 		$this->setParametro('super_mensura','super_mensura','numeric');
-		$this->setParametro('id_tramite','id_tramite','int4');
+		$this->setParametro('id_tramite_detalle','id_tramite_detalle','int4');
 		$this->setParametro('avenida','avenida','varchar');
 		$this->setParametro('alcantarillado','alcantarillado','varchar');
 		$this->setParametro('telefonia','telefonia','varchar');
@@ -95,7 +96,8 @@ class MODDatoTecnico extends MODbase{
 		$this->setParametro('zona','zona','varchar');
 		$this->setParametro('equipamiento','equipamiento','varchar');
 		$this->setParametro('rasante_municipal','rasante_municipal','varchar');
-
+		$this->setParametro('super_excedente','super_excedente','numeric');
+		$this->setParametro('super_inexistente','super_inexistente','numeric');
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
@@ -115,7 +117,7 @@ class MODDatoTecnico extends MODbase{
 		$this->setParametro('super_escritura','super_escritura','numeric');
 		$this->setParametro('tipo_calle','tipo_calle','varchar');
 		$this->setParametro('super_mensura','super_mensura','numeric');
-		$this->setParametro('id_tramite','id_tramite','int4');
+		$this->setParametro('id_tramite_detalle','id_tramite_detalle','int4');
 		$this->setParametro('avenida','avenida','varchar');
 		$this->setParametro('alcantarillado','alcantarillado','varchar');
 		$this->setParametro('telefonia','telefonia','varchar');
@@ -137,7 +139,9 @@ class MODDatoTecnico extends MODbase{
 		$this->setParametro('zona','zona','varchar');
 		$this->setParametro('equipamiento','equipamiento','varchar');
 		$this->setParametro('rasante_municipal','rasante_municipal','varchar');
-
+		$this->setParametro('super_excedente','super_excedente','numeric');
+		$this->setParametro('super_inexistente','super_inexistente','numeric');
+		
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();

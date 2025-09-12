@@ -43,7 +43,7 @@ Phx.vista.Matricula=Ext.extend(Phx.gridInterfaz,{
 			config:{
 					labelSeparator:'',
 					inputType:'hidden',
-					name: 'id_tramite'
+					name: 'id_tramite_detalle'
 			},
 			type:'Field',
 			form:true 
@@ -328,7 +328,7 @@ Phx.vista.Matricula=Ext.extend(Phx.gridInterfaz,{
 		{name:'nro_notario', type: 'string'},
 		{name:'fecha_decreto', type: 'date',dateFormat:'Y-m-d'},
 		{name:'nombre_notario', type: 'string'},
-		{name:'id_tramite', type: 'numeric'},
+		{name:'id_tramite_detalle', type: 'numeric'},
 		{name:'nro_testimonio', type: 'string'},
 		{name:'id_usuario_ai', type: 'numeric'},
 		{name:'id_usuario_reg', type: 'numeric'},
@@ -348,17 +348,17 @@ Phx.vista.Matricula=Ext.extend(Phx.gridInterfaz,{
 	bsave:true,
 	onButtonNew: function () {
         Phx.vista.Matricula.superclass.onButtonNew.call(this);
-        this.getComponente('id_tramite').setValue(this.maestro.id_tramite);
+        this.getComponente('id_tramite_detalle').setValue(this.maestro.id_tramite_detalle);
     },
     onReloadPage: function (m) {
         this.maestro = m;
         console.log(this.maestro);
-        this.store.baseParams = {id_tramite: this.maestro.id_tramite};
+        this.store.baseParams = {id_tramite_detalle: this.maestro.id_tramite_detalle};
         this.load({params: {start: 0, limit: 50}})
     },
 	loadValoresIniciales:function(){
         Phx.vista.Matricula.superclass.loadValoresIniciales.call(this);
-        this.Cmp.id_tramite.setValue(this.maestro.id_tramite);
+        this.Cmp.id_tramite_detalle.setValue(this.maestro.id_tramite_detalle);
     },
 	}
 )

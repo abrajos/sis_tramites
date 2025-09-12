@@ -54,7 +54,87 @@ class ACTTramiteDetalle extends ACTbase{
         $this->res->imprimirRespuesta($this->res->generarJson());
 
     }
+
+
+	function listarOtTramite(){
+		$this->objParam->defecto('ordenacion','id_tramite_detalle');
+
+		$this->objParam->defecto('dir_ordenacion','asc');
+
+	//	if($this->objParam->getParametro('estado_tramite')!=''){
+			$this->objParam->addFiltro("tradet.estado_tramite = "."'' OT''");	
+		//}
+
+		if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
+			$this->objReporte = new Reporte($this->objParam,$this);
+			$this->res = $this->objReporte->generarReporteListado('MODTramiteDetalle','listarOtTramite');
+		} else{
+			$this->objFunc=$this->create('MODTramiteDetalle');
 			
+			$this->res=$this->objFunc->listarTramiteDetalle($this->objParam);
+		}
+		$this->res->imprimirRespuesta($this->res->generarJson());
+	}
+
+	function listarTopografo(){
+		$this->objParam->defecto('ordenacion','id_tramite_detalle');
+
+		$this->objParam->defecto('dir_ordenacion','asc');
+
+	//	if($this->objParam->getParametro('estado_tramite')!=''){
+			$this->objParam->addFiltro("tradet.estado_tramite = "."''TOPOGRAFO''");	
+		//}
+
+		if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
+			$this->objReporte = new Reporte($this->objParam,$this);
+			$this->res = $this->objReporte->generarReporteListado('MODTramiteDetalle','listarTramiteDetalle');
+		} else{
+			$this->objFunc=$this->create('MODTramiteDetalle');
+			
+			$this->res=$this->objFunc->listarTramiteDetalle($this->objParam);
+		}
+		$this->res->imprimirRespuesta($this->res->generarJson());
+	}	
+	
+	function listarArquitecto(){
+		$this->objParam->defecto('ordenacion','id_tramite_detalle');
+
+		$this->objParam->defecto('dir_ordenacion','asc');
+
+	//	if($this->objParam->getParametro('estado_tramite')!=''){
+			$this->objParam->addFiltro("tradet.estado_tramite = "."''ARQUITECTO''");	
+		//}
+
+		if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
+			$this->objReporte = new Reporte($this->objParam,$this);
+			$this->res = $this->objReporte->generarReporteListado('MODTramiteDetalle','listarTramiteDetalle');
+		} else{
+			$this->objFunc=$this->create('MODTramiteDetalle');
+			
+			$this->res=$this->objFunc->listarTramiteDetalle($this->objParam);
+		}
+		$this->res->imprimirRespuesta($this->res->generarJson());
+	}
+
+	function listarAbogado(){
+		$this->objParam->defecto('ordenacion','id_tramite_detalle');
+
+		$this->objParam->defecto('dir_ordenacion','asc');
+
+	//	if($this->objParam->getParametro('estado_tramite')!=''){
+			$this->objParam->addFiltro("tradet.estado_tramite = "."''ABOGADO''");	
+		//}
+
+		if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
+			$this->objReporte = new Reporte($this->objParam,$this);
+			$this->res = $this->objReporte->generarReporteListado('MODTramiteDetalle','listarTramiteDetalle');
+		} else{
+			$this->objFunc=$this->create('MODTramiteDetalle');
+			
+			$this->res=$this->objFunc->listarTramiteDetalle($this->objParam);
+		}
+		$this->res->imprimirRespuesta($this->res->generarJson());
+	}
 }
 
 ?>

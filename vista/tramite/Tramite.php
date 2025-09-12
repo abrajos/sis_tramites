@@ -47,14 +47,14 @@ Phx.vista.Tramite=Ext.extend(Phx.gridInterfaz,{
 			});
 			 console.log(config);
 		
-		this.addButton('imprimirRes', {
+		/*this.addButton('imprimirRes', {
 				text: 'Imprimir Resolucion',
 				iconCls: 'bprint',
 				disabled: false,
 				handler: this.BResolucion,
 				tooltip: '<b>Imprimir Resolucion</b><br/>Impresión de Resolución'
 			});	
-
+*/
 	},
 			
 	Atributos:[
@@ -433,7 +433,13 @@ Phx.vista.Tramite=Ext.extend(Phx.gridInterfaz,{
 	},
 	bdel:true,
 	bsave:true,
-	tabsouth:[{
+	south:{
+		url:'../../../sis_tramites/vista/tramite_detalle/TramiteDetalle.php',
+        title:'Detalle Tramite',
+        height:'50%',
+        cls:'TramiteDetalle'
+   		},
+	/*tabsouth:[{
         url:'../../../sis_tramites/vista/tramite_detalle/TramiteDetalle.php',
         title:'Detalle Tramite',
         height:'50%',
@@ -459,7 +465,7 @@ Phx.vista.Tramite=Ext.extend(Phx.gridInterfaz,{
         height:'50%',
         cls:'Boleta'
 		}
-	],
+	],*/
 
    preparaMenu:function(n){
       	Phx.vista.Tramite.superclass.preparaMenu.call(this,n);
@@ -568,7 +574,7 @@ successDerivar : function(resp) {
 			});
 	
 		},
-
+/*
 		BResolucion:function () {
 			var rec = this.sm.getSelected();
 			Phx.CP.loadingShow();
@@ -584,7 +590,7 @@ successDerivar : function(resp) {
 				scope: this
 			});
 	
-		},
+		},*/
 
 		onButtonNew: function () {
         

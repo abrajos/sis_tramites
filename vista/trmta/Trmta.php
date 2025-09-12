@@ -43,7 +43,7 @@ Phx.vista.Trmta=Ext.extend(Phx.gridInterfaz,{
 			config:{
 					labelSeparator:'',
 					inputType:'hidden',
-					name: 'id_tramite'
+					name: 'id_tramite_detalle'
 			},
 			type:'Field',
 			form:true 
@@ -210,7 +210,7 @@ Phx.vista.Trmta=Ext.extend(Phx.gridInterfaz,{
 	id_store:'id_rmta',
 	fields: [
 		{name:'id_rmta', type: 'numeric'},
-		{name:'id_tramite', type: 'numeric'},
+		{name:'id_tramite_detalle', type: 'numeric'},
 		{name:'fecha_rmta', type: 'date',dateFormat:'Y-m-d'},
 		{name:'tipo_aprobacion', type: 'string'},
 		{name:'estado_reg', type: 'string'},
@@ -233,17 +233,17 @@ Phx.vista.Trmta=Ext.extend(Phx.gridInterfaz,{
 	bsave:true,
 	onButtonNew: function () {
         Phx.vista.Trmta.superclass.onButtonNew.call(this);
-        this.getComponente('id_tramite').setValue(this.maestro.id_tramite);
+        this.getComponente('id_tramite_detalle').setValue(this.maestro.id_tramite_detalle);
     },
     onReloadPage: function (m) {
         this.maestro = m;
         console.log(this.maestro);
-        this.store.baseParams = {id_tramite: this.maestro.id_tramite};
+        this.store.baseParams = {id_tramite_detalle: this.maestro.id_tramite_detalle};
         this.load({params: {start: 0, limit: 50}})
     },
 	loadValoresIniciales:function(){
         Phx.vista.Trmta.superclass.loadValoresIniciales.call(this);
-        this.Cmp.id_tramite.setValue(this.maestro.id_tramite);
+        this.Cmp.id_tramite_detalle.setValue(this.maestro.id_tramite_detalle);
     },
 	}
 )

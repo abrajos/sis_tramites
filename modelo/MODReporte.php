@@ -41,6 +41,142 @@ class MODReporte extends MODbase {
 
         return $this->respuesta;
     }
+
+    function listarCabeceraInforme() {
+        $this->procedimiento = 'sistra.ft_reporte_sel';
+        $this->transaccion = 'TRA_LISINF_SEL';
+        $this->tipo_procedimiento = 'SEL';
+
+        $this->setParametro('id_tramite_detalle', 'id_tramite_detalle', 'integer');
+		        		
+        $this->captura('num_informe', 'varchar');
+        $this->captura('nombrea', 'text');
+        $this->captura('cargoa', 'varchar');
+        $this->captura('via', 'text');
+        $this->captura('cargovia', 'varchar');
+		$this->captura('de', 'text');
+        $this->captura('cargode', 'varchar');
+		$this->captura('mes', 'text');
+        $this->captura('dia', 'double PRECISION');
+        $this->captura('anio', 'double PRECISION');
+        $this->captura('referencia', 'varchar');
+		;
+
+        $this->armarConsulta();
+		//echo $this->consulta;exit;
+        $this->ejecutarConsulta();
+
+        return $this->respuesta;
+    }
+
+    function listarCuerpoInforme() {
+        $this->procedimiento = 'sistra.ft_reporte_sel';
+        $this->transaccion = 'TRA_LICUIN_SEL';
+        $this->tipo_procedimiento = 'SEL';
+
+        $this->setParametro('id_tramite_detalle', 'id_tramite_detalle', 'integer');
+	
+        $this->captura('cite_tramite', 'varchar');
+        $this->captura('nombre_tramite', 'varchar');
+        $this->captura('distrito', 'varchar');
+        $this->captura('zona', 'varchar');
+        $this->captura('manzana', 'varchar');
+		$this->captura('lote', 'varchar');
+        $this->captura('calle', 'varchar');
+		$this->captura('avenida', 'varchar');
+        $this->captura('tipo_calle', 'varchar');
+        $this->captura('rasante_municipal', 'varchar');
+        $this->captura('colindante_norte', 'varchar');
+        $this->captura('colindante_sur', 'varchar');
+        $this->captura('colindante_oeste', 'varchar');
+        $this->captura('colindante_este', 'varchar');
+        $this->captura('super_escritura', 'numeric');
+        $this->captura('super_mensura', 'numeric');
+        $this->captura('super_excedente', 'numeric');
+        $this->captura('super_inexistente', 'numeric');
+        $this->captura('super_total', 'numeric');
+        $this->captura('long_rasante', 'numeric');
+        $this->captura('vias', 'varchar');
+        $this->captura('agua_potable', 'varchar');
+        $this->captura('alcantarillado', 'varchar');
+        $this->captura('alumbrado_publico', 'varchar');
+        $this->captura('telefonia', 'varchar');
+        $this->captura('equipamiento', 'varchar');
+        $this->captura('transporte', 'varchar');
+        $this->captura('observacion', 'varchar');
+        $this->captura('conclusion', 'varchar');
+		
+        $this->armarConsulta();
+		//echo $this->consulta;exit;
+        $this->ejecutarConsulta();
+
+        return $this->respuesta;
+    }
+
+    function listarCabeceraInformeLegal() {
+        $this->procedimiento = 'sistra.ft_reporte_sel';
+        $this->transaccion = 'TRA_LICALE_SEL';
+        $this->tipo_procedimiento = 'SEL';
+
+        $this->setParametro('id_tramite_detalle', 'id_tramite_detalle', 'integer');
+	
+        $this->captura('num_informe', 'varchar');
+        $this->captura('nombrea', 'text');
+        $this->captura('cargoa', 'varchar');
+        $this->captura('via', 'text');
+        $this->captura('cargovia', 'varchar');
+		$this->captura('de', 'text');
+        $this->captura('cargode', 'varchar');
+		$this->captura('mes', 'text');
+        $this->captura('dia', 'double PRECISION');
+        $this->captura('anio', 'double PRECISION');
+        $this->captura('referencia', 'varchar');
+
+        $this->captura('cite_tramite', 'varchar');
+        $this->captura('nombre_tramite', 'varchar');
+        $this->captura('id_tipo_tramite', 'int4');
+        $this->captura('id_tramite', 'int4');
+        $this->captura('observacion', 'varchar');
+        $this->captura('conclusion', 'varchar');
+
+        $this->captura('nro_matricula', 'varchar');
+        $this->captura('superficie', 'numeric');
+        $this->captura('asiento', 'varchar');
+		$this->captura('fecha_asiento', 'date');
+        $this->captura('nro_testimonio', 'varchar');
+		$this->captura('fecha_testimonio', 'date');
+        $this->captura('nro_notario', 'varchar');
+        $this->captura('nombre_notario', 'varchar');
+        $this->captura('nro_rmta', 'varchar');
+        $this->captura('fecha_rmta', 'date');
+       
+		
+        $this->armarConsulta();
+		//echo $this->consulta;exit;
+        $this->ejecutarConsulta();
+
+        return $this->respuesta;
+    }
+
+    function listarCuerpoInformeLegal() {
+        $this->procedimiento = 'sistra.ft_reporte_sel';
+        $this->transaccion = 'TRA_LICULE_SEL';
+        $this->tipo_procedimiento = 'SEL';
+
+        $this->setParametro('id_tramite_detalle', 'id_tramite_detalle', 'integer');
+	
+        $this->captura('distrito', 'varchar');
+        $this->captura('zona', 'varchar');
+        $this->captura('manzana', 'varchar');
+        $this->captura('lote', 'varchar');
+       
+        $this->armarConsulta();
+		//echo $this->consulta;exit;
+        $this->ejecutarConsulta();
+
+        return $this->respuesta;
+    }
+
 	function listarFormularioPersonas() {
         $this->procedimiento = 'sistra.ft_reporte_sel';
         $this->transaccion = 'TRA_LISPER_SEL';
@@ -66,6 +202,33 @@ class MODReporte extends MODbase {
 
         return $this->respuesta;
     }
+
+    function listarFormularioPersonasTradet() {
+        $this->procedimiento = 'sistra.ft_reporte_sel';
+        $this->transaccion = 'TRA_LIPETR_SEL';
+        $this->tipo_procedimiento = 'SEL';
+
+        $this->setParametro('id_tramite_detalle', 'id_tramite_detalle', 'integer');
+		        		
+        $this->captura('domicilio', 'varchar');
+        $this->captura('tipo_persona', 'varchar');
+        $this->captura('fecha_poder', 'date');
+		$this->captura('notario', 'varchar');
+		$this->captura('nro_notaria', 'integer');
+		$this->captura('nombre_completo1', 'text');
+		$this->captura('celular1', 'varchar');
+		$this->captura('correo', 'varchar');
+		$this->captura('ci', 'varchar');
+        $this->captura('expedicion', 'varchar');
+        $this->captura('nro_poder', 'varchar');
+
+        $this->armarConsulta();
+		//echo $this->consulta;exit;
+        $this->ejecutarConsulta();
+
+        return $this->respuesta;
+    }
+
 
     function listarOT() {
         $this->procedimiento = 'sistra.ft_reporte_sel';

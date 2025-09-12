@@ -1,36 +1,36 @@
 <?php
 /**
 *@package pXP
-*@file gen-MODLote.php
+*@file gen-MODCorrelativo.php
 *@author  (admin)
-*@date 17-04-2025 00:18:04
+*@date 26-08-2025 21:14:57
 *@description Clase que envia los parametros requeridos a la Base de datos para la ejecucion de las funciones, y que recibe la respuesta del resultado de la ejecucion de las mismas
 */
 
-class MODLote extends MODbase{
+class MODCorrelativo extends MODbase{
 	
 	function __construct(CTParametro $pParam){
 		parent::__construct($pParam);
 	}
 			
-	function listarLote(){
+	function listarCorrelativo(){
 		//Definicion de variables para ejecucion del procedimientp
-		$this->procedimiento='sistra.ft_lote_sel';
-		$this->transaccion='SISTRA_lotes_SEL';
+		$this->procedimiento='sistra.ft_correlativo_sel';
+		$this->transaccion='SISTRA_CORREL_SEL';
 		$this->tipo_procedimiento='SEL';//tipo de transaccion
 				
 		//Definicion de la lista del resultado del query
-		$this->captura('id_lote','int4');
-		$this->captura('tipo_cesion','varchar');
-		$this->captura('superficie','numeric');
-		$this->captura('nombre','varchar');
-		$this->captura('id_tramite_detalle','int4');
+		$this->captura('id_correlativo','int4');
 		$this->captura('estado_reg','varchar');
-		$this->captura('lote','varchar');
-		$this->captura('id_usuario_ai','int4');
-		$this->captura('usuario_ai','varchar');
-		$this->captura('fecha_reg','timestamp');
+		$this->captura('sigla','varchar');
+		$this->captura('tipo','varchar');
+		$this->captura('cargo','varchar');
+		$this->captura('num_siguiente','int4');
+		$this->captura('num_actual','int4');
 		$this->captura('id_usuario_reg','int4');
+		$this->captura('fecha_reg','timestamp');
+		$this->captura('usuario_ai','varchar');
+		$this->captura('id_usuario_ai','int4');
 		$this->captura('id_usuario_mod','int4');
 		$this->captura('fecha_mod','timestamp');
 		$this->captura('usr_reg','varchar');
@@ -44,19 +44,19 @@ class MODLote extends MODbase{
 		return $this->respuesta;
 	}
 			
-	function insertarLote(){
+	function insertarCorrelativo(){
 		//Definicion de variables para ejecucion del procedimiento
-		$this->procedimiento='sistra.ft_lote_ime';
-		$this->transaccion='SISTRA_lotes_INS';
+		$this->procedimiento='sistra.ft_correlativo_ime';
+		$this->transaccion='SISTRA_CORREL_INS';
 		$this->tipo_procedimiento='IME';
 				
 		//Define los parametros para la funcion
-		$this->setParametro('tipo_cesion','tipo_cesion','varchar');
-		$this->setParametro('superficie','superficie','numeric');
-		$this->setParametro('nombre','nombre','varchar');
-		$this->setParametro('id_tramite_detalle','id_tramite_detalle','int4');
 		$this->setParametro('estado_reg','estado_reg','varchar');
-		$this->setParametro('lote','lote','varchar');
+		$this->setParametro('sigla','sigla','varchar');
+		$this->setParametro('tipo','tipo','varchar');
+		$this->setParametro('cargo','cargo','varchar');
+		$this->setParametro('num_siguiente','num_siguiente','int4');
+		$this->setParametro('num_actual','num_actual','int4');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -66,20 +66,20 @@ class MODLote extends MODbase{
 		return $this->respuesta;
 	}
 			
-	function modificarLote(){
+	function modificarCorrelativo(){
 		//Definicion de variables para ejecucion del procedimiento
-		$this->procedimiento='sistra.ft_lote_ime';
-		$this->transaccion='SISTRA_lotes_MOD';
+		$this->procedimiento='sistra.ft_correlativo_ime';
+		$this->transaccion='SISTRA_CORREL_MOD';
 		$this->tipo_procedimiento='IME';
 				
 		//Define los parametros para la funcion
-		$this->setParametro('id_lote','id_lote','int4');
-		$this->setParametro('tipo_cesion','tipo_cesion','varchar');
-		$this->setParametro('superficie','superficie','numeric');
-		$this->setParametro('nombre','nombre','varchar');
-		$this->setParametro('id_tramite_detalle','id_tramite_detalle','int4');
+		$this->setParametro('id_correlativo','id_correlativo','int4');
 		$this->setParametro('estado_reg','estado_reg','varchar');
-		$this->setParametro('lote','lote','varchar');
+		$this->setParametro('sigla','sigla','varchar');
+		$this->setParametro('tipo','tipo','varchar');
+		$this->setParametro('cargo','cargo','varchar');
+		$this->setParametro('num_siguiente','num_siguiente','int4');
+		$this->setParametro('num_actual','num_actual','int4');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -89,14 +89,14 @@ class MODLote extends MODbase{
 		return $this->respuesta;
 	}
 			
-	function eliminarLote(){
+	function eliminarCorrelativo(){
 		//Definicion de variables para ejecucion del procedimiento
-		$this->procedimiento='sistra.ft_lote_ime';
-		$this->transaccion='SISTRA_lotes_ELI';
+		$this->procedimiento='sistra.ft_correlativo_ime';
+		$this->transaccion='SISTRA_CORREL_ELI';
 		$this->tipo_procedimiento='IME';
 				
 		//Define los parametros para la funcion
-		$this->setParametro('id_lote','id_lote','int4');
+		$this->setParametro('id_correlativo','id_correlativo','int4');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();

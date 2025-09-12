@@ -1,7 +1,7 @@
 <?php
 /**
 *@package pXP
-*@file OtTramite.php
+*@file Arquitecto.php
 *@author  jmita
 *@date 26-03-2025 01:17:21
 *@description Archivo con la interfaz de usuario que permite la ejecucion de todas las funcionalidades del sistema
@@ -10,12 +10,12 @@
 header("content-type: text/javascript; charset=UTF-8");
 ?>
 <script>
-Phx.vista.OtTramite=Ext.extend(Phx.gridInterfaz,{
+Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
 
 	constructor:function(config){
 		this.maestro=config.maestro;
     	//llama al constructor de la clase padre
-		Phx.vista.OtTramite.superclass.constructor.call(this,config);
+		Phx.vista.Arquitecto.superclass.constructor.call(this,config);
 		this.init();
 		this.load({params:{start:0, limit:this.tam_pag}});
 		//this.iniciarEventos();
@@ -26,13 +26,19 @@ Phx.vista.OtTramite=Ext.extend(Phx.gridInterfaz,{
 				handler : this.BDerivar,
 				tooltip : '<b>Derivar</b><br/>Deriva al funcionario asignado'
 			});
-	/*	this.addButton('datosTecnicos', {
-                argument: {imprimir: 'datosTecnicos'},
-                text: '<i class="fa fa-thumbs-o-up fa-2x"></i> Datos Tecnicos', /*iconCls:'' ,*/
-              /*  disabled: false,
-                handler: this.datosTecnicos
-            });*/
-
+		this.addButton('trmta', {
+                argument: {imprimir: 'trmta'},
+                text: '<i class="fa fa-thumbs-o-up fa-2x"></i> R. M. T. A.', /*iconCls:'' ,*/
+                disabled: false,
+                handler: this.trmta
+            });
+		this.addButton('imprimirInfor', {
+				text: 'Imprimir Informe',
+				iconCls: 'bprint',
+				disabled: false,
+				handler: this.BInforme,
+				tooltip: '<b>Imprimir Informe</b><br/>Impresión del Informe'
+			});		
 			 console.log(config);
 	},
 			
@@ -57,6 +63,22 @@ Phx.vista.OtTramite=Ext.extend(Phx.gridInterfaz,{
 			},
 			type:'Field',
 			form:true 
+		},
+
+		{
+			config:{
+				name: 'cite_tramite',
+				fieldLabel: 'Num. Tramite',
+				allowBlank: true,
+				anchor: '80%',
+				gwidth: 100,
+				maxLength:20
+			},
+				type:'TextField',
+				filters:{pfiltro:'trami.cite_tramite',type:'string'},
+				id_grupo:1,
+				grid:true,
+				form:true
 		},
 
 		{
@@ -315,10 +337,10 @@ Phx.vista.OtTramite=Ext.extend(Phx.gridInterfaz,{
 		}
 	],
 	tam_pag:50,	
-	title:'Tramite Detalle',
+	title:'Arquitecto',
 	ActSave:'../../sis_tramites/control/TramiteDetalle/insertarTramiteDetalle',
 	ActDel:'../../sis_tramites/control/TramiteDetalle/eliminarTramiteDetalle',
-	ActList:'../../sis_tramites/control/TramiteDetalle/listarOtTramite',
+	ActList:'../../sis_tramites/control/TramiteDetalle/listarArquitecto',
 	id_store:'id_tramite_detalle',
 	fields: [
 		{name:'id_tramite_detalle', type: 'numeric'},
@@ -339,7 +361,7 @@ Phx.vista.OtTramite=Ext.extend(Phx.gridInterfaz,{
 		{name:'usr_reg', type: 'string'},
 		{name:'usr_mod', type: 'string'},
 		{name:'desc_funcionario1', type: 'string'},
-		
+		{name:'cite_tramite', type: 'string'},
 	],
 	sortInfo:{
 		field: 'id_tramite_detalle',
@@ -348,10 +370,15 @@ Phx.vista.OtTramite=Ext.extend(Phx.gridInterfaz,{
 	bdel:false,
 	bsave:false,
 	bnew:false,
-
+	east:{
+        url:'../../../sis_tramites/vista/informe/Informe.php',
+        title:'Informe',
+        height:'50%',
+        cls:'Informe'
+   		},
 	preparaMenu: function (tb) {
         // llamada funcion clace padre
-        Phx.vista.OtTramite.superclass.preparaMenu.call(this, tb)
+        Phx.vista.Arquitecto.superclass.preparaMenu.call(this, tb)
 		
 		var data = this.getSelectedData();
 		  var tb =this.tbar;
@@ -377,14 +404,15 @@ Phx.vista.OtTramite=Ext.extend(Phx.gridInterfaz,{
 		  	*/
          if(data.estado_reg=="inactivo"){
          
-				      this.getBoton('edit').disable();
-			   	    this.getBoton('Derivar').disable();
-              this.getBoton('datosTecnicos').disable();
-		          }
+			this.getBoton('edit').disable();
+			this.getBoton('Derivar').disable();
+            this.getBoton('trmta').disable();
+		    }
           else {
           
-              this.getBoton('edit').enable();
-			   	    this.getBoton('Derivar').enable();
+            this.getBoton('edit').enable();
+			this.getBoton('Derivar').enable();
+			this.getBoton('trmta').enable();
           };
 		  	
 		  
@@ -393,8 +421,8 @@ Phx.vista.OtTramite=Ext.extend(Phx.gridInterfaz,{
 		  return tb
     },
     onButtonNew: function () {
-        Phx.vista.OtTramite.superclass.onButtonNew.call(this);
-        this.getComponente('id_tramite').setValue(this.maestro.id_tramite);
+        Phx.vista.Arquitecto.superclass.onButtonNew.call(this);
+        this.getComponente('id_tramite_detalle').setValue(this.maestro.id_tramite_detalle);
     },
    /* onReloadPage: function (m) {
         this.maestro = m;
@@ -435,18 +463,18 @@ Phx.vista.OtTramite=Ext.extend(Phx.gridInterfaz,{
 		if (!reg.ROOT.error) {
 			alert(reg.ROOT.detalle.mensaje)
 		}
-	  Phx.vista.Tramite.superclass.onReloadPage.call();	
+	  Phx.vista.Arquitecto.superclass.onReloadPage.call();	
    
     this.reload();
     
 	},
-/*
-	datosTecnicos: function () {
+
+	trmta: function () {
 		var rec = this.getSelectedData();
-		this.getComponente('id_tramite').setValue(this.maestro.id_tramite);
+		//this.getComponente('id_tramite_detalle').setValue(this.id_tramite_detalle);
 		//enviamos el id seleccionado para cual el archivo se deba subir
 		rec.datos_extras_id = rec.id_tramite_detalle;
-		rec.datos_extras_id = rec.id_tramite;
+		//rec.datos_extras_id = rec.id_tramite;
 		//enviamos el nombre de la tabla
 		rec.datos_extras_tabla = 'tdato_tecnico';
 		//enviamos el codigo ya que una tabla puede tener varios archivos diferentes como ci,pasaporte,contrato,slider,fotos,etc
@@ -455,15 +483,34 @@ Phx.vista.OtTramite=Ext.extend(Phx.gridInterfaz,{
 		//esto es cuando queremos darle una ruta personalizada
 		//rec.datos_extras_ruta_personalizada = './../../../uploaded_files/favioVideos/videos/';
 
-		Phx.CP.loadWindows('../../../sis_tramites/vista/dato_tecnico/DatoTecnico.php',
-			'DatoTecnico',
+		Phx.CP.loadWindows('../../../sis_tramites/vista/trmta/Trmta.php',
+			'Trmta',
 			{
 				width: 900,
 				height: 400
-			}, rec, this.idContenedor, 'DatoTecnico');
+			}, rec, this.idContenedor, 'Trmta');
 
-	},*/
+	},
 
+	BInforme:function () {
+			var rec = this.getSelectedData();
+			Phx.CP.loadingShow();
+			console.log(rec);
+			console.log("despues");
+			Ext.Ajax.request({
+				url: '../../sis_tramites/control/ReporteInforme/emitirInformeTopo',
+				params: {
+
+					id_tramite_detalle: rec.id_tramite_detalle,
+					id_usuario_reg: rec.id_usuario_reg
+				},
+				success: this.successExport,
+				failure: this.conexionFailure,
+				timeout: this.timeout,
+				scope: this
+			});
+	
+		},
 
 	}
 )

@@ -31,7 +31,7 @@ class MODMatricula extends MODbase{
 		$this->captura('nro_notario','varchar');
 		$this->captura('fecha_decreto','date');
 		$this->captura('nombre_notario','varchar');
-		$this->captura('id_tramite','int4');
+		$this->captura('id_tramite_detalle','int4');
 		$this->captura('nro_testimonio','varchar');
 		$this->captura('id_usuario_ai','int4');
 		$this->captura('id_usuario_reg','int4');
@@ -67,7 +67,7 @@ class MODMatricula extends MODbase{
 		$this->setParametro('nro_notario','nro_notario','varchar');
 		$this->setParametro('fecha_decreto','fecha_decreto','date');
 		$this->setParametro('nombre_notario','nombre_notario','varchar');
-		$this->setParametro('id_tramite','id_tramite','int4');
+		$this->setParametro('id_tramite_detalle','id_tramite_detalle','int4');
 		$this->setParametro('nro_testimonio','nro_testimonio','varchar');
 
 		//Ejecuta la instruccion
@@ -96,7 +96,7 @@ class MODMatricula extends MODbase{
 		$this->setParametro('nro_notario','nro_notario','varchar');
 		$this->setParametro('fecha_decreto','fecha_decreto','date');
 		$this->setParametro('nombre_notario','nombre_notario','varchar');
-		$this->setParametro('id_tramite','id_tramite','int4');
+		$this->setParametro('id_tramite_detalle','id_tramite_detalle','int4');
 		$this->setParametro('nro_testimonio','nro_testimonio','varchar');
 
 		//Ejecuta la instruccion

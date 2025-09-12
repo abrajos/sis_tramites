@@ -16,10 +16,10 @@ Phx.vista.DatoTecnico=Ext.extend(Phx.gridInterfaz,{
 		this.maestro=config.maestro;
     	//llama al constructor de la clase padre
 		Phx.vista.DatoTecnico.superclass.constructor.call(this,config);
-		console.log("id:" + this.id_tramite);
+		console.log("id:" + this.id_tramite_detalle);
 		this.init();
-		this.getComponente('id_tramite').setValue(this.id_tramite);
-		this.store.baseParams = {id_tramite: this.id_tramite};
+		this.getComponente('id_tramite_detalle').setValue(this.id_tramite_detalle);
+		this.store.baseParams = {id_tramite_detalle: this.id_tramite_detalle};
 		this.load({params:{start:0, limit:this.tam_pag}})
 		this.iniciarEventos();
 		
@@ -104,7 +104,7 @@ Phx.vista.DatoTecnico=Ext.extend(Phx.gridInterfaz,{
 			config:{
 					labelSeparator:'',
 					inputType:'hidden',
-					name: 'id_tramite'
+					name: 'id_tramite_detalle'
 			},
 			type:'Field',
 			form:true 
@@ -291,7 +291,37 @@ Phx.vista.DatoTecnico=Ext.extend(Phx.gridInterfaz,{
 				form:true
 		},
 		
-		
+		{
+			config:{
+				name: 'super_excedente',
+				fieldLabel: 'Superficie Excedente',
+				allowBlank: false,
+				anchor: '80%',
+				gwidth: 100,
+				maxLength:10
+			},
+				type:'NumberField',
+				filters:{pfiltro:'dattec.super_excedente',type:'numeric'},
+				id_grupo:2,
+				grid:true,
+				form:true
+		},
+		{
+			config:{
+				name: 'super_inexistente',
+				fieldLabel: 'Superficie Inexistente',
+				allowBlank: false,
+				anchor: '80%',
+				gwidth: 100,
+				maxLength:10
+			},
+				type:'NumberField',
+				filters:{pfiltro:'dattec.super_inexistente',type:'numeric'},
+				id_grupo:2,
+				grid:true,
+				form:true
+		},
+
 		{
 			config:{
 				name: 'super_total',
@@ -520,13 +550,21 @@ Phx.vista.DatoTecnico=Ext.extend(Phx.gridInterfaz,{
 			config:{
 				name: 'rasante_municipal',
 				fieldLabel: 'Rasante Municipal',
-				allowBlank: true,
-				anchor: '80%',
-				gwidth: 100,
-				maxLength:50
+				allowBlank: false,
+                anchor: '40%',
+                gwidth: 80,
+                typeAhead: true,
+                triggerAction: 'all',
+                lazyRender: true,
+                mode: 'local',
+                store: ['si','no']
 			},
-				type:'TextField',
-				filters:{pfiltro:'dattec.rasante_municipal',type:'string'},
+				type:'ComboBox',
+				filters:{   pfiltro:'dattec.rasante_municipal',
+                        type: 'list',
+                         options: ['si','no']  
+                    },
+            	valorInicial: 'si',
 				id_grupo:0,
 				grid:true,
 				form:true
@@ -650,7 +688,7 @@ Phx.vista.DatoTecnico=Ext.extend(Phx.gridInterfaz,{
 		{name:'super_escritura', type: 'numeric'},
 		{name:'tipo_calle', type: 'string'},
 		{name:'super_mensura', type: 'numeric'},
-		{name:'id_tramite', type: 'numeric'},
+		{name:'id_tramite_detalle', type: 'numeric'},
 		{name:'avenida', type: 'string'},
 		{name:'alcantarillado', type: 'string'},
 		{name:'telefonia', type: 'string'},
@@ -680,7 +718,8 @@ Phx.vista.DatoTecnico=Ext.extend(Phx.gridInterfaz,{
 		{name:'id_usuario_mod', type: 'numeric'},
 		{name:'usr_reg', type: 'string'},
 		{name:'usr_mod', type: 'string'},
-		
+		{name:'super_excedente', type: 'numeric'},
+		{name:'super_inexistente', type: 'numeric'},
 	],
 	sortInfo:{
 		field: 'id_dato_tecnico',
@@ -698,18 +737,18 @@ Phx.vista.DatoTecnico=Ext.extend(Phx.gridInterfaz,{
     },
 	onButtonNew: function () {
         Phx.vista.DatoTecnico.superclass.onButtonNew.call(this);
-        this.getComponente('id_tramite').setValue(this.id_tramite);
+        this.getComponente('id_tramite_detalle').setValue(this.id_tramite_detalle);
         this.mostrarGrupo(0);
         this.mostrarGrupo(1);
         this.mostrarGrupo(2);
         this.mostrarGrupo(3);
-		console.log(this.id_tramite);
+		console.log(this.id_tramite_detalle);
     },
 	onReloadPage: function (m) {
         this.maestro = m;
         console.log(m);
 
-        this.store.baseParams = {id_tramite: this.id_tramite};
+        this.store.baseParams = {id_tramite_detalle: this.id_tramite_detalle};
 
 
         this.load({params: {start: 0, limit: 50}})

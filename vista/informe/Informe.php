@@ -84,7 +84,7 @@ Phx.vista.Informe=Ext.extend(Phx.gridInterfaz,{
 				}),
 				valueField: 'id_',
 				displayField: 'nombre',
-				gdisplayField: 'desc_',
+				gdisplayField: 'funcionario',
 				hiddenName: 'id_funcionario',
 				forceSelection: true,
 				typeAhead: false,
@@ -97,7 +97,7 @@ Phx.vista.Informe=Ext.extend(Phx.gridInterfaz,{
 				gwidth: 150,
 				minChars: 2,
 				renderer : function(value, p, record) {
-					return String.format('{0}', record.data['desc_']);
+					return String.format('{0}', record.data['funcionario']);
 				}
 			},
 			type: 'ComboBox',
@@ -127,7 +127,7 @@ Phx.vista.Informe=Ext.extend(Phx.gridInterfaz,{
 				}),
 				valueField: 'id_funcionario',
 				displayField: 'desc_person',
-				gdisplayField: 'desc_funcionario1',
+				gdisplayField: 'funcionariovia',
 				hiddenName: 'id_funcionario',
 				forceSelection: false,
 				typeAhead: false,
@@ -140,7 +140,7 @@ Phx.vista.Informe=Ext.extend(Phx.gridInterfaz,{
 				gwidth: 250,
 				minChars: 2,
 				renderer : function(value, p, record) {
-					return String.format('{0}', record.data['desc_funcionario1']);
+					return String.format('{0}', record.data['funcionariovia']);
 				}
 			},
 			type: 'ComboBox',
@@ -170,7 +170,7 @@ Phx.vista.Informe=Ext.extend(Phx.gridInterfaz,{
 				}),
 				valueField: 'id_funcionario',
 				displayField: 'desc_person',
-				gdisplayField: 'desc_funcionario1',
+				gdisplayField: 'funcionarioa',
 				hiddenName: 'id_funcionario',
 				forceSelection: false,
 				typeAhead: false,
@@ -183,7 +183,7 @@ Phx.vista.Informe=Ext.extend(Phx.gridInterfaz,{
 				gwidth: 250,
 				minChars: 2,
 				renderer : function(value, p, record) {
-					return String.format('{0}', record.data['desc_funcionario1']);
+					return String.format('{0}', record.data['funcionarioa']);
 				}
 			},
 			type: 'ComboBox',
@@ -405,7 +405,9 @@ Phx.vista.Informe=Ext.extend(Phx.gridInterfaz,{
 		{name:'id_usuario_mod', type: 'numeric'},
 		{name:'usr_reg', type: 'string'},
 		{name:'usr_mod', type: 'string'},
-		
+		{name:'funcionarioa', type: 'string'},
+		{name:'funcionario', type: 'string'},
+		{name:'funcionariovia', type: 'string'},
 	],
 	sortInfo:{
 		field: 'id_informe',

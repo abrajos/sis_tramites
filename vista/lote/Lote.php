@@ -48,18 +48,27 @@ Phx.vista.Lote=Ext.extend(Phx.gridInterfaz,{
 			type:'Field',
 			form:true 
 		},
+		
 		{
 			config:{
 				name: 'tipo_cesion',
 				fieldLabel: 'Tipo Cesión',
 				allowBlank: false,
-				anchor: '80%',
-				gwidth: 100,
-				maxLength:15
+                anchor: '40%',
+                gwidth: 80,
+                typeAhead: true,
+                triggerAction: 'all',
+                lazyRender: true,
+                mode: 'local',
+                store: ['via','area_verde', 'lote']
 			},
-				type:'TextField',
-				filters:{pfiltro:'lotes.tipo_cesion',type:'string'},
-				id_grupo:1,
+				type:'ComboBox',
+				filters:{   pfiltro:'lotes.tipo_cesion',
+                        type: 'list',
+                         options: ['via','area_verde', 'lote']  
+                    },
+            	valorInicial: 'via',
+				id_grupo:0,
 				grid:true,
 				form:true
 		},
@@ -93,7 +102,66 @@ Phx.vista.Lote=Ext.extend(Phx.gridInterfaz,{
 				grid:true,
 				form:true
 		},
-		
+		{
+			config:{
+				name: 'co_norte',
+				fieldLabel: 'Colindante norte',
+				allowBlank: false,
+				anchor: '80%',
+				gwidth: 100,
+				maxLength:20
+			},
+				type:'TextField',
+				filters:{pfiltro:'lotes.co_norte',type:'string'},
+				id_grupo:1,
+				grid:true,
+				form:true
+		},
+		{
+			config:{
+				name: 'co_sud',
+				fieldLabel: 'Colindante Sud',
+				allowBlank: false,
+				anchor: '80%',
+				gwidth: 100,
+				maxLength:20
+			},
+				type:'TextField',
+				filters:{pfiltro:'lotes.co_sud',type:'string'},
+				id_grupo:1,
+				grid:true,
+				form:true
+		},
+		{
+			config:{
+				name: 'co_este',
+				fieldLabel: 'Colindante Este',
+				allowBlank: false,
+				anchor: '80%',
+				gwidth: 100,
+				maxLength:20
+			},
+				type:'TextField',
+				filters:{pfiltro:'lotes.co_este',type:'string'},
+				id_grupo:1,
+				grid:true,
+				form:true
+		},
+		{
+			config:{
+				name: 'co_oeste',
+				fieldLabel: 'Colindante Oeste',
+				allowBlank: false,
+				anchor: '80%',
+				gwidth: 100,
+				maxLength:20
+			},
+				type:'TextField',
+				filters:{pfiltro:'lotes.co_oeste',type:'string'},
+				id_grupo:1,
+				grid:true,
+				form:true
+		},
 		{
 			config:{
 				name: 'estado_reg',
@@ -239,6 +307,10 @@ Phx.vista.Lote=Ext.extend(Phx.gridInterfaz,{
 		{name:'fecha_mod', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
 		{name:'usr_reg', type: 'string'},
 		{name:'usr_mod', type: 'string'},
+		{name:'co_norte', type: 'string'},
+		{name:'co_sud', type: 'string'},
+		{name:'co_este', type: 'string'},
+		{name:'co_oeste', type: 'string'},
 		
 	],
 	sortInfo:{

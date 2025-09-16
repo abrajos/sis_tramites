@@ -40,6 +40,9 @@ class MODInforme extends MODbase{
 		$this->captura('id_usuario_mod','int4');
 		$this->captura('usr_reg','varchar');
 		$this->captura('usr_mod','varchar');
+		$this->captura('funcionarioa','text');
+		$this->captura('funcionario','text');
+		$this->captura('funcionariovia','text');
 		
 		//Ejecuta la instruccion
 		$this->armarConsulta();

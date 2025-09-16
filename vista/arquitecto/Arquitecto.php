@@ -26,11 +26,11 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
 				handler : this.BDerivar,
 				tooltip : '<b>Derivar</b><br/>Deriva al funcionario asignado'
 			});
-		this.addButton('trmta', {
-                argument: {imprimir: 'trmta'},
-                text: '<i class="fa fa-thumbs-o-up fa-2x"></i> R. M. T. A.', /*iconCls:'' ,*/
+		this.addButton('boleta', {
+                argument: {imprimir: 'boleta'},
+                text: '<i class="fa fa-thumbs-o-up fa-2x"></i> Boleta', 
                 disabled: false,
-                handler: this.trmta
+                handler: this.boleta
             });
 		this.addButton('imprimirInfor', {
 				text: 'Imprimir Informe',
@@ -78,7 +78,7 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
 				filters:{pfiltro:'trami.cite_tramite',type:'string'},
 				id_grupo:1,
 				grid:true,
-				form:true
+				form:false
 		},
 
 		{
@@ -93,8 +93,8 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
 				type:'TextField',
 				filters:{pfiltro:'tradet.num_informe',type:'string'},
 				id_grupo:1,
-				grid:true,
-				form:true
+				grid:false,
+				form:false
 		},
 		{
 			config:{
@@ -108,8 +108,8 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
 				type:'TextField',
 				filters:{pfiltro:'tradet.referencia_informe',type:'string'},
 				id_grupo:1,
-				grid:true,
-				form:true
+				grid:false,
+				form:false
 		},
 		{
 			config:{
@@ -153,8 +153,8 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
 				type:'TextArea',
 				filters:{pfiltro:'tradet.descripcion',type:'string'},
 				id_grupo:1,
-				grid:true,
-				form:true
+				grid:false,
+				form:false
 		},
 		{
 			config: {
@@ -191,6 +191,49 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
 				minChars: 2,
 				renderer : function(value, p, record) {
 					return String.format('{0}', record.data['desc_funcionario1']);
+				}
+			},
+			type: 'ComboBox',
+			id_grupo: 0,
+			filters: {pfiltro: 'PERSON.nombre_completo2',type: 'string'},
+			grid: true,
+			form: false
+		},
+		{
+			config: {
+				name: 'id_funcionario_deriv',
+				fieldLabel: 'Funcionario Derivado',
+				allowBlank: true,
+				emptyText: 'Elija una opción...',
+				store: new Ext.data.JsonStore({
+					url: '../../sis_organigrama/control/Funcionario/listarFuncionario',
+					id: 'id_funcionario',
+					root: 'datos',
+					sortInfo: {
+						field: 'PERSON.nombre_completo2',
+						direction: 'ASC'
+					},
+					totalProperty: 'total',
+					fields: ['id_funcionario', 'desc_person', 'codigo'],
+					remoteSort: true,
+					baseParams: {par_filtro: 'PERSON.nombre_completo2'}
+				}),
+				valueField: 'id_funcionario',
+				displayField: 'desc_person',
+				gdisplayField: 'funcio_deriv',
+				hiddenName: 'id_funcionario',
+				forceSelection: false,
+				typeAhead: false,
+				triggerAction: 'all',
+				lazyRender: true,
+				mode: 'remote',
+				pageSize: 15,
+				queryDelay: 1000,
+				anchor: '100%',
+				gwidth: 250,
+				minChars: 2,
+				renderer : function(value, p, record) {
+					return String.format('{0}', record.data['funcio_deriv']);
 				}
 			},
 			type: 'ComboBox',
@@ -362,6 +405,8 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
 		{name:'usr_mod', type: 'string'},
 		{name:'desc_funcionario1', type: 'string'},
 		{name:'cite_tramite', type: 'string'},
+		{name:'id_funcionario_deriv', type: 'numeric'},
+		{name:'funcio_deriv', type: 'string'},
 	],
 	sortInfo:{
 		field: 'id_tramite_detalle',
@@ -406,13 +451,13 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
          
 			this.getBoton('edit').disable();
 			this.getBoton('Derivar').disable();
-            this.getBoton('trmta').disable();
+           // this.getBoton('trmta').disable();
 		    }
           else {
           
             this.getBoton('edit').enable();
 			this.getBoton('Derivar').enable();
-			this.getBoton('trmta').enable();
+			//this.getBoton('trmta').enable();
           };
 		  	
 		  
@@ -439,13 +484,15 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
 		var rec = this.sm.getSelected();
 		var id_tramite_detalle = this.sm.getSelected().data.id_tramite_detalle;
 		var id_funcionario = this.sm.getSelected().data.id_funcionario;
+		var id_funcionario_deriv = this.sm.getSelected().data.id_funcionario_deriv;
 		if (confirm('Esta seguro de DERIVAR el tramite?')){
 		Phx.CP.loadingShow();
 		Ext.Ajax.request({
 			url : '../../sis_tramites/control/TramiteDetalle/derivarTramiteDetalle',
 			params : {
 				id_tramite_detalle : id_tramite_detalle,
-				id_funcionario  : id_funcionario
+				id_funcionario  : id_funcionario,
+				id_funcionario_deriv  : id_funcionario_deriv
 				/*id_correspondencia : id_correspondencia,
 				id_origen          : this.maestro.id_origen*/
 				},
@@ -469,26 +516,26 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
     
 	},
 
-	trmta: function () {
+	boleta: function () {
 		var rec = this.getSelectedData();
 		//this.getComponente('id_tramite_detalle').setValue(this.id_tramite_detalle);
 		//enviamos el id seleccionado para cual el archivo se deba subir
 		rec.datos_extras_id = rec.id_tramite_detalle;
 		//rec.datos_extras_id = rec.id_tramite;
 		//enviamos el nombre de la tabla
-		rec.datos_extras_tabla = 'tdato_tecnico';
+		rec.datos_extras_tabla = 'tboleta';
 		//enviamos el codigo ya que una tabla puede tener varios archivos diferentes como ci,pasaporte,contrato,slider,fotos,etc
-		rec.datos_extras_codigo = 'dato tecnico';
+		rec.datos_extras_codigo = 'boleta';
 
 		//esto es cuando queremos darle una ruta personalizada
 		//rec.datos_extras_ruta_personalizada = './../../../uploaded_files/favioVideos/videos/';
 
-		Phx.CP.loadWindows('../../../sis_tramites/vista/trmta/Trmta.php',
-			'Trmta',
+		Phx.CP.loadWindows('../../../sis_tramites/vista/boleta/Boleta.php',
+			'Boleta',
 			{
 				width: 900,
 				height: 400
-			}, rec, this.idContenedor, 'Trmta');
+			}, rec, this.idContenedor, 'Boleta');
 
 	},
 
@@ -498,7 +545,7 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
 			console.log(rec);
 			console.log("despues");
 			Ext.Ajax.request({
-				url: '../../sis_tramites/control/ReporteInforme/emitirInformeTopo',
+				url: '../../sis_tramites/control/ReporteInformeArqui/emitirInformeArqui',
 				params: {
 
 					id_tramite_detalle: rec.id_tramite_detalle,

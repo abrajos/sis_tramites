@@ -72,7 +72,7 @@ Phx.vista.TramiteDetalle=Ext.extend(Phx.gridInterfaz,{
 				filters:{pfiltro:'tradet.num_informe',type:'string'},
 				id_grupo:1,
 				grid:true,
-				form:true
+				form:false
 		},
 		{
 			config:{
@@ -86,8 +86,8 @@ Phx.vista.TramiteDetalle=Ext.extend(Phx.gridInterfaz,{
 				type:'TextField',
 				filters:{pfiltro:'tradet.referencia_informe',type:'string'},
 				id_grupo:1,
-				grid:true,
-				form:true
+				grid:false,
+				form:false
 		},
 		{
 			config:{
@@ -131,8 +131,8 @@ Phx.vista.TramiteDetalle=Ext.extend(Phx.gridInterfaz,{
 				type:'TextArea',
 				filters:{pfiltro:'tradet.descripcion',type:'string'},
 				id_grupo:1,
-				grid:true,
-				form:true
+				grid:false,
+				form:false
 		},
 		{
 			config: {
@@ -169,6 +169,49 @@ Phx.vista.TramiteDetalle=Ext.extend(Phx.gridInterfaz,{
 				minChars: 2,
 				renderer : function(value, p, record) {
 					return String.format('{0}', record.data['desc_funcionario1']);
+				}
+			},
+			type: 'ComboBox',
+			id_grupo: 0,
+			filters: {pfiltro: 'PERSON.nombre_completo2',type: 'string'},
+			grid: true,
+			form: false
+		},
+		{
+			config: {
+				name: 'id_funcionario_deriv',
+				fieldLabel: 'Funcionario Derivado',
+				allowBlank: true,
+				emptyText: 'Elija una opción...',
+				store: new Ext.data.JsonStore({
+					url: '../../sis_organigrama/control/Funcionario/listarFuncionario',
+					id: 'id_funcionario',
+					root: 'datos',
+					sortInfo: {
+						field: 'PERSON.nombre_completo2',
+						direction: 'ASC'
+					},
+					totalProperty: 'total',
+					fields: ['id_funcionario', 'desc_person', 'codigo'],
+					remoteSort: true,
+					baseParams: {par_filtro: 'PERSON.nombre_completo2'}
+				}),
+				valueField: 'id_funcionario',
+				displayField: 'desc_person',
+				gdisplayField: 'funcio_deriv',
+				hiddenName: 'id_funcionario',
+				forceSelection: false,
+				typeAhead: false,
+				triggerAction: 'all',
+				lazyRender: true,
+				mode: 'remote',
+				pageSize: 15,
+				queryDelay: 1000,
+				anchor: '100%',
+				gwidth: 250,
+				minChars: 2,
+				renderer : function(value, p, record) {
+					return String.format('{0}', record.data['funcio_deriv']);
 				}
 			},
 			type: 'ComboBox',
@@ -257,7 +300,7 @@ Phx.vista.TramiteDetalle=Ext.extend(Phx.gridInterfaz,{
 				fieldLabel: 'Fecha creación',
 				allowBlank: true,
 				anchor: '80%',
-				gwidth: 100,
+				gwidth: 120,
 							format: 'd/m/Y', 
 							renderer:function (value,p,record){return value?value.dateFormat('d/m/Y H:i:s'):''}
 			},
@@ -339,7 +382,9 @@ Phx.vista.TramiteDetalle=Ext.extend(Phx.gridInterfaz,{
 		{name:'usr_reg', type: 'string'},
 		{name:'usr_mod', type: 'string'},
 		{name:'desc_funcionario1', type: 'string'},
-		
+		{name:'cite_tramite', type: 'string'},
+		{name:'id_funcionario_deriv', type: 'numeric'},
+		{name:'funcio_deriv', type: 'string'},
 	],
 	sortInfo:{
 		field: 'id_tramite_detalle',

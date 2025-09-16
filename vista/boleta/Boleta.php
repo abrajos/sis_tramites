@@ -43,7 +43,7 @@ Phx.vista.Boleta=Ext.extend(Phx.gridInterfaz,{
 			config:{
 					labelSeparator:'',
 					inputType:'hidden',
-					name: 'id_tramite'
+					name: 'id_tramite_detalle'
 			},
 			type:'Field',
 			form:true 
@@ -82,7 +82,7 @@ Phx.vista.Boleta=Ext.extend(Phx.gridInterfaz,{
 			config:{
 				name: 'comp_pago',
 				fieldLabel: 'Comprobante Pago',
-				allowBlank: false,
+				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
 				maxLength:5
@@ -97,7 +97,7 @@ Phx.vista.Boleta=Ext.extend(Phx.gridInterfaz,{
 			config:{
 				name: 'fecha_pago',
 				fieldLabel: 'Fecha Pago',
-				allowBlank: false,
+				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
 							format: 'd/m/Y', 
@@ -251,7 +251,7 @@ Phx.vista.Boleta=Ext.extend(Phx.gridInterfaz,{
 		{name:'nro_liquidacion', type: 'numeric'},
 		{name:'monto', type: 'numeric'},
 		{name:'comp_pago', type: 'numeric'},
-		{name:'id_tramite', type: 'numeric'},
+		{name:'id_tramite_detalle', type: 'numeric'},
 		{name:'expediente', type: 'numeric'},
 		{name:'id_usuario_reg', type: 'numeric'},
 		{name:'usuario_ai', type: 'string'},
@@ -271,17 +271,17 @@ Phx.vista.Boleta=Ext.extend(Phx.gridInterfaz,{
 	bsave:true,
 	onButtonNew: function () {
         Phx.vista.Boleta.superclass.onButtonNew.call(this);
-        this.getComponente('id_tramite').setValue(this.maestro.id_tramite);
+        this.getComponente('id_tramite_detalle').setValue(this.maestro.id_tramite_detalle);
     },
     onReloadPage: function (m) {
         this.maestro = m;
         console.log(this.maestro);
-        this.store.baseParams = {id_tramite: this.maestro.id_tramite};
+        this.store.baseParams = {id_tramite_detalle: this.maestro.id_tramite_detalle};
         this.load({params: {start: 0, limit: 50}})
     },
 	loadValoresIniciales:function(){
         Phx.vista.Boleta.superclass.loadValoresIniciales.call(this);
-        this.Cmp.id_tramite.setValue(this.maestro.id_tramite);
+        this.Cmp.id_tramite_detalle.setValue(this.maestro.id_tramite_detalle);
     },
 	}
 )

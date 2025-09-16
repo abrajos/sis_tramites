@@ -169,6 +169,84 @@ class MODReporte extends MODbase {
         $this->captura('zona', 'varchar');
         $this->captura('manzana', 'varchar');
         $this->captura('lote', 'varchar');
+        $this->captura('aprobacion', 'varchar');
+        $this->captura('area_agro', 'varchar');
+        $this->captura('cod_catastral', 'varchar');
+        $this->captura('ddrr_registro', 'varchar');
+        $this->captura('kami', 'varchar');
+       
+        $this->armarConsulta();
+		//echo $this->consulta;exit;
+        $this->ejecutarConsulta();
+
+        return $this->respuesta;
+    }
+
+    function listarCabeceraInformeArqui() {
+        $this->procedimiento = 'sistra.ft_reporte_sel';
+        $this->transaccion = 'TRA_LICAAR_SEL';
+        $this->tipo_procedimiento = 'SEL';
+
+        $this->setParametro('id_tramite_detalle', 'id_tramite_detalle', 'integer');
+	
+        $this->captura('num_informe', 'varchar');
+        $this->captura('nombrea', 'text');
+        $this->captura('cargoa', 'varchar');
+        $this->captura('via', 'text');
+        $this->captura('cargovia', 'varchar');
+		$this->captura('de', 'text');
+        $this->captura('cargode', 'varchar');
+		$this->captura('mes', 'text');
+        $this->captura('dia', 'double PRECISION');
+        $this->captura('anio', 'double PRECISION');
+        $this->captura('referencia', 'varchar');
+
+        $this->captura('cite_tramite', 'varchar');
+        $this->captura('nombre_tramite', 'varchar');
+        $this->captura('id_tipo_tramite', 'int4');
+        $this->captura('id_tramite', 'int4');
+        $this->captura('observacion', 'varchar');
+        $this->captura('conclusion', 'varchar');
+
+           
+		
+        $this->armarConsulta();
+		//echo $this->consulta;exit;
+        $this->ejecutarConsulta();
+
+        return $this->respuesta;
+    }
+
+    function listarCuerpoInformeArqui() {
+        $this->procedimiento = 'sistra.ft_reporte_sel';
+        $this->transaccion = 'TRA_LICUAR_SEL';
+        $this->tipo_procedimiento = 'SEL';
+
+        $this->setParametro('id_tramite_detalle', 'id_tramite_detalle', 'integer');
+	
+        $this->captura('id_tramite', 'int4');
+        $this->captura('cite_tramite', 'varchar');
+        $this->captura('fecha_leg', 'date');
+        $this->captura('inf_leg', 'varchar');
+        $this->captura('legal', 'text');
+        $this->captura('fecha_top', 'date');
+        $this->captura('inf_top', 'varchar');
+        $this->captura('topo', 'text');
+        $this->captura('distrito', 'varchar');
+        $this->captura('zona', 'varchar');
+        $this->captura('manzana', 'varchar');
+        $this->captura('lote', 'varchar');
+        $this->captura('calle', 'varchar');
+        $this->captura('avenida', 'varchar');
+        $this->captura('super_escritura', 'numeric');
+        $this->captura('super_mensura', 'numeric');
+        $this->captura('super_total', 'numeric');
+        $this->captura('long_rasante', 'numeric');
+        $this->captura('colindante_este', 'varchar');
+        $this->captura('colindante_norte', 'varchar');
+        $this->captura('colindante_oeste', 'varchar');
+        $this->captura('colindante_sur', 'varchar');
+        $this->captura('nro_liquidacion', 'integer');
        
         $this->armarConsulta();
 		//echo $this->consulta;exit;

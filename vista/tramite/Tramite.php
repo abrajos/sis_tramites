@@ -88,8 +88,8 @@ Phx.vista.Tramite=Ext.extend(Phx.gridInterfaz,{
 				name: 'num_resolucion',
 				fieldLabel: 'Nro Resolución',
 				allowBlank: true,
-				anchor: '30%',
-				gwidth: 40,
+				anchor: '80%',
+				gwidth: 100,
 				maxLength:10
 			},
 				type:'TextField',
@@ -129,7 +129,7 @@ Phx.vista.Tramite=Ext.extend(Phx.gridInterfaz,{
 				pageSize: 15,
 				queryDelay: 1000,
 				anchor: '100%',
-				gwidth: 500,
+				gwidth: 300,
 				minChars: 2,
 				renderer : function(value, p, record) {
 					return String.format('{0}', record.data['nombre_tramite']);
@@ -162,7 +162,7 @@ Phx.vista.Tramite=Ext.extend(Phx.gridInterfaz,{
 				fieldLabel: 'Fojas',
 				allowBlank: false,
 				anchor: '80%',
-				gwidth: 150,
+				gwidth: 90,
 				maxLength:50
 			},
 				type:'TextField',

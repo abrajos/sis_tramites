@@ -8,15 +8,15 @@
 */
 
 require_once (dirname(__FILE__) . '/../reportes/pxpReport/ReportWriter.php');
-require_once (dirname(__FILE__) . '/../reportes/RInformeLegal.php');
+require_once (dirname(__FILE__) . '/../reportes/RInformeArqui.php');
 require_once (dirname(__FILE__) . '/../reportes/pxpReport/DataSource.php');
 
 
-class ACTReporteInformeLegal extends ACTbase{    
+class ACTReporteInformeArqui extends ACTbase{    
 			
 	
 
-	function emitirInformeLegal(){
+	function emitirInformeArqui(){
 		
 		$idtramite = $this->objParam->getParametro('id_tramite_detalle');
 		$idusuarioreg = $this->objParam->getParametro('id_usuario_reg');
@@ -27,16 +27,16 @@ class ACTReporteInformeLegal extends ACTbase{
         $this->objParam->addParametroConsulta('cantidad', 10000);
         $this->objParam->addParametroConsulta('puntero', 0);
         $this->objFunc = $this->create('MODReporte');
-        $resultlistarCabeceraInformeLegal = $this->objFunc->listarCabeceraInformeLegal($this->objParam);
+        $resultlistarCabeceraInformeArqui = $this->objFunc->listarCabeceraInformeArqui($this->objParam);
         
-        if($resultlistarCabeceraInformeLegal->getTipo()=='ERROR'){
-          $resultlistarCabeceraInformeLegal->imprimirRespuesta($resultlistarCabeceraInformeLegal-> generarMensajeJson());
+        if($resultlistarCabeceraInformeArqui->getTipo()=='ERROR'){
+          $resultlistarCabeceraInformeArqui->imprimirRespuesta($resultlistarCabeceraInformeArqui-> generarMensajeJson());
           exit;
         }
 		
 		//var_dump($resultListarVacacion->getDatos());exit;
 		$dataSource = new DataSource();
-        $resultData = $resultlistarCabeceraInformeLegal->getDatos();
+        $resultData = $resultlistarCabeceraInformeArqui->getDatos();
 		//var_dump($resultData[0]['desc_funcionario1']);exit;
         $num_informe = $resultData[0]['num_informe'];
 		$nombrea = $resultData[0]['nombrea'];
@@ -54,36 +54,41 @@ class ACTReporteInformeLegal extends ACTbase{
 		$id_tramite = $resultData[0]['id_tramite'];
 		$observacion = $resultData[0]['observacion'];
 		$conclusion = $resultData[0]['conclusion'];
-		$nro_matricula = $resultData[0]['nro_matricula'];
-		$superficie = $resultData[0]['superficie'];
-		$asiento = $resultData[0]['asiento'];
-		$fecha_asiento = $resultData[0]['fecha_asiento'];
-		$nro_testimonio = $resultData[0]['id_trnro_testimonioamite'];
-		$fecha_testimonio = $resultData[0]['fecha_testimonio'];
-		$nro_notario = $resultData[0]['nro_notario'];
-		$nombre_notario = $resultData[0]['nombre_notario'];
-		$nro_rmta = $resultData[0]['nro_rmta'];
-		$fecha_rmta = $resultData[0]['fecha_rmta'];
-		
+				
 		$this->objFunc = $this->create('MODReporte');
-		$resultlistarCuerpoInformeLegal = $this->objFunc->listarCuerpoInformeLegal($this->objParam);
+		$resultlistarCuerpoInformeArqui = $this->objFunc->listarCuerpoInformeArqui($this->objParam);
         
-        if($resultlistarCuerpoInformeLegal->getTipo()=='ERROR'){
-          $resultlistarCuerpoInformeLegal->imprimirRespuesta($resultlistarCuerpoInformeLegal-> generarMensajeJson());
+        if($resultlistarCuerpoInformeArqui->getTipo()=='ERROR'){
+          $resultlistarCuerpoInformeArqui->imprimirRespuesta($resultlistarCuerpoInformeArqui-> generarMensajeJson());
           exit;
         }
 		
-		$resultDataCuerpoInformeLegal = $resultlistarCuerpoInformeLegal->getDatos();
+		$resultDataCuerpoInformeArqui = $resultlistarCuerpoInformeArqui->getDatos();
 		
-		$distrito = $resultDataCuerpoInformeLegal[0]['distrito'];
-		$zona = $resultDataCuerpoInformeLegal[0]['zona'];
-		$manzana = $resultDataCuerpoInformeLegal[0]['manzana'];
-		$lote = $resultDataCuerpoInformeLegal[0]['lote'];
-		$aprobacion = $resultDataCuerpoInformeLegal[0]['aprobacion'];
-		$area_agro = $resultDataCuerpoInformeLegal[0]['area_agro'];
-		$cod_catastral = $resultDataCuerpoInformeLegal[0]['cod_catastral'];
-		$ddrr_registro = $resultDataCuerpoInformeLegal[0]['ddrr_registro'];
-		$kami = $resultDataCuerpoInformeLegal[0]['kami'];
+		$id_tramite = $resultDataCuerpoInformeArqui[0]['id_tramite'];
+		$cite_tramite = $resultDataCuerpoInformeArqui[0]['cite_tramite'];
+		$fecha_leg = $resultDataCuerpoInformeArqui[0]['fecha_leg'];
+		$inf_leg = $resultDataCuerpoInformeArqui[0]['inf_leg'];
+		$legal = $resultDataCuerpoInformeArqui[0]['legal'];
+		$fecha_top = $resultDataCuerpoInformeArqui[0]['fecha_top'];
+		$inf_top = $resultDataCuerpoInformeArqui[0]['inf_top'];
+		$topo = $resultDataCuerpoInformeArqui[0]['topo'];
+		$distrito = $resultDataCuerpoInformeArqui[0]['distrito'];
+		$zona = $resultDataCuerpoInformeArqui[0]['zona'];
+		$manzana = $resultDataCuerpoInformeArqui[0]['manzana'];
+		$lote = $resultDataCuerpoInformeArqui[0]['lote'];
+		$calle = $resultDataCuerpoInformeArqui[0]['calle'];
+		$avenida = $resultDataCuerpoInformeArqui[0]['avenida'];
+		$super_escritura = $resultDataCuerpoInformeArqui[0]['super_escritura'];
+		$super_mensura = $resultDataCuerpoInformeArqui[0]['super_mensura'];
+		$super_total = $resultDataCuerpoInformeArqui[0]['super_total'];
+		$long_rasante = $resultDataCuerpoInformeArqui[0]['long_rasante'];
+		$colindante_este = $resultDataCuerpoInformeArqui[0]['colindante_este'];
+		$colindante_norte = $resultDataCuerpoInformeArqui[0]['colindante_norte'];
+		$colindante_oeste = $resultDataCuerpoInformeArqui[0]['colindante_oeste'];
+		$colindante_sur = $resultDataCuerpoInformeArqui[0]['colindante_sur'];
+		$nro_liquidacion = $resultDataCuerpoInformeArqui[0]['nro_liquidacion'];
+
 
 		$this->objFunc = $this->create('MODReporte');
 		$resultListarPersonas = $this->objFunc->listarFormularioPersonasTradet($this->objParam);
@@ -122,27 +127,30 @@ class ACTReporteInformeLegal extends ACTbase{
 		$dataSource->putParameter('id_tramite', $id_tramite);
 		$dataSource->putParameter('observacion', $observacion);
 		$dataSource->putParameter('conclusion', $conclusion);
-		$dataSource->putParameter('nro_matricula', $nro_matricula);
-		$dataSource->putParameter('superficie', $superficie);
-		$dataSource->putParameter('asiento', $asiento);
-		$dataSource->putParameter('fecha_asiento', $fecha_asiento);
-		$dataSource->putParameter('nro_testimonio', $nro_testimonio);
-		$dataSource->putParameter('fecha_testimonio', $fecha_testimonio);
-		$dataSource->putParameter('nro_notario', $nro_notario);
-		$dataSource->putParameter('nombre_notario', $nombre_notario);
-		$dataSource->putParameter('nro_rmta', $nro_rmta);
-		$dataSource->putParameter('fecha_rmta', $fecha_rmta);
-
+		
+		$dataSource->putParameter('id_tramite', $id_tramite);
+		$dataSource->putParameter('cite_tramite', $cite_tramite);
+		$dataSource->putParameter('fecha_leg', $fecha_leg);
+		$dataSource->putParameter('inf_leg', $inf_leg);
+		$dataSource->putParameter('legal', $legal);
+		$dataSource->putParameter('fecha_top', $fecha_top);
+		$dataSource->putParameter('inf_top', $inf_top);
+		$dataSource->putParameter('topo', $topo);
 		$dataSource->putParameter('distrito', $distrito);
 		$dataSource->putParameter('zona', $zona);
 		$dataSource->putParameter('manzana', $manzana);
 		$dataSource->putParameter('lote', $lote);
-		$dataSource->putParameter('aprobacion', $aprobacion);
-		$dataSource->putParameter('area_agro', $area_agro);
-		$dataSource->putParameter('cod_catastral', $cod_catastral);
-		$dataSource->putParameter('ddrr_registro', $ddrr_registro);
-		$dataSource->putParameter('kami', $kami);
-
+		$dataSource->putParameter('calle', $calle);
+		$dataSource->putParameter('avenida', $avenida);
+		$dataSource->putParameter('super_escritura', $super_escritura);
+		$dataSource->putParameter('super_mensura', $super_mensura);
+		$dataSource->putParameter('super_total', $super_total);
+		$dataSource->putParameter('long_rasante', $long_rasante);
+		$dataSource->putParameter('colindante_este', $colindante_este);
+		$dataSource->putParameter('colindante_norte', $colindante_norte);
+		$dataSource->putParameter('colindante_oeste', $colindante_oeste);
+		$dataSource->putParameter('colindante_sur', $colindante_sur);
+		$dataSource->putParameter('nro_liquidacion', $nro_liquidacion);
 		
 		$dataSourceArray = Array();
         $dataSourceClasificacion = new DataSource();
@@ -154,11 +162,11 @@ class ACTReporteInformeLegal extends ACTbase{
 		
 		//var_dump($dataSource->getDataset()); exit;
 		
-		$reporte = new RInformeLegal();
+		$reporte = new RInformeArqui();
         
         $reporte->setDataSource($dataSource); 
         //$nombreArchivo = 'SolicitudVA'.uniqid(md5(session_id())).'.pdf';
-		$nombreArchivo = 'RInformeLegal.pdf';
+		$nombreArchivo = 'RInformeArqui.pdf';
         $reportWriter = new ReportWriter($reporte, dirname(__FILE__) . '/../../reportes_generados/' . $nombreArchivo);
         $reportWriter->writeReport(ReportWriter::PDF);
 

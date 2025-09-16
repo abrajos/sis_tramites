@@ -35,6 +35,10 @@ class MODLote extends MODbase{
 		$this->captura('fecha_mod','timestamp');
 		$this->captura('usr_reg','varchar');
 		$this->captura('usr_mod','varchar');
+		$this->captura('co_norte','varchar');
+		$this->captura('co_sud','varchar');
+		$this->captura('co_este','varchar');
+		$this->captura('co_oeste','varchar');
 		
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -57,6 +61,10 @@ class MODLote extends MODbase{
 		$this->setParametro('id_tramite_detalle','id_tramite_detalle','int4');
 		$this->setParametro('estado_reg','estado_reg','varchar');
 		$this->setParametro('lote','lote','varchar');
+		$this->setParametro('co_norte','co_norte','varchar');
+		$this->setParametro('co_sud','co_sud','varchar');
+		$this->setParametro('co_este','co_este','varchar');
+		$this->setParametro('co_oeste','co_oeste','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -80,7 +88,11 @@ class MODLote extends MODbase{
 		$this->setParametro('id_tramite_detalle','id_tramite_detalle','int4');
 		$this->setParametro('estado_reg','estado_reg','varchar');
 		$this->setParametro('lote','lote','varchar');
-
+		$this->setParametro('co_norte','co_norte','varchar');
+		$this->setParametro('co_sud','co_sud','varchar');
+		$this->setParametro('co_este','co_este','varchar');
+		$this->setParametro('co_oeste','co_oeste','varchar');
+		
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();

@@ -263,18 +263,27 @@ Phx.vista.DatoTecnico=Ext.extend(Phx.gridInterfaz,{
 		{
 			config:{
 				name: 'lote',
-				fieldLabel: 'Lote',
-				allowBlank: true,
-				anchor: '80%',
-				gwidth: 100,
-				maxLength:50
-			},
-				type:'TextField',
-				filters:{pfiltro:'dattec.lote',type:'string'},
-				id_grupo:2,
+				fieldLabel: 'Lotes?',
+				allowBlank: false,
+                anchor: '40%',
+                gwidth: 80,
+                typeAhead: true,
+                triggerAction: 'all',
+                lazyRender: true,
+                mode: 'local',
+                store: ['si','no']
+            },
+            type:'ComboBox',
+            id_grupo:2,
+            filters:{   pfiltro:'dattec.lote',
+                        type: 'list',
+                         options: ['si','no']  
+                    },
+            valorInicial: 'si',
 				grid:true,
 				form:true
 		},
+		
 		{
 			config:{
 				name: 'colindante_oeste',

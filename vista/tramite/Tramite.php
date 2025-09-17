@@ -291,6 +291,21 @@ Phx.vista.Tramite=Ext.extend(Phx.gridInterfaz,{
 		},
 		{
 			config:{
+				name: 'observacion',
+				fieldLabel: 'Observación',
+				allowBlank: false,
+				anchor: '80%',
+				gwidth: 150,
+				maxLength:200
+			},
+				type:'TextField',
+				filters:{pfiltro:'trami.observacion',type:'string'},
+				id_grupo:1,
+				grid:true,
+				form:true
+		},
+		{
+			config:{
 				name: 'fecha_resolucion',
 				fieldLabel: 'Fecha Resolución',
 				allowBlank: true,
@@ -426,6 +441,7 @@ Phx.vista.Tramite=Ext.extend(Phx.gridInterfaz,{
 		{name:'fojas', type: 'numeric'},
 		{name:'num_resolucion', type: 'numeric'},
 		{name:'fecha_resolucion', type: 'date',dateFormat:'Y-m-d'},
+		{name:'observacion', type: 'string'},
 	],
 	sortInfo:{
 		field: 'id_tramite',
@@ -598,6 +614,8 @@ successDerivar : function(resp) {
 		Phx.vista.Tramite.superclass.onButtonNew.call(this);
 		this.getComponente('fecha_resolucion').setVisible(false);
 		this.getComponente('num_resolucion').setVisible(false);
+		this.getComponente('observacion').setValue('El lugar debe estar limpio y estaqueado');
+		this.getComponente('ubicacion').setValue('COLCAPIRHUA');
     
     	},
 		onButtonEdit: function () {

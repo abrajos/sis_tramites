@@ -34,6 +34,9 @@ class MODReporte extends MODbase {
         $this->captura('mes_resolucion', 'text');
 		$this->captura('dia_resolucion', 'double PRECISION');
         $this->captura('anio_resolucion', 'double PRECISION');
+        $this->captura('celular1', 'varchar');
+        $this->captura('correo', 'varchar');
+        $this->captura('observacion', 'varchar');
 
         $this->armarConsulta();
 		//echo $this->consulta;exit;

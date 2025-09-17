@@ -135,7 +135,7 @@ Class RFormularioTramite extends Report {
                 $tipo_persona = $row['tipo_persona'];
                 //var_dump("tipo: ",$tipo_persona); 
                 if ( $tipo_persona == "tramitador"){
-                    $pdf->Cell($w = 60, $h = $hMedium, $txt = $row['nombre_completo1'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+                    $pdf->Cell($w = 110, $h = $hMedium, $txt = $row['nombre_completo1'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
                     $pdf->SetFont('', 'N');
 	                $pdf->Cell($w = 18, $h = $hMedium, $txt = 'con C.I. N°: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
                     $pdf->SetFont('', 'B');
@@ -148,7 +148,7 @@ Class RFormularioTramite extends Report {
                     $pdf->SetFont('', 'B');
                     $pdf->Cell($w = 20, $h = $hMedium, $txt = $row['domicilio'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
                 } else {
-                    $pdf->Cell($w = 60, $h = $hMedium, $txt = $row['nombre_completo1'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+                    $pdf->Cell($w = 110, $h = $hMedium, $txt = $row['nombre_completo1'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
                     $pdf->SetFont('', 'N');
 	                $pdf->Cell($w = 18, $h = $hMedium, $txt = 'con C.I. N°: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
                     $pdf->SetFont('', 'B');
@@ -166,7 +166,7 @@ Class RFormularioTramite extends Report {
             $pdf->SetFont('', 'N');
             $pdf->Cell($w = 30, $h = $hMedium, $txt = 'Solicito el tramite: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
             $pdf->SetFont('', 'B');
-            $pdf->Cell($w = 50, $h = $hMedium, $txt = $dataSource->getParameter('nombre_tramite'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+            $pdf->Cell($w = 50, $h = $hMedium, $txt = strtoupper($dataSource->getParameter('nombre_tramite')), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
             $pdf->Ln();
             $pdf->SetFont('', 'N');
             $pdf->Cell($w = 48, $h = $hMedium, $txt = 'del bien inmueble situado en: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
@@ -234,7 +234,7 @@ Class RFormularioTramite extends Report {
             $pdf->Cell($w = 10, $h = $hMedium, $txt = $dataSource->getParameter('fojas'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
             $pdf->Ln();
             $pdf->SetFont('', 'N');
-	        $pdf->Cell($w = 45, $h = $hMedium, $txt = 'señalo Teléfono y/o correo: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
+	        $pdf->Cell($w = 45, $h = $hMedium, $txt = 'señalo Teléfono y/o correo: '.$dataSource->getParameter('celular1').'     '.$dataSource->getParameter('correo'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
             foreach ($dataSource->getDataSet() as $row) {
                 
                 $tipo_persona = $row['tipo_persona'];
@@ -257,7 +257,7 @@ Class RFormularioTramite extends Report {
             $pdf->SetFont('', 'N');
 	        $pdf->Cell($w = 8, $h = $hMedium, $txt = '  de  ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
             $pdf->SetFont('', 'B');
-            $pdf->Cell($w = 10, $h = $hMedium, $txt = $dataSource->getParameter('mes'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+            $pdf->Cell($w = 15, $h = $hMedium, $txt = $dataSource->getParameter('mes'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
             $pdf->SetFont('', 'N');
 	        $pdf->Cell($w = 8, $h = $hMedium, $txt = '  de  ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
             $pdf->SetFont('', 'B');
@@ -302,6 +302,11 @@ Class RFormularioTramite extends Report {
         $pdf->Cell($w = 46, $h = $hGlobal, $txt = 'El presente formulario sirve para el encaminamiento y seguimiento de tramite, asi mismo concluido el tramite sera entregado', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
         $pdf->Ln();
         $pdf->Cell($w = 46, $h = $hGlobal, $txt = 'al propietario.', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+        $pdf->Ln();
+        $pdf->Cell($w = 180, $h = $hGlobal, $txt = 'Observación: '.$dataSource->getParameter('observacion'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+        $pdf->Ln(15);
+        //$pdf->Cell($w = 46, $h = $hGlobal, $txt = 'al propietario.', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+        
         /*$pdf->Cell($w = 0, $h = $hMedium, $txt = 'DETALLE DE MATERIALES', $border = 0, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
         $pdf->Ln();
        /* foreach ($dataSource->getParameter('clasificacionDataSources') as $clasificacionDataSource) {

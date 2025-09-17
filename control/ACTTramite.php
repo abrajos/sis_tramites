@@ -63,7 +63,7 @@ class ACTTramite extends ACTbase{
         $this->objParam->addFiltro("trami.id_tramite = ".$this->objParam->getParametro('id_tramite'));
         $this->objParam->addParametroConsulta('ordenacion', 'trami.id_tramite');
         $this->objParam->addParametroConsulta('dir_ordenacion', 'asc');
-        $this->objParam->addParametroConsulta('cantidad', 10000);
+        $this->objParam->addParametroConsulta('cantidad', 1);
         $this->objParam->addParametroConsulta('puntero', 0);
         $this->objFunc = $this->create('MODReporte');
         $resultlistarDatosFormulario = $this->objFunc->listarDatosFormulario($this->objParam);
@@ -87,6 +87,9 @@ class ACTTramite extends ACTbase{
 		$anio = $resultData[0]['anio'];
 		$hora = $resultData[0]['hora'];
 		$minuto = $resultData[0]['minuto'];
+		$celular1 = $resultData[0]['celular1'];
+		$correo = $resultData[0]['correo'];
+		$observacion = $resultData[0]['observacion'];
 		
 		$this->objFunc = $this->create('MODReporte');
 		$resultListarPersonas = $this->objFunc->listarFormularioPersonas($this->objParam);
@@ -112,6 +115,9 @@ class ACTTramite extends ACTbase{
 		$dataSource->putParameter('anio', $anio);
 		$dataSource->putParameter('hora', $hora);
 		$dataSource->putParameter('minuto', $minuto);
+		$dataSource->putParameter('celular1', $celular1);
+		$dataSource->putParameter('correo', $correo);
+		$dataSource->putParameter('observacion', $observacion);
 		
 		$dataSourceArray = Array();
         $dataSourceClasificacion = new DataSource();

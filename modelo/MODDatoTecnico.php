@@ -56,6 +56,7 @@ class MODDatoTecnico extends MODbase{
 		$this->captura('usr_mod','varchar');
 		$this->captura('super_excedente','numeric');
 		$this->captura('super_inexistente','numeric');
+		$this->captura('nombre_lote','varchar');
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
@@ -98,6 +99,7 @@ class MODDatoTecnico extends MODbase{
 		$this->setParametro('rasante_municipal','rasante_municipal','varchar');
 		$this->setParametro('super_excedente','super_excedente','numeric');
 		$this->setParametro('super_inexistente','super_inexistente','numeric');
+		$this->setParametro('nombre_lote','nombre_lote','varchar');
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
@@ -141,6 +143,7 @@ class MODDatoTecnico extends MODbase{
 		$this->setParametro('rasante_municipal','rasante_municipal','varchar');
 		$this->setParametro('super_excedente','super_excedente','numeric');
 		$this->setParametro('super_inexistente','super_inexistente','numeric');
+		$this->setParametro('nombre_lote','nombre_lote','varchar');
 		
 		//Ejecuta la instruccion
 		$this->armarConsulta();

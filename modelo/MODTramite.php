@@ -41,6 +41,7 @@ class MODTramite extends MODbase{
 		$this->captura('fojas','int4');
 		$this->captura('num_resolucion','int4');
 		$this->captura('fecha_resolucion','date');
+		$this->captura('observacion','varchar');
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
@@ -64,6 +65,7 @@ class MODTramite extends MODbase{
 		$this->setParametro('id_tipo_tramite','id_tipo_tramite','int4');
 		$this->setParametro('ubicacion','ubicacion','varchar');
 		$this->setParametro('fojas','fojas','int4');
+		$this->setParametro('observacion','observacion','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -91,6 +93,7 @@ class MODTramite extends MODbase{
 		$this->setParametro('fojas','fojas','int4');
 		$this->setParametro('num_resolucion','num_resolucion','int4');
 		$this->setParametro('fecha_resolucion','fecha_resolucion','date');
+		$this->setParametro('observacion','observacion','varchar');
 		
 		//Ejecuta la instruccion
 		$this->armarConsulta();

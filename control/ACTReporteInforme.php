@@ -120,7 +120,7 @@ class ACTReporteInforme extends ACTbase{
 		$dataSource->putParameter('lote', $lote);
 		$dataSource->putParameter('calle', $calle);
 		$dataSource->putParameter('avenida', $avenida);
-		$dataSource->putParameter('tipo_calle', $ctipo_callei);
+		$dataSource->putParameter('tipo_calle', $tipo_calle);
 		$dataSource->putParameter('rasante_municipal', $rasante_municipal);
 		$dataSource->putParameter('colindante_norte', $colindante_norte);
 		$dataSource->putParameter('colindante_sur', $colindante_sur);

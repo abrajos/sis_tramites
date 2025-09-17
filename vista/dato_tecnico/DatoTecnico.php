@@ -283,7 +283,21 @@ Phx.vista.DatoTecnico=Ext.extend(Phx.gridInterfaz,{
 				grid:true,
 				form:true
 		},
-		
+		{
+			config:{
+				name: 'nombre_lote',
+				fieldLabel: 'Lote',
+				allowBlank: false,
+				anchor: '80%',
+				gwidth: 100,
+				maxLength:500
+			},
+				type:'TextField',
+				filters:{pfiltro:'dattec.nombre_lote',type:'string'},
+				id_grupo:2,
+				grid:true,
+				form:true
+		},
 		{
 			config:{
 				name: 'colindante_oeste',
@@ -291,7 +305,7 @@ Phx.vista.DatoTecnico=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: false,
 				anchor: '80%',
 				gwidth: 100,
-				maxLength:50
+				maxLength:500
 			},
 				type:'TextField',
 				filters:{pfiltro:'dattec.colindante_oeste',type:'string'},
@@ -376,7 +390,7 @@ Phx.vista.DatoTecnico=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: false,
 				anchor: '80%',
 				gwidth: 100,
-				maxLength:50
+				maxLength:500
 			},
 				type:'TextField',
 				filters:{pfiltro:'dattec.colindante_sur',type:'string'},
@@ -452,7 +466,7 @@ Phx.vista.DatoTecnico=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: false,
 				anchor: '80%',
 				gwidth: 100,
-				maxLength:50
+				maxLength:500
 			},
 				type:'TextField',
 				filters:{pfiltro:'dattec.colindante_este',type:'string'},
@@ -503,7 +517,7 @@ Phx.vista.DatoTecnico=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: false,
 				anchor: '80%',
 				gwidth: 100,
-				maxLength:50
+				maxLength:500
 			},
 				type:'TextField',
 				filters:{pfiltro:'dattec.colindante_norte',type:'string'},
@@ -729,6 +743,7 @@ Phx.vista.DatoTecnico=Ext.extend(Phx.gridInterfaz,{
 		{name:'usr_mod', type: 'string'},
 		{name:'super_excedente', type: 'numeric'},
 		{name:'super_inexistente', type: 'numeric'},
+		{name:'nombre_lote', type: 'string'},
 	],
 	sortInfo:{
 		field: 'id_dato_tecnico',

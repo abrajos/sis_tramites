@@ -311,7 +311,9 @@ Class RInformeTopo extends Report {
             $pdf->SetFont('', 'B');
             $pdf->Ln(5);
             $pdf->Cell($w = 180, $h = $hMedium, $txt = $dataSource->getParameter('cargode'), $border = 0, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-            
+            if($dataSource->getParameter('distrito')=="si"){
+               
+          
             $pdf->AddPage();
             $pdf->SetFont('', 'B');
             $pdf->SetFontSize(16);
@@ -421,6 +423,7 @@ Class RInformeTopo extends Report {
                         $pdf->Cell($w = 20, $h = $hMedium, $txt =  ($total_via+$total_area+$total_lote).' m2', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
                         $pdf->Cell($w = 20, $h = $hMedium, $txt = ($total_via_p+$total_area_p+$total_lote_p).' %', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
                         $pdf->Ln();
+                    };
             /* foreach ($dataSource->getDataSet() as $row) {
                 $tipo_persona = $row['tipo_persona'];
                 //var_dump("tipo: ",$tipo_persona); 

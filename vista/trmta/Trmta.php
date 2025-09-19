@@ -71,7 +71,7 @@ Phx.vista.Trmta=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
-				maxLength:20
+				maxLength:200
 			},
 				type:'TextField',
 				filters:{pfiltro:'rmta.tipo_aprobacion',type:'string'},
@@ -101,7 +101,7 @@ Phx.vista.Trmta=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: false,
 				anchor: '80%',
 				gwidth: 100,
-				maxLength:20
+				maxLength:100
 			},
 				type:'TextField',
 				filters:{pfiltro:'rmta.nro_rmta',type:'string'},

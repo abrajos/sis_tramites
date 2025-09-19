@@ -70,7 +70,7 @@ Phx.vista.Matricula=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
-				maxLength:20
+				maxLength:200
 			},
 				type:'TextField',
 				filters:{pfiltro:'matri.asiento',type:'string'},
@@ -85,7 +85,7 @@ Phx.vista.Matricula=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
-				maxLength:20
+				maxLength:200
 			},
 				type:'TextField',
 				filters:{pfiltro:'matri.decreto_registrador',type:'string'},
@@ -116,7 +116,7 @@ Phx.vista.Matricula=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: false,
 				anchor: '80%',
 				gwidth: 100,
-				maxLength:20
+				maxLength:200
 			},
 				type:'TextField',
 				filters:{pfiltro:'matri.nro_matricula',type:'string'},
@@ -162,7 +162,7 @@ Phx.vista.Matricula=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
-				maxLength:20
+				maxLength:200
 			},
 				type:'TextField',
 				filters:{pfiltro:'matri.nro_notario',type:'string'},
@@ -193,7 +193,7 @@ Phx.vista.Matricula=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
-				maxLength:30
+				maxLength:300
 			},
 				type:'TextField',
 				filters:{pfiltro:'matri.nombre_notario',type:'string'},
@@ -209,7 +209,7 @@ Phx.vista.Matricula=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
-				maxLength:20
+				maxLength:200
 			},
 				type:'TextField',
 				filters:{pfiltro:'matri.nro_testimonio',type:'string'},

@@ -74,21 +74,6 @@ Phx.vista.Lote=Ext.extend(Phx.gridInterfaz,{
 		},
 		{
 			config:{
-				name: 'superficie',
-				fieldLabel: 'Superficie',
-				allowBlank: false,
-				anchor: '80%',
-				gwidth: 100,
-				maxLength:20
-			},
-				type:'NumberField',
-				filters:{pfiltro:'lotes.superficie',type:'numeric'},
-				id_grupo:1,
-				grid:true,
-				form:true
-		},
-		{
-			config:{
 				name: 'nombre',
 				fieldLabel: 'Nombre',
 				allowBlank: false,
@@ -104,9 +89,40 @@ Phx.vista.Lote=Ext.extend(Phx.gridInterfaz,{
 		},
 		{
 			config:{
+				name: 'superficie',
+				fieldLabel: 'Superficie',
+				allowBlank: false,
+				anchor: '80%',
+				gwidth: 100,
+				maxLength:20
+			},
+				type:'NumberField',
+				filters:{pfiltro:'lotes.superficie',type:'numeric'},
+				id_grupo:1,
+				grid:true,
+				form:true
+		},
+		{
+			config:{
+				name: 'porcentaje',
+				fieldLabel: 'Porcentaje',
+				allowBlank: true,
+				anchor: '80%',
+				gwidth: 100,
+				maxLength:20
+			},
+				type:'TextField',
+				filters:{pfiltro:'lotes.porcentaje',type:'string'},
+				id_grupo:1,
+				grid:true,
+				form:true
+		},
+		
+		{
+			config:{
 				name: 'co_norte',
 				fieldLabel: 'Colindante norte',
-				allowBlank: false,
+				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
 				maxLength:20
@@ -121,7 +137,7 @@ Phx.vista.Lote=Ext.extend(Phx.gridInterfaz,{
 			config:{
 				name: 'co_sud',
 				fieldLabel: 'Colindante Sud',
-				allowBlank: false,
+				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
 				maxLength:20
@@ -136,7 +152,7 @@ Phx.vista.Lote=Ext.extend(Phx.gridInterfaz,{
 			config:{
 				name: 'co_este',
 				fieldLabel: 'Colindante Este',
-				allowBlank: false,
+				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
 				maxLength:20
@@ -151,7 +167,7 @@ Phx.vista.Lote=Ext.extend(Phx.gridInterfaz,{
 			config:{
 				name: 'co_oeste',
 				fieldLabel: 'Colindante Oeste',
-				allowBlank: false,
+				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
 				maxLength:20
@@ -177,21 +193,7 @@ Phx.vista.Lote=Ext.extend(Phx.gridInterfaz,{
 				grid:true,
 				form:false
 		},
-		{
-			config:{
-				name: 'lote',
-				fieldLabel: 'Lote',
-				allowBlank: true,
-				anchor: '80%',
-				gwidth: 100,
-				maxLength:20
-			},
-				type:'TextField',
-				filters:{pfiltro:'lotes.lote',type:'string'},
-				id_grupo:1,
-				grid:true,
-				form:true
-		},
+		
 		{
 			config:{
 				name: 'id_usuario_ai',
@@ -311,7 +313,7 @@ Phx.vista.Lote=Ext.extend(Phx.gridInterfaz,{
 		{name:'co_sud', type: 'string'},
 		{name:'co_este', type: 'string'},
 		{name:'co_oeste', type: 'string'},
-		
+		{name:'porcentaje', type: 'numeric'},
 	],
 	sortInfo:{
 		field: 'id_lote',

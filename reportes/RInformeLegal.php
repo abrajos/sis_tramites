@@ -264,7 +264,7 @@ Class RInformeLegal extends Report {
                 $pdf->Ln(30);        
 
             } else{
-                if ( $dataSource->getParameter('id_tipo_tramite') == 3 || $dataSource->getParameter('id_tipo_tramite') == 4 ){
+                if ( $dataSource->getParameter('id_tipo_tramite') == 8 || $dataSource->getParameter('id_tipo_tramite') == 20 ){
                         
                     $pdf->MultiCell(180, $h = $hMedium, 'De conformidad al Art. 24 Constitución Politica del Estado Plurinacional, art 24, Toda persona tiene derecho a la Petición de manera individual o colectiva, sea oral o escrita, y a la obtención de respuesta formal y pronta. Para el ejercicio de este derecho no exigirá mas requisito que la identificación del peticionante, así tembién menciona en su art. 56 inc I.- Toda persona tiene derecho a la pro´piedad privada individual o colectiva, siempre que esta cumpla una función social. II. Se garantiza la propiedad privada siempre que el uso que se haga de ella no sea perjudicial al interes colectivo. ', 0, 'J', 0, 0, '', '', true);
                     $pdf->Ln(28);
@@ -307,6 +307,45 @@ Class RInformeLegal extends Report {
                     $pdf->SetFont('', 'B');
                     $pdf->MultiCell(180, $h = $hMedium, '         El presente informe Legal no define el Derecho Propietario, Si existiera doble titularidad de derecho propietario será quien alegue ser probada por la via llamada por ley, el mismo será de entera y total responsabilidad del interesado y se aplicara según Normativa Vigente. Los Planos a ser aprobados, no contravienen a las normas legales en vigencia y cumple con todos los requisitos, faltando que la parte técnica remita los informes técnicos de topografía y Normas urbanas y/o presenten observaciones al trámite a ser aprobado.', 0, 'J', 0, 0, '', '', true);
                     $pdf->Ln(20);        
+                    $pdf->Ln(8);
+                    
+                };  
+                $tramites_id = [1,2,3,4,5,6,7,9,10,11,12,13,14,15,16,17,18,19];
+                if (in_array($dataSource->getParameter('id_tipo_tramite'),$tramites_id )){
+                        
+                    $pdf->MultiCell(180, $h = $hMedium, 'De conformidad al Art. 24 Constitución Politica del Estado Plurinacional. Toda persona tiene derecho a la Petición de manera individual o colectiva, sea oral o escrita, y a la obtención de respuesta formal y pronta. Para el ejercicio de este derecho no exigirá mas requisito que la identificación del peticionante, así tembién menciona en su art. 56 inc I.- Toda persona tiene derecho a la pro´piedad privada individual o colectiva, siempre que esta cumpla una función social. II. Se garantiza la propiedad privada siempre que el uso que se haga de ella no sea perjudicial al interes colectivo. ', 0, 'J', 0, 0, '', '', true);
+                    $pdf->Ln(28);
+                    $pdf->MultiCell(180, $h = $hMedium, 'Que, en virtud a la Ley 2341 de procedimiento Administrativo, en inc. k) del art. 4 establece que los procedimientos administrativos, deben responder a los principios de economia, simplicidad y celeridad, evitando la realizacion de tramites, formalismos o diligencias innecesarias.', 0, 'J', 0, 0, '', '', true);
+                    $pdf->Ln(15);
+                    $pdf->MultiCell(180, $h = $hMedium, 'Que de acuerdo a la resolución Municipal Bi-Secretarial N° 1/2020 de fecha 11 de diciembre de 2020 emitida por Secretaria Municipal Técnica del Gobierno Autónomo Municipal de Colcapirhua, los contribuyentes deben cumplir con los procedimientos y requisitos para los trámites administrativos y técnicos de la Dirección de Urbanismo y Catastro', 0, 'J', 0, 0, '', '', true);
+                    $pdf->Ln(30);
+                    $pdf->AddPage();
+                    $pdf->Ln(8);
+                    $pdf->SetFont('', 'B');
+                    $pdf->Cell($w = 19, $h = $hMedium, $txt = 'CONCLUSIONES y RECOMENDACION.- ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
+                    $pdf->Ln(8);
+                    $pdf->SetFont('', 'N');
+                    $pdf->MultiCell(180, $h = $hMedium, 'Realizado el informe legal, conforme los antecedentes lineas arriba, quien es (son) propietario(s):', 0, 'L', 0, 0, '', '', true);
+                    $pdf->Ln(5);
+                    foreach ($dataSource->getDataSet() as $row) {
+                        $tipo_persona = $row['tipo_persona'];
+                        //var_dump("tipo: ",$tipo_persona); 
+                        if ( $tipo_persona == "propietario"){
+                            $pdf->SetFont('', 'B');
+                            $pdf->Cell($w = 70, $h = $hMedium, $txt = $row['nombre_completo1'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+                            $pdf->SetFont('', 'N');
+                            $pdf->Cell($w = 18, $h = $hMedium, $txt = 'con C.I. N°: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
+                            $pdf->SetFont('', 'B');
+                            $pdf->Cell($w = 12, $h = $hMedium, $txt = $row['ci'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+                            $pdf->Cell($w = 7, $h = $hMedium, $txt = '  ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   	
+                            $pdf->Cell($w = 5, $h = $hMedium, $txt = $row['expedicion'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+                            $pdf->Ln();
+                        };                 
+                    };
+                    $pdf->SetFont('', 'N');
+                    $pdf->MultiCell(180, $h = $hMedium, 'legitimo(s) propietario de un predio con una extensión superficial de '.$dataSource->getParameter('superficie').' m2.; debidamente registrado en oficinas de Derechos Reales; Conforme Testimonio N° '.$dataSource->getParameter('nro_testimonio').' de fecha '.$dataSource->getParameter('fecha_testimonio').', otorgado por la Notaria de Fe Pública N° '.$dataSource->getParameter('nro_notario').', '.$dataSource->getParameter('nombre_notario').', (Escritura Pública de transferencia de un lote de terreno), cumple con los requisitos de la R.M. Bi-Sectorial N° 01/2020 de 11/12/2020 de la Resolución Municipal Bi-Sectorial y con lo establecidoen el Decreto Municipal 007/2016 de fecha 16/09/2016; por lo que se recomienda la prosecución del tramite administrativo, faltando la aprobacion de la parte técnica topográfica y normas urbanas del plano a ser aprobado. El presente informe Legal no define derecho propietario, Si existiera doble titularidad de derecho propietario será quien alegue deberá demostrarla mediante la Via judicial, siendo de responsabilidaddel interesado y se aplicará según normativa vigente.', 0, 'J', 0, 0, '', '', true);
+                    $pdf->Ln(30);        
+                           
                     $pdf->Ln(8);
                     
                 };  

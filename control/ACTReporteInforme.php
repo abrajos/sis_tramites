@@ -89,13 +89,26 @@ class ACTReporteInforme extends ACTbase{
 		$transporte = $resultDataCuerpoInforme[0]['transporte'];
 		$observacion = $resultDataCuerpoInforme[0]['observacion'];
 		$conclusion = $resultDataCuerpoInforme[0]['conclusion'];
+		$nombre_lote = $resultDataCuerpoInforme[0]['nombre_lote'];
 
 		//var_dump($resultListarVacacion->getDatos());exit;
 		
 		//$mainDataSet = $resultListarInformes->getDatos();
 		//$resultData2 = $resultlistarVacacion->getDatos();
-		$mainDataSet[] = array("listarCuerpoInforme" => $resultListarCuerpoInforme, );
-		
+		//$mainDataSet[] = array("listarCuerpoInforme" => $resultListarCuerpoInforme, );
+		$this->objParam->addFiltro("tradet.id_tramite_detalle = ".$this->objParam->getParametro('id_tramite_detalle'));
+        $this->objParam->addParametroConsulta('ordenacion', 'lot.tipo_cesion');
+        $this->objParam->addParametroConsulta('dir_ordenacion', 'asc');
+        $this->objParam->addParametroConsulta('cantidad', 10000);
+        $this->objParam->addParametroConsulta('puntero', 0);
+        $this->objFunc = $this->create('MODReporte');
+		$resultListarLotes = $this->objFunc->listarLoteReporte($this->objParam);
+        
+        if($resultListarLotes->getTipo()=='ERROR'){
+          $resultListarLotes->imprimirRespuesta($resultListarLotes-> generarMensajeJson());
+          exit;
+        }
+		$mainDataSet = $resultListarLotes->getDatos();
 		//var_dump($mainDataSet);exit;
 		
 		$dataSource->putParameter('num_informe', $num_informe);
@@ -141,7 +154,7 @@ class ACTReporteInforme extends ACTbase{
 		$dataSource->putParameter('transporte', $transporte);
 		$dataSource->putParameter('observacion', $observacion);
 		$dataSource->putParameter('conclusion', $conclusion);
-		
+		$dataSource->putParameter('nombre_lote', $nombre_lote);
 
 		
 		$dataSourceArray = Array();

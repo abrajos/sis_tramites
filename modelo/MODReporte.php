@@ -108,6 +108,7 @@ class MODReporte extends MODbase {
         $this->captura('transporte', 'varchar');
         $this->captura('observacion', 'varchar');
         $this->captura('conclusion', 'varchar');
+        $this->captura('nombre_lote', 'varchar');
 		
         $this->armarConsulta();
 		//echo $this->consulta;exit;
@@ -445,6 +446,26 @@ class MODReporte extends MODbase {
         $this->captura('nombre', 'varchar');
         $this->captura('superficie', 'numeric');
         
+        
+        
+        $this->armarConsulta();
+		//echo $this->consulta;exit;
+        $this->ejecutarConsulta();
+
+        return $this->respuesta;
+    }
+
+    function listarLoteReporte() {
+        $this->procedimiento = 'sistra.ft_reporte_sel';
+        $this->transaccion = 'TRA_LILORE_SEL';
+        $this->tipo_procedimiento = 'SEL';
+
+        $this->setParametro('id_tramite_detalle', 'id_tramite_detalle', 'integer');
+		        		
+        $this->captura('tipo_cesion', 'varchar');  
+        $this->captura('nombre', 'varchar');
+        $this->captura('superficie', 'numeric');
+        $this->captura('porcentaje', 'numeric');
         
         
         $this->armarConsulta();

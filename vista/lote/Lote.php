@@ -79,7 +79,7 @@ Phx.vista.Lote=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: false,
 				anchor: '80%',
 				gwidth: 100,
-				maxLength:20
+				maxLength:200
 			},
 				type:'TextField',
 				filters:{pfiltro:'lotes.nombre',type:'string'},
@@ -125,7 +125,7 @@ Phx.vista.Lote=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
-				maxLength:20
+				maxLength:200
 			},
 				type:'TextField',
 				filters:{pfiltro:'lotes.co_norte',type:'string'},
@@ -140,7 +140,7 @@ Phx.vista.Lote=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
-				maxLength:20
+				maxLength:200
 			},
 				type:'TextField',
 				filters:{pfiltro:'lotes.co_sud',type:'string'},
@@ -155,7 +155,7 @@ Phx.vista.Lote=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
-				maxLength:20
+				maxLength:200
 			},
 				type:'TextField',
 				filters:{pfiltro:'lotes.co_este',type:'string'},
@@ -170,7 +170,7 @@ Phx.vista.Lote=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
-				maxLength:20
+				maxLength:200
 			},
 				type:'TextField',
 				filters:{pfiltro:'lotes.co_oeste',type:'string'},

@@ -63,7 +63,7 @@ class CustomReport extends TCPDF {
             'module_height' => 1 // height of a single module in points
         );
         
-        $this->write2DBarcode($html, 'QRCODE,M', 170, 260, 30, 30, $style, 'N');
+        $this->write2DBarcode($html, 'QRCODE,M', 170, 290, 30, 30, $style, 'N');
         
       //  $this->write2DBarcode($html, 'PDF417', $x+80, $y-5, 0, 30, $style, 'N');
         //$this->Text(20, 25, 'QRCODE M');
@@ -105,7 +105,7 @@ Class RInformeLegal extends Report {
         // $pdf->setLanguageArray($l);
 
         // Crea la pagina para mostrar los totales de los almacenes.
-        $pdf->AddPage('P', 'A4');
+        $pdf->AddPage('P', array(215.9, 330));
 
         $hGlobal = 5;
         $hMedium = 7.5;

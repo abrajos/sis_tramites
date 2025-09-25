@@ -474,6 +474,97 @@ class MODReporte extends MODbase {
 
         return $this->respuesta;
     }
+
+    function listarBoletaLiquida(){
+		//Definicion de variables para ejecucion del procedimientp
+		$this->procedimiento='sistra.ft_boleta_liquida_sel';
+		$this->transaccion='SISTRA_bolliq_SEL';
+		$this->tipo_procedimiento='SEL';//tipo de transaccion
+				
+		//Definicion de la lista del resultado del query
+		$this->captura('id_boleta_liquida','int4');
+		$this->captura('plano_bs','numeric');
+		$this->captura('division_m','numeric');
+		$this->captura('fecha_emision','date');
+		$this->captura('anexion_bs','numeric');
+		$this->captura('monto_literal','varchar');
+		$this->captura('plano_cons_bs','numeric');
+		$this->captura('id_tramite','int4');
+		$this->captura('concepto_a_m','numeric');
+		$this->captura('nombre_concepto_b','varchar');
+		$this->captura('concepto_a_bs','numeric');
+		$this->captura('plano_m','numeric');
+		$this->captura('plano_cons_m','numeric');
+		$this->captura('anexion_m','numeric');
+		$this->captura('estado_reg','varchar');
+		$this->captura('linea_nivel_m','numeric');
+		$this->captura('division_bs','numeric');
+		$this->captura('concepto_b_bs','numeric');
+		$this->captura('linea_nivel_bs','numeric');
+		$this->captura('avance_m','numeric');
+		$this->captura('avance_bs','numeric');
+		$this->captura('nombre_concepto_a','varchar');
+		$this->captura('cite_tramite','varchar');
+		$this->captura('concepto_b_m','numeric');
+		$this->captura('plano_verja_m','numeric');
+		$this->captura('total_bs','numeric');
+		$this->captura('total_redon','numeric');
+		$this->captura('nro_boleta','int4');
+		$this->captura('id_tramite_detalle','int4');
+		$this->captura('plano_verja_bs','numeric');
+		$this->captura('id_usuario_reg','int4');
+		$this->captura('fecha_reg','timestamp');
+		$this->captura('usuario_ai','varchar');
+		$this->captura('id_usuario_ai','int4');
+		$this->captura('fecha_mod','timestamp');
+		$this->captura('id_usuario_mod','int4');
+		$this->captura('usr_reg','varchar');
+		$this->captura('usr_mod','varchar');
+		$this->captura('plano_cons_tot','numeric');
+		$this->captura('plano_tot','numeric');
+		$this->captura('plano_verja_tot','numeric');
+		$this->captura('linea_nivel_tot','numeric');
+		$this->captura('anexion_tot','numeric');
+		$this->captura('division_tot','numeric');
+		$this->captura('avance_tot','numeric');
+		$this->captura('concep_a_tot','numeric');
+		$this->captura('concep_b_tot','numeric');
+
+		
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		$this->ejecutarConsulta();
+		
+		//Devuelve la respuesta
+		return $this->respuesta;
+	}
+
+    function listarFormularioPersonasBoleta() {
+        $this->procedimiento = 'sistra.ft_reporte_sel';
+        $this->transaccion = 'TRA_LIPEBO_SEL';
+        $this->tipo_procedimiento = 'SEL';
+
+        $this->setParametro('id_boleta_liquida', 'id_boleta_liquida', 'integer');
+		        		
+        $this->captura('domicilio', 'varchar');
+        $this->captura('tipo_persona', 'varchar');
+        $this->captura('fecha_poder', 'date');
+		$this->captura('notario', 'varchar');
+		$this->captura('nro_notaria', 'integer');
+		$this->captura('nombre_completo1', 'text');
+		$this->captura('celular1', 'varchar');
+		$this->captura('correo', 'varchar');
+		$this->captura('ci', 'varchar');
+        $this->captura('expedicion', 'varchar');
+        $this->captura('nro_poder', 'varchar');
+
+        $this->armarConsulta();
+		//echo $this->consulta;exit;
+        $this->ejecutarConsulta();
+
+        return $this->respuesta;
+    }
+
 	/*
 	function listarKardexItem() {
         $this->procedimiento = 'alm.ft_rep_kardex_item_sel';

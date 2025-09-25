@@ -28,7 +28,7 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
 			});
 		this.addButton('boleta', {
                 argument: {imprimir: 'boleta'},
-                text: '<i class="fa fa-thumbs-o-up fa-2x"></i> Boleta', 
+                text: '<i class="fa fa-thumbs-o-up fa-2x"></i> Boleta Liquidación', 
                 disabled: false,
                 handler: this.boleta
             });
@@ -530,12 +530,12 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
 		//esto es cuando queremos darle una ruta personalizada
 		//rec.datos_extras_ruta_personalizada = './../../../uploaded_files/favioVideos/videos/';
 
-		Phx.CP.loadWindows('../../../sis_tramites/vista/boleta/Boleta.php',
-			'Boleta',
+		Phx.CP.loadWindows('../../../sis_tramites/vista/boleta_liquida/BoletaLiquida.php',
+			'BoletaLiquida',
 			{
 				width: 900,
 				height: 400
-			}, rec, this.idContenedor, 'Boleta');
+			}, rec, this.idContenedor, 'BoletaLiquida');
 
 	},
 

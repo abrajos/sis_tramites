@@ -230,6 +230,7 @@ class MODReporte extends MODbase {
 	
         $this->captura('id_tramite', 'int4');
         $this->captura('cite_tramite', 'varchar');
+        $this->captura('id_tipo_tramite', 'int4');
         $this->captura('fecha_leg', 'date');
         $this->captura('inf_leg', 'varchar');
         $this->captura('legal', 'text');
@@ -250,8 +251,11 @@ class MODReporte extends MODbase {
         $this->captura('colindante_norte', 'varchar');
         $this->captura('colindante_oeste', 'varchar');
         $this->captura('colindante_sur', 'varchar');
-        $this->captura('nro_liquidacion', 'integer');
-       
+        $this->captura('nro_boleta', 'integer');
+        $this->captura('nro_rmta', 'varchar');
+        $this->captura('fecha_rmta', 'date');
+        $this->captura('tipo_aprobacion', 'varchar');
+
         $this->armarConsulta();
 		//echo $this->consulta;exit;
         $this->ejecutarConsulta();

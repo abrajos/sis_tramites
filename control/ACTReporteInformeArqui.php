@@ -49,7 +49,9 @@ class ACTReporteInformeArqui extends ACTbase{
 		$dia = $resultData[0]['dia'];
 		$anio = $resultData[0]['anio'];
 		$referencia = $resultData[0]['referencia'];
+		
 		$cite_tramite = $resultData[0]['cite_tramite'];
+		$nombre_tramite = $resultData[0]['nombre_tramite'];
 		$id_tipo_tramite = $resultData[0]['id_tipo_tramite'];
 		$id_tramite = $resultData[0]['id_tramite'];
 		$observacion = $resultData[0]['observacion'];
@@ -67,6 +69,7 @@ class ACTReporteInformeArqui extends ACTbase{
 		
 		$id_tramite = $resultDataCuerpoInformeArqui[0]['id_tramite'];
 		$cite_tramite = $resultDataCuerpoInformeArqui[0]['cite_tramite'];
+		$id_tipo_tramite = $resultDataCuerpoInformeArqui[0]['id_tipo_tramite'];
 		$fecha_leg = $resultDataCuerpoInformeArqui[0]['fecha_leg'];
 		$inf_leg = $resultDataCuerpoInformeArqui[0]['inf_leg'];
 		$legal = $resultDataCuerpoInformeArqui[0]['legal'];
@@ -87,7 +90,10 @@ class ACTReporteInformeArqui extends ACTbase{
 		$colindante_norte = $resultDataCuerpoInformeArqui[0]['colindante_norte'];
 		$colindante_oeste = $resultDataCuerpoInformeArqui[0]['colindante_oeste'];
 		$colindante_sur = $resultDataCuerpoInformeArqui[0]['colindante_sur'];
-		$nro_liquidacion = $resultDataCuerpoInformeArqui[0]['nro_liquidacion'];
+		$nro_boleta = $resultDataCuerpoInformeArqui[0]['nro_boleta'];
+		$nro_rmta = $resultDataCuerpoInformeArqui[0]['nro_rmta'];
+		$fecha_rmta = $resultDataCuerpoInformeArqui[0]['fecha_rmta'];
+		$tipo_aprobacion = $resultDataCuerpoInformeArqui[0]['tipo_aprobacion'];
 
 
 		$this->objFunc = $this->create('MODReporte');
@@ -130,6 +136,7 @@ class ACTReporteInformeArqui extends ACTbase{
 		
 		$dataSource->putParameter('id_tramite', $id_tramite);
 		$dataSource->putParameter('cite_tramite', $cite_tramite);
+		$dataSource->putParameter('id_tipo_tramite', $id_tipo_tramite);
 		$dataSource->putParameter('fecha_leg', $fecha_leg);
 		$dataSource->putParameter('inf_leg', $inf_leg);
 		$dataSource->putParameter('legal', $legal);
@@ -150,7 +157,11 @@ class ACTReporteInformeArqui extends ACTbase{
 		$dataSource->putParameter('colindante_norte', $colindante_norte);
 		$dataSource->putParameter('colindante_oeste', $colindante_oeste);
 		$dataSource->putParameter('colindante_sur', $colindante_sur);
-		$dataSource->putParameter('nro_liquidacion', $nro_liquidacion);
+		$dataSource->putParameter('nro_boleta', $nro_boleta);
+		$dataSource->putParameter('nro_rmta', $nro_rmta);
+		$dataSource->putParameter('fecha_rmta', $fecha_rmta);
+		$dataSource->putParameter('tipo_aprobacion', $tipo_aprobacion);
+
 		
 		$dataSourceArray = Array();
         $dataSourceClasificacion = new DataSource();

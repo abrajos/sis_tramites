@@ -70,7 +70,7 @@ class ACTReporteFormularioBoleta extends ACTbase{
 		$id_tramite_detalle = $resultData[0]['id_tramite_detalle'];
 		$plano_verja_bs = $resultData[0]['plano_verja_bs'];
 		$id_usuario_reg = $resultData[0]['id_usuario_reg'];
-		$fecha_reg = $resultData[0]['linea_nfecha_regivel_m'];		
+		$fecha_reg = $resultData[0]['fecha_reg'];		
 		$usuario_ai = $resultData[0]['usuario_ai'];
 		$id_usuario_ai = $resultData[0]['id_usuario_ai'];
 		$fecha_mod = $resultData[0]['fecha_mod'];
@@ -143,7 +143,7 @@ class ACTReporteFormularioBoleta extends ACTbase{
 		$dataSource->putParameter('division_tot', $division_tot);
 		$dataSource->putParameter('avance_tot', $avance_tot);
 		$dataSource->putParameter('concep_a_tot', $concep_a_tot);
-		$dataSource->putParameter('concep_b_tot', $long_rasante);
+		$dataSource->putParameter('concep_b_tot', $concep_b_tot);
 				
 		$dataSourceArray = Array();
         $dataSourceClasificacion = new DataSource();

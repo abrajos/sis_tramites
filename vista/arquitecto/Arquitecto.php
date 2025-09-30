@@ -32,6 +32,12 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
                 disabled: false,
                 handler: this.boleta
             });
+			this.addButton('datosTecnicos', {
+                argument: {imprimir: 'datosTecnicos'},
+                text: '<i class="fa fa-thumbs-o-up fa-2x"></i> Datos Tecnicos', /*iconCls:'' ,*/
+                disabled: false,
+                handler: this.datosTecnicos
+            });
 		this.addButton('imprimirInfor', {
 				text: 'Imprimir Informe',
 				iconCls: 'bprint',
@@ -536,6 +542,29 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
 				width: 900,
 				height: 400
 			}, rec, this.idContenedor, 'BoletaLiquida');
+
+	},
+
+	datosTecnicos: function () {
+		var rec = this.getSelectedData();
+		//jos168this.getComponente('id_tramite_detalle').setValue(this.id_tramite_detalle);
+		//enviamos el id seleccionado para cual el archivo se deba subir
+		rec.datos_extras_id = rec.id_tramite_detalle;
+		rec.datos_extras_id = rec.id_tramite;
+		//enviamos el nombre de la tabla
+		rec.datos_extras_tabla = 'tdato_tecnico';
+		//enviamos el codigo ya que una tabla puede tener varios archivos diferentes como ci,pasaporte,contrato,slider,fotos,etc
+		rec.datos_extras_codigo = 'dato tecnico';
+
+		//esto es cuando queremos darle una ruta personalizada
+		//rec.datos_extras_ruta_personalizada = './../../../uploaded_files/favioVideos/videos/';
+
+		Phx.CP.loadWindows('../../../sis_tramites/vista/dato_tecnico/DatoTecnico.php',
+			'DatoTecnico',
+			{
+				width: 900,
+				height: 400
+			}, rec, this.idContenedor, 'DatoTecnico');
 
 	},
 

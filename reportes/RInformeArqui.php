@@ -48,10 +48,10 @@ class CustomReport extends TCPDF {
         //$this->SetFooterMargin(PDF_MARGIN_FOOTER);
         $x = $this->GetX();
         $y = $this->GetY();
-        $this->SetY(-15);
+        $this->SetY(-10);
         $this->SetFont('helvetica', 'I', 6);
         $this->Cell(180, 0, 'usuario: '.$dataSource->getParameter('de'), 0, 1, 'L');
-        $this->Cell(180, 10, 'Pagina: '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
+        $this->Cell(180, 5, 'Pagina: '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
         $html = 'Numero Tramite: '.$dataSource->getParameter('num_informe')."\n".'Tramite: '.$dataSource->getParameter('nombre_tramite')."\n".'Usuario: '.$dataSource->getParameter('de')."\n".'Sistema de Tramites ';
         $style = array(
             'border' => 0,
@@ -63,7 +63,7 @@ class CustomReport extends TCPDF {
             'module_height' => 1 // height of a single module in points
         );
         
-        $this->write2DBarcode($html, 'QRCODE,M', 170, 290, 30, 30, $style, 'N');
+        $this->write2DBarcode($html, 'QRCODE,M', 170, 300, 25, 25, $style, 'N');
         
       //  $this->write2DBarcode($html, 'PDF417', $x+80, $y-5, 0, 30, $style, 'N');
         //$this->Text(20, 25, 'QRCODE M');
@@ -159,7 +159,7 @@ Class RInformeArqui extends Report {
 			$pdf->Ln(8);
             $pdf->SetFont('', 'B');
             $pdf->Cell($w = 180, $h = $hMedium, $txt = '     1.   ANTECEDENTES ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-            $pdf->Ln(8);
+            $pdf->Ln(5);
             $pdf->SetFont('', 'N');
             $pdf->Cell($w = 63, $h = $hMedium, $txt = 'De acuerdo al memorial dirigido a su autoridad y a documentación presentada a esta Jefatura por: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
             $pdf->Ln(5);
@@ -212,88 +212,91 @@ Class RInformeArqui extends Report {
                        
             $pdf->SetFont('', 'B');
             $pdf->Cell($w = 180, $h = $hMedium, $txt = '     2.      UBICACION ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-            $pdf->Ln(8);
+            $pdf->Ln(1);
 
             $pdf->SetFont('', 'N');
             $pdf->Cell($w = 40, $h = $hMedium, $txt = '', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
             $pdf->Cell($w = 40, $h = $hMedium, $txt = 'Zona: '.$dataSource->getParameter('zona'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            $pdf->Cell($w = 40, $h = $hMedium, $txt = 'Lote: '.$dataSource->getParameter('lote'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+            $pdf->Cell($w = 100, $h = $hMedium, $txt = 'Lote: '.$dataSource->getParameter('lote'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
             $pdf->Ln(7);
             $pdf->Cell($w = 40, $h = $hMedium, $txt = '', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
             $pdf->Cell($w = 40, $h = $hMedium, $txt = 'Distrito: '.$dataSource->getParameter('distrito'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            $pdf->Cell($w = 40, $h = $hMedium, $txt = 'Calle: '.$dataSource->getParameter('calle'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+            $pdf->Cell($w = 100, $h = $hMedium, $txt = 'Calle: '.$dataSource->getParameter('calle'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
             $pdf->Ln(7);
             $pdf->Cell($w = 40, $h = $hMedium, $txt = '', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
             $pdf->Cell($w = 40, $h = $hMedium, $txt = 'Manzana: '.$dataSource->getParameter('manzana'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            $pdf->Cell($w = 40, $h = $hMedium, $txt = 'Avenida: '.$dataSource->getParameter('avenida'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+            $pdf->Cell($w = 100, $h = $hMedium, $txt = 'Avenida: '.$dataSource->getParameter('avenida'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
 
-            $pdf->Ln(10);
+            $pdf->Ln();
                        
             $pdf->SetFont('', 'B');
             $pdf->Cell($w = 180, $h = $hMedium, $txt = '     3.      RELACION DE SUPERFICIES ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-            $pdf->Ln(8);
+            $pdf->Ln();
             $pdf->Cell($w = 40, $h = $hMedium, $txt = '', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
             $pdf->Cell($w = 50, $h = $hMedium, $txt = 'DETALLE', $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
             $pdf->Cell($w = 30, $h = $hMedium, $txt = 'CANT.', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
             $pdf->Cell($w = 40, $h = $hMedium, $txt = 'UNID', $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-            $pdf->Ln(7);
+            $pdf->Ln();
             $pdf->SetFont('', 'N');
             $pdf->Cell($w = 40, $h = $hMedium, $txt = '', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
             $pdf->Cell($w = 50, $h = $hMedium, $txt = 'Superficie según Escritura', $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
             $pdf->Cell($w = 30, $h = $hMedium, $txt = $dataSource->getParameter('super_escritura'), $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
             $pdf->Cell($w = 40, $h = $hMedium, $txt = ' m2', $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-            $pdf->Ln(7);
+            $pdf->Ln();
             $pdf->Cell($w = 40, $h = $hMedium, $txt = '', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
             $pdf->Cell($w = 50, $h = $hMedium, $txt = 'Superficie según Mensura', $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
             $pdf->Cell($w = 30, $h = $hMedium, $txt = $dataSource->getParameter('super_mensura'), $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
             $pdf->Cell($w = 40, $h = $hMedium, $txt = ' m2', $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-            $pdf->Ln(7);
+            $pdf->Ln();
             $pdf->SetFont('', 'B');
             $pdf->Cell($w = 40, $h = $hMedium, $txt = '', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
             $pdf->Cell($w = 50, $h = $hMedium, $txt = 'Superficie Total Util.', $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
             $pdf->Cell($w = 30, $h = $hMedium, $txt = $dataSource->getParameter('super_total'), $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
             $pdf->Cell($w = 40, $h = $hMedium, $txt = ' m2', $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-            $pdf->Ln(7);
+            $pdf->Ln();
             $pdf->SetFont('', 'N');
             $pdf->Cell($w = 40, $h = $hMedium, $txt = '', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
             $pdf->Cell($w = 50, $h = $hMedium, $txt = 'Longitud Rasante', $border ='LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
             $pdf->Cell($w = 30, $h = $hMedium, $txt = $dataSource->getParameter('long_rasante'), $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
             $pdf->Cell($w = 40, $h = $hMedium, $txt = ' m', $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-            $pdf->Ln(7);
+            $pdf->Ln();
 
             $pdf->SetFont('', 'B');
             $pdf->Cell($w = 180, $h = $hMedium, $txt = '     4.      COLINDANCIAS GENERALES ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-            $pdf->Ln(8);
+            $pdf->Ln();
             $pdf->SetFont('', 'N');
             //$pdf->Cell($w = 40, $h = $hMedium, $txt = '', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-            $pdf->Cell($w = 90, $h = $hMedium, $txt = 'NORTE: '.$dataSource->getParameter('colindante_norte'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            $pdf->Cell($w = 90, $h = $hMedium, $txt = 'ESTE: '.$dataSource->getParameter('colindante_este'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-            $pdf->Ln(7);
+            $pdf->Cell($w = 180, $h = 6.5, $txt = 'NORTE: '.$dataSource->getParameter('colindante_norte'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
+            $pdf->Ln();
+            $pdf->Cell($w = 180, $h = 6.5, $txt = 'ESTE: '.$dataSource->getParameter('colindante_este'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
             //pdf->Cell($w = 40, $h = $hMedium, $txt = '', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-            $pdf->Cell($w = 90, $h = $hMedium, $txt = 'SUD: '.$dataSource->getParameter('colindante_sur'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            $pdf->Cell($w = 90, $h = $hMedium, $txt = 'OESTE: '.$dataSource->getParameter('colindante_este'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+            $pdf->Ln();
+            $pdf->Cell($w = 180, $h = 6.5, $txt = 'SUD: '.$dataSource->getParameter('colindante_sur'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
+            $pdf->Ln();
+            $pdf->Cell($w = 180, $h = 6.5, $txt = 'OESTE: '.$dataSource->getParameter('colindante_este'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
             $pdf->Ln(7);
             $pdf->SetFont('', 'B');
-            $pdf->Cell($w = 180, $h = $hMedium, $txt = ' ACLARACIONES: SUP. S/ESCRITURA: '.$dataSource->getParameter('super_escritura').' m2.', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
+            //$pdf->Cell($w = 180, $h = $hMedium, $txt = ' ACLARACIONES: SUP. S/ESCRITURA: '.$dataSource->getParameter('super_escritura').' m2.', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
+            $pdf->MultiCell(180, $h = $hMedium, 'ACLARACIONES: '.$dataSource->getParameter('observacion'), 0, 'J', 0, 0, '', '', true);
             $pdf->Ln(8);
             $pdf->MultiCell(180, $h = $hMedium, 'EL PREDIO CUENTA CON '.$dataSource->getParameter('tipo_aprobacion').' CON R.M.T.A. N° '.$dataSource->getParameter('nro_rmta').' DE FECHA '.$dataSource->getParameter('fecha_rmta'), 0, 'J', 0, 0, '', '', true);
-            $pdf->Ln(6);
+            $pdf->Ln(8);
             $pdf->SetFont('', 'N');
             $pdf->MultiCell(180, $h = $hMedium, 'Por tanto: ', 0, 'L', 0, 0, '', '', true);
-            $pdf->Ln(7);
+            $pdf->Ln();
             
             $pdf->MultiCell(180, $h = $hMedium, 'En el  Departamento de  Normas  Urbanas de la Dirección de Urbanismo y Catastro, revisado los informes adjuntos a la carpeta, se efectuó la  verificación  de los requisitos  según reglamentación general de urbanismo y de  subdivisión de  propiedades urbanas, así como el reglamento de edificaciones en actual vigencia, por lo  que  se  procedió  al  llenado  de la Boleta de Liquidación  No. '.$dataSource->getParameter('nro_boleta').'  de aprobación de planos relativos a  la  propiedad citada para la prosecución del trámite administrativo. ', 0, 'J', 0, 0, '', '', true);
             $pdf->Ln(24);
             $pdf->SetFont('', 'B');
             $pdf->MultiCell(180, $h = $hMedium, 'Dando cumplimiento al decreto municipal N° 002 de fecha 18 de marzo de 2016 ', 0, 'L', 0, 0, '', '', true);
-            $pdf->Ln(6);
+            $pdf->Ln();
             
             $pdf->SetFont('', 'N');
             $pdf->Cell($w = 180, $h = $hMedium, $txt = 'Es cuanto informo de la inspección realizada.', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-            $pdf->Ln(15);
+            $pdf->Ln(18);
             $pdf->Cell($w = 180, $h = $hMedium, $txt = $dataSource->getParameter('de'), $border = 0, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
             $pdf->SetFont('', 'B');
-            $pdf->Ln(5);
+            $pdf->Ln(2);
             $pdf->Cell($w = 180, $h = $hMedium, $txt = $dataSource->getParameter('cargode'), $border = 0, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
             
             

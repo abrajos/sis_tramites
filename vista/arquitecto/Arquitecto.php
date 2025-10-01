@@ -84,7 +84,8 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
 				filters:{pfiltro:'trami.cite_tramite',type:'string'},
 				id_grupo:1,
 				grid:true,
-				form:false
+				form:false,
+				bottom_filter : true
 		},
 
 		{

@@ -22,7 +22,46 @@ Phx.vista.DatosLegal=Ext.extend(Phx.gridInterfaz,{
 		this.load({params:{start:0, limit:this.tam_pag}})
 		this.iniciarEventos();
 	},
-			
+	register:'',
+    tipo: '',
+    fheight: '95%',
+    fwidth: '95%',
+    Grupos: [
+        {
+            layout: 'column',
+            border: false,
+            defaults: {
+                border: true
+            },
+            items: [{
+                bodyStyle: 'padding-right:5px;',
+                items: [{
+                    xtype: 'fieldset',
+                    columnWidth: 1.0,
+                    title: 'Datos Legal',
+                    autoHeight: true,
+                    defaults: {
+                          anchor: '-20' // leave room for error icon
+                      },
+                    items: [],
+                    id_grupo:0
+                }]
+            }, {
+                bodyStyle: 'padding-left:5px;',
+                items: [{
+                    xtype: 'fieldset',
+                    columnWidth: 1.0,
+                    defaults: {
+                          anchor: '10' // leave room for error icon
+                      },
+                    title: 'Datos Folio Real',
+                    autoHeight: false,
+                    items: [],
+                    id_grupo:1
+                }]
+            }]
+        }
+    ],		
 	Atributos:[
 		{
 			//configuracion del componente
@@ -58,7 +97,7 @@ Phx.vista.DatosLegal=Ext.extend(Phx.gridInterfaz,{
                 store: ['si','no']
             },
             type:'ComboBox',
-            id_grupo:3,
+            id_grupo:0,
             filters:{   pfiltro:'datleg.aprobacion',
                         type: 'list',
                          options: ['si','no']  
@@ -78,7 +117,7 @@ Phx.vista.DatosLegal=Ext.extend(Phx.gridInterfaz,{
 			},
 				type:'TextField',
 				filters:{pfiltro:'datleg.aux',type:'string'},
-				id_grupo:1,
+				id_grupo:0,
 				grid:false,
 				form:false
 		},
@@ -98,7 +137,7 @@ Phx.vista.DatosLegal=Ext.extend(Phx.gridInterfaz,{
                 store: ['si','no']
             },
             type:'ComboBox',
-            id_grupo:3,
+            id_grupo:0,
             filters:{   pfiltro:'datleg.area_agro',
                         type: 'list',
                          options: ['si','no']  
@@ -118,7 +157,7 @@ Phx.vista.DatosLegal=Ext.extend(Phx.gridInterfaz,{
 			},
 				type:'TextField',
 				filters:{pfiltro:'datleg.cod_catastral',type:'string'},
-				id_grupo:1,
+				id_grupo:0,
 				grid:true,
 				form:true
 		},
@@ -137,7 +176,7 @@ Phx.vista.DatosLegal=Ext.extend(Phx.gridInterfaz,{
                 store: ['si','no']
             },
             type:'ComboBox',
-            id_grupo:3,
+            id_grupo:0,
             filters:{   pfiltro:'datleg.kami',
                         type: 'list',
                          options: ['si','no']  
@@ -157,7 +196,7 @@ Phx.vista.DatosLegal=Ext.extend(Phx.gridInterfaz,{
 			},
 				type:'TextField',
 				filters:{pfiltro:'datleg.ddrr_registro',type:'string'},
-				id_grupo:1,
+				id_grupo:0,
 				grid:true,
 				form:true
 		},
@@ -267,7 +306,94 @@ Phx.vista.DatosLegal=Ext.extend(Phx.gridInterfaz,{
 				id_grupo:1,
 				grid:true,
 				form:false
-		}
+		},
+		{
+			config:{
+				name: 'zona',
+				fieldLabel: 'Zona',
+				allowBlank: false,
+				anchor: '80%',
+				origen: 'CATALOGO',
+					gdisplayField: 'zona',
+					gwidth: 100,
+					baseParams:{
+						cod_subsistema:'SISTRA',
+						catalogo_tipo:'tdato_tecnico_zona'
+					},
+					renderer:function (value, p, record){return String.format('{0}', record.data['zona']);}
+	       		},
+	       		type:'ComboRec',
+				filters:{pfiltro:'datleg.zona',type:'string'},
+				id_grupo:1,
+				grid:true,
+				form:true
+		},
+		{
+			config:{
+				name: 'manzana',
+				fieldLabel: 'Manzano',
+				allowBlank: false,
+				anchor: '80%',
+				gwidth: 100,
+				maxLength:50
+			},
+				type:'TextField',
+				filters:{pfiltro:'datleg.manzana',type:'string'},
+				id_grupo:1,
+				grid:true,
+				form:true
+		},
+		{
+			config:{
+				name: 'distrito',
+				fieldLabel: 'Distrito',
+				allowBlank: false,
+				anchor: '80%',
+				origen: 'CATALOGO',
+					gdisplayField: 'distrito',
+					gwidth: 100,
+					baseParams:{
+						cod_subsistema:'SISTRA',
+						catalogo_tipo:'tdato_tecnico_distrito'
+					},
+					renderer:function (value, p, record){return String.format('{0}', record.data['distrito']);}
+	       		},
+	       		type:'ComboRec',
+				filters:{pfiltro:'datleg.distrito',type:'string'},
+				id_grupo:1,
+				grid:true,
+				form:true
+		},
+		{
+			config:{
+				name: 'lote',
+				fieldLabel: 'Lote',
+				allowBlank: false,
+				anchor: '80%',
+				gwidth: 100,
+				maxLength:500
+			},
+				type:'TextField',
+				filters:{pfiltro:'datleg.lote',type:'string'},
+				id_grupo:1,
+				grid:true,
+				form:true
+		},
+		{
+			config:{
+				name: 'superficie',
+				fieldLabel: 'Superficie util',
+				allowBlank: false,
+				anchor: '80%',
+				gwidth: 100,
+				maxLength:10
+			},
+				type:'NumberField',
+				filters:{pfiltro:'datleg.superficie',type:'numeric'},
+				id_grupo:1,
+				grid:true,
+				form:true
+		},
 	],
 	tam_pag:50,	
 	title:'Datos Legal',
@@ -293,6 +419,11 @@ Phx.vista.DatosLegal=Ext.extend(Phx.gridInterfaz,{
 		{name:'usr_reg', type: 'string'},
 		{name:'usr_mod', type: 'string'},
 		{name:'id_tramite_detalle', type: 'numeric'},
+		{name:'zona', type: 'string'},
+		{name:'lote', type: 'string'},
+		{name:'manzana', type: 'string'},
+		{name:'distrito', type: 'string'},
+		{name:'superficie', type: 'numeric'},
 	],
 	sortInfo:{
 		field: 'id_datos_legal',

@@ -292,14 +292,14 @@ Class RInformeTopo extends Report {
             $pdf->Cell($w = 90, $h = $hMedium, $txt = 'Transporte: '.$dataSource->getParameter('transporte'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
             $pdf->Cell($w = 90, $h = $hMedium, $txt = ' ', $border = '', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
             $pdf->Ln(9);
-            $pdf->AddPage();
+            //$pdf->AddPage();
             $pdf->SetFont('', 'B');
             $pdf->Cell($w = 19, $h = $hMedium, $txt = 'CONCLUSIONES.- ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
             $pdf->Ln(8);
             $pdf->SetFont('', 'N');
             $pdf->MultiCell(180, $h = $hMedium, $dataSource->getParameter('conclusion'), 0, 'J', 0, 0, '', '', true);
                     
-            $pdf->Ln(25);
+            $pdf->Ln(20);
             
            
             
@@ -311,6 +311,12 @@ Class RInformeTopo extends Report {
             $pdf->SetFont('', 'B');
             $pdf->Ln(5);
             $pdf->Cell($w = 180, $h = $hMedium, $txt = $dataSource->getParameter('cargode'), $border = 0, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
+            $pdf->Ln(5);
+          
+            
+
+
+
             if($dataSource->getParameter('lote')=="si"){
                
           
@@ -323,6 +329,7 @@ Class RInformeTopo extends Report {
             $pdf->Cell($w = 30, $h = $hMedium, $txt = ' ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
             $pdf->Cell($w = 120, $h = $hMedium, $txt = 'RELACION Y DIVISION DE LOTES', $border = 1, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
             $pdf->Ln();
+            
             foreach ($dataSource->getDataSet() as $row) {
                 $pdf->SetFontSize(10);
                 $pdf->SetFont('', 'N');
@@ -340,7 +347,7 @@ Class RInformeTopo extends Report {
                     $total_lote_p = $total_lote_p + $row['porcentaje'];
                     $pdf->Cell($w = 30, $h = $hMedium, $txt = ' ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
                     $pdf->Cell($w = 30, $h = $hMedium, $txt = $row['tipo_cesion'], $border = 1, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-	                $pdf->MultiCell($w = 50, $h = $hMedium, $txt = $row['nombre'], $border = 1, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
+	                $pdf->Cell($w = 50, $h = $hMedium, $txt = $row['nombre'], $border = 1, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
                     $pdf->Cell($w = 20, $h = $hMedium, $txt = $row['superficie'].' m2', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
                     $pdf->Cell($w = 20, $h = $hMedium, $txt = $row['porcentaje'].' %', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
                     $pdf->Ln();
@@ -355,6 +362,7 @@ Class RInformeTopo extends Report {
                 $pdf->Cell($w = 20, $h = $hMedium, $txt = $total_lote_p.' %', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
 
                     $pdf->Ln();
+
             foreach ($dataSource->getDataSet() as $row) {
                 $pdf->SetFontSize(10);
                 $pdf->SetFont('', 'N');
@@ -372,7 +380,7 @@ Class RInformeTopo extends Report {
                     $total_area_p = $total_area_p + $row['porcentaje'];
                     $pdf->Cell($w = 30, $h = $hMedium, $txt = ' ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
                     $pdf->Cell($w = 30, $h = $hMedium, $txt = $row['tipo_cesion'], $border = 1, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-	                $pdf->MultiCell($w = 50, $h = $hMedium, $txt = $row['nombre'], $border = 1, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
+	                $pdf->Cell($w = 50, $h = $hMedium, $txt = $row['nombre'], $border = 1, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
                     $pdf->Cell($w = 20, $h = $hMedium, $txt = $row['superficie'].' m2', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
                     $pdf->Cell($w = 20, $h = $hMedium, $txt = $row['porcentaje'].' %', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
                     $pdf->Ln();
@@ -387,7 +395,7 @@ Class RInformeTopo extends Report {
                 $pdf->Cell($w = 20, $h = $hMedium, $txt = $total_area_p.' %', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
 
                 $pdf->Ln();
-                    foreach ($dataSource->getDataSet() as $row) {
+           foreach ($dataSource->getDataSet() as $row) {
                         $pdf->SetFontSize(10);
                         $pdf->SetFont('', 'N');
                         $total_area ;
@@ -404,7 +412,7 @@ Class RInformeTopo extends Report {
                             $total_via_p = $total_via_p + $row['porcentaje'];
                             $pdf->Cell($w = 30, $h = $hMedium, $txt = ' ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
                             $pdf->Cell($w = 30, $h = $hMedium, $txt = $row['tipo_cesion'], $border = 1, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-                            $pdf->MultiCell($w = 50, $h = $hMedium, $txt = $row['nombre'], $border = 1, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
+                            $pdf->Cell($w = 50, $h = $hMedium, $txt = $row['nombre'], $border = 1, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
                             $pdf->Cell($w = 20, $h = $hMedium, $txt = $row['superficie'].' m2', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
                             $pdf->Cell($w = 20, $h = $hMedium, $txt = $row['porcentaje'].' %', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
                             $pdf->Ln();
@@ -423,7 +431,7 @@ Class RInformeTopo extends Report {
                         $pdf->Cell($w = 20, $h = $hMedium, $txt =  ($total_via+$total_area+$total_lote).' m2', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
                         $pdf->Cell($w = 20, $h = $hMedium, $txt = ($total_via_p+$total_area_p+$total_lote_p).' %', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
                         $pdf->Ln();
-                    };
+                 };
             /* foreach ($dataSource->getDataSet() as $row) {
                 $tipo_persona = $row['tipo_persona'];
                 //var_dump("tipo: ",$tipo_persona); 
@@ -547,14 +555,6 @@ Class RInformeTopo extends Report {
 			$pdf->Cell($w = 20, $h = $hMedium, $txt = $dataSource->getParameter('total_vacacion'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
 			$pdf->Ln();*/
 			
-			$pdf->SetFontSize(7.5);
-			$pdf->SetFont('', '');
-	        $wMargin = 15;
-	        $wNro = 10;
-	        $wCodigo = 15;
-	        $wDetalle = 25;
-	        $wTotal = 20;
-			$totalVaca = 0;
 	
 	/*
 	
@@ -600,9 +600,7 @@ Class RInformeTopo extends Report {
 	        $pdf->Cell($w = $wDetalle+$wDetalle+$wTotal, $h = $hGlobal, $txt = 'VACACION TOTAL', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
 	        $pdf->Cell($w = $wTotal, $h = $hGlobal, $txt = number_format($totalVaca, 2), $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
 	*/
-	        $pdf->Ln();
-	        $pdf->Ln();
-	        $pdf->Ln();
+	    
                
 	        //$pdf->AddPage();
 	    //}

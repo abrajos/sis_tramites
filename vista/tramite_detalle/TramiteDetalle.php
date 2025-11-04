@@ -456,13 +456,15 @@ Phx.vista.TramiteDetalle=Ext.extend(Phx.gridInterfaz,{
 		var rec = this.sm.getSelected();
 		var id_tramite_detalle = this.sm.getSelected().data.id_tramite_detalle;
 		var id_funcionario = this.sm.getSelected().data.id_funcionario;
+		var id_funcionario_deriv = this.sm.getSelected().data.id_funcionario_deriv;
 		if (confirm('Esta seguro de DERIVAR el tramite?')){
 		Phx.CP.loadingShow();
 		Ext.Ajax.request({
 			url : '../../sis_tramites/control/TramiteDetalle/derivarTramiteDetalle',
 			params : {
 				id_tramite_detalle : id_tramite_detalle,
-				id_funcionario  : id_funcionario
+				id_funcionario  : id_funcionario,
+				id_funcionario_deriv  : id_funcionario_deriv
 				/*id_correspondencia : id_correspondencia,
 				id_origen          : this.maestro.id_origen*/
 				},

@@ -58,14 +58,26 @@ class ACTReporteInformeLegal extends ACTbase{
 		$superficie = $resultData[0]['superficie'];
 		$asiento = $resultData[0]['asiento'];
 		$fecha_asiento = $resultData[0]['fecha_asiento'];
-		$nro_testimonio = $resultData[0]['id_trnro_testimonioamite'];
+		$nro_testimonio = $resultData[0]['nro_testimonio'];
 		$fecha_testimonio = $resultData[0]['fecha_testimonio'];
 		$nro_notario = $resultData[0]['nro_notario'];
 		$nombre_notario = $resultData[0]['nombre_notario'];
 		$nro_rmta = $resultData[0]['nro_rmta'];
 		$fecha_rmta = $resultData[0]['fecha_rmta'];
+
 		
-		$this->objFunc = $this->create('MODReporte');
+		$distrito = $resultData[0]['distrito'];
+		$zona = $resultData[0]['zona'];
+		$manzana = $resultData[0]['manzana'];
+		$lote = $resultData[0]['lote'];
+		$aprobacion = $resultData[0]['aprobacion'];
+		$area_agro = $resultData[0]['area_agro'];
+		$cod_catastral = $resultData[0]['cod_catastral'];
+		$ddrr_registro = $resultData[0]['ddrr_registro'];
+		$kami = $resultData[0]['kami'];
+		$superficie_leg = $resultData[0]['superficie_leg'];
+		
+		/*$this->objFunc = $this->create('MODReporte');
 		$resultlistarCuerpoInformeLegal = $this->objFunc->listarCuerpoInformeLegal($this->objParam);
         
         if($resultlistarCuerpoInformeLegal->getTipo()=='ERROR'){
@@ -84,7 +96,7 @@ class ACTReporteInformeLegal extends ACTbase{
 		$cod_catastral = $resultDataCuerpoInformeLegal[0]['cod_catastral'];
 		$ddrr_registro = $resultDataCuerpoInformeLegal[0]['ddrr_registro'];
 		$kami = $resultDataCuerpoInformeLegal[0]['kami'];
-
+*/
 		$this->objFunc = $this->create('MODReporte');
 		$resultListarPersonas = $this->objFunc->listarFormularioPersonasTradet($this->objParam);
         
@@ -142,6 +154,7 @@ class ACTReporteInformeLegal extends ACTbase{
 		$dataSource->putParameter('cod_catastral', $cod_catastral);
 		$dataSource->putParameter('ddrr_registro', $ddrr_registro);
 		$dataSource->putParameter('kami', $kami);
+		$dataSource->putParameter('superficie_leg', $superficie_leg);
 
 		
 		$dataSourceArray = Array();

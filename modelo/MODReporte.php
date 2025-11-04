@@ -153,7 +153,16 @@ class MODReporte extends MODbase {
         $this->captura('nombre_notario', 'varchar');
         $this->captura('nro_rmta', 'varchar');
         $this->captura('fecha_rmta', 'date');
-       
+        $this->captura('aprobacion', 'varchar');
+        $this->captura('area_agro', 'varchar');
+        $this->captura('cod_catastral', 'varchar');
+        $this->captura('ddrr_registro', 'varchar');
+        $this->captura('distrito', 'varchar');
+        $this->captura('kami', 'varchar');
+        $this->captura('lote', 'varchar');
+        $this->captura('manzana', 'varchar');
+        $this->captura('superficie_leg', 'numeric');
+        $this->captura('zona', 'varchar');
 		
         $this->armarConsulta();
 		//echo $this->consulta;exit;

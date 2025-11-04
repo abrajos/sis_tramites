@@ -47,15 +47,14 @@ Phx.vista.Tramite=Ext.extend(Phx.gridInterfaz,{
 			});
 			 console.log(config);
 		
-		/*this.addButton('imprimirRes', {
+		this.addButton('imprimirRes', {
 				text: 'Imprimir Resolucion',
 				iconCls: 'bprint',
 				disabled: false,
 				handler: this.BResolucion,
 				tooltip: '<b>Imprimir Resolucion</b><br/>Impresión de Resolución'
 			});	
-*/
-	},
+},
 			
 	Atributos:[
 		{
@@ -591,7 +590,7 @@ successDerivar : function(resp) {
 			});
 	
 		},
-/*
+
 		BResolucion:function () {
 			var rec = this.sm.getSelected();
 			Phx.CP.loadingShow();
@@ -607,7 +606,7 @@ successDerivar : function(resp) {
 				scope: this
 			});
 	
-		},*/
+		},
 
 		onButtonNew: function () {
         

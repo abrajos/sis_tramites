@@ -37,6 +37,11 @@ class MODDatosLegal extends MODbase{
 		$this->captura('usr_reg','varchar');
 		$this->captura('usr_mod','varchar');
 		$this->captura('id_tramite_detalle','int4');
+		$this->captura('zona','varchar');
+		$this->captura('lote','varchar');
+		$this->captura('manzana','varchar');
+		$this->captura('distrito','varchar');
+		$this->captura('superficie','numeric');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -61,6 +66,11 @@ class MODDatosLegal extends MODbase{
 		$this->setParametro('kami','kami','varchar');
 		$this->setParametro('ddrr_registro','ddrr_registro','varchar');
 		$this->setParametro('id_tramite_detalle','id_tramite_detalle','int4');
+		$this->setParametro('zona','zona','varchar');
+		$this->setParametro('lote','lote','varchar');
+		$this->setParametro('manzana','manzana','varchar');
+		$this->setParametro('distrito','distrito','varchar');
+		$this->setParametro('superficie','superficie','numeric');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -79,13 +89,18 @@ class MODDatosLegal extends MODbase{
 		//Define los parametros para la funcion
 		$this->setParametro('id_datos_legal','id_datos_legal','int4');
 		$this->setParametro('aprobacion','aprobacion','varchar');
-		$this->setParametro('aux','aux','varchar');
+		//$this->setParametro('aux','aux','varchar');
 		$this->setParametro('estado_reg','estado_reg','varchar');
 		$this->setParametro('area_agro','area_agro','varchar');
 		$this->setParametro('cod_catastral','cod_catastral','varchar');
 		$this->setParametro('kami','kami','varchar');
 		$this->setParametro('ddrr_registro','ddrr_registro','varchar');
 		$this->setParametro('id_tramite_detalle','id_tramite_detalle','int4');
+		$this->setParametro('zona','zona','varchar');
+		$this->setParametro('lote','lote','varchar');
+		$this->setParametro('manzana','manzana','varchar');
+		$this->setParametro('distrito','distrito','varchar');
+		$this->setParametro('superficie','superficie','numeric');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();

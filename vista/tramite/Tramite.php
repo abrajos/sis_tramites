@@ -488,7 +488,7 @@ Phx.vista.Tramite=Ext.extend(Phx.gridInterfaz,{
       	  var data = this.getSelectedData();
 		  var tb =this.tbar;
         console.log(data);
-
+		//this.getBoton('Derivar').disable(); 
 		    //if(data.estado_tramite=='Inicio' || data.estado_tramite=='RECEPCION' ){
     /*if(data.id_usuario_mod==57 || data.id_usuario_reg==57 ){
 				this.getBoton('edit').enable();
@@ -514,6 +514,7 @@ Phx.vista.Tramite=Ext.extend(Phx.gridInterfaz,{
 		  } 
       */
 		  	
+	  
 		  return tb
 		
 	},

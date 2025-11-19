@@ -137,5 +137,41 @@ class MODTramiteDetalle extends MODbase{
 		
 		
 	}
+	function corregirTramite()
+	{
+		//Definicion de variables para ejecucion del procedimiento
+		$this->procedimiento='sistra.ft_tramite_detalle_ime';
+		$this->transaccion='TR_CORTRA_UPD';
+		$this->tipo_procedimiento='IME';
+				
+		//Define los parametros para la funcion
+		$this->setParametro('id_tramite_detalle','id_tramite_detalle','int4');
+        $this->setParametro('id_tramite','id_tramite','int4');
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		$this->ejecutarConsulta();
+
+		//Devuelve la respuesta
+		return $this->respuesta;
+			
+	}
+	function tramiteCorregido()
+	{
+		//Definicion de variables para ejecucion del procedimiento
+		$this->procedimiento='sistra.ft_tramite_detalle_ime';
+		$this->transaccion='TR_COREDO_UPD';
+		$this->tipo_procedimiento='IME';
+				
+		//Define los parametros para la funcion
+		$this->setParametro('id_tramite_detalle','id_tramite_detalle','int4');
+		//Ejecuta la instruccion
+		$this->armarConsulta();
+		$this->ejecutarConsulta();
+
+		//Devuelve la respuesta
+		return $this->respuesta;
+		
+		
+	}
 }
 ?>

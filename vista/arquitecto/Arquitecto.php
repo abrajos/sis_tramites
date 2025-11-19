@@ -45,6 +45,13 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
 				handler: this.BInforme,
 				tooltip: '<b>Imprimir Informe</b><br/>Impresión del Informe'
 			});		
+		this.addButton('corregido',{
+				text: 'Corregido',
+				iconCls: 'bchecklist',
+				disabled: true,
+				handler: this.tramiteCorregido,
+				tooltip: '<b>Vuelve al estado de inactivo</b><br/>Se corrigio el tramite'
+			});
 			 console.log(config);
 	},
 			
@@ -454,14 +461,30 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
 		  	
 		  };
 		  	*/
+		if(data.estado_reg=="corregir"){
+         
+		 	this.getBoton('edit').disable();
+		 	this.getBoton('Derivar').disable();
+		 
+		 	this.getBoton('corregido').enable();
+		 	
+		 }
+	   else {
+			this.getBoton('corregido').disable();
+		 	this.getBoton('edit').enable();
+		 	this.getBoton('Derivar').enable();
+		 	
+	   };
+		
          if(data.estado_reg=="inactivo"){
          
 			this.getBoton('edit').disable();
 			this.getBoton('Derivar').disable();
+			this.getBoton('corregido').disable();
            // this.getBoton('trmta').disable();
 		    }
           else {
-          
+			//this.getBoton('corregido').disable();
             this.getBoton('edit').enable();
 			this.getBoton('Derivar').enable();
 			//this.getBoton('trmta').enable();
@@ -587,6 +610,41 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
 				scope: this
 			});
 	
+		},
+		tramiteCorregido : function () {
+   		//AJAX tiene q revisar revisar si hay una ficha para llamar, si hay una ficha anterior en atencion por el mismo usuario o si no hay fichas para atender
+   		//si no hay fichas para atender lanzar alerta
+   		//si ya hay una ficha en atencion para el usuario devovler esa ficha
+   		//Si hay una nueva ficha para atender, cambiar el estado de la ficha, asignarla al usuario y devolver al ficha
+   		
+		var rec = this.sm.getSelected();
+		var data = rec.data;
+		if (data) {
+			Phx.CP.loadingShow();
+   			Ext.Ajax.request({
+				url: '../../sis_tramites/control/TramiteDetalle/tramiteCorregido',
+			  	params:{
+			  		id_tramite_detalle: data.id_tramite_detalle
+			      },
+			      success:this.successRep,
+			      failure: this.conexionFailure,
+			      timeout:this.timeout,
+			      scope:this
+			});
+   		//Cargar el formulario con los datos de la ficha devuelta en el ajax
+		}
+
+	},
+	successRep:function(resp){
+			
+			//console.log(Phx.vista);
+			Phx.CP.loadingHide();
+			var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+			console.log(reg.ROOT.datos);
+			var datos = {datos:reg.ROOT.datos};
+			this.reload();
+			
+		// this.onReloadPage(reg.ROOT.datos);
 		},
 
 	}

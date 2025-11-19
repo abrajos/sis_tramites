@@ -135,6 +135,25 @@ class ACTTramiteDetalle extends ACTbase{
 		}
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
+
+	function corregirTramite()
+    {
+        //crea el objetoFunSeguridad que contiene todos los metodos del sistema de seguridad
+        $this->objFunSeguridad = $this->create('MODTramiteDetalle');
+        $this->res = $this->objFunSeguridad->corregirTramite($this->objParam);
+        //imprime respuesta en formato JSON
+        $this->res->imprimirRespuesta($this->res->generarJson());
+
+    }
+	function tramiteCorregido()
+    {
+        //crea el objetoFunSeguridad que contiene todos los metodos del sistema de seguridad
+        $this->objFunSeguridad = $this->create('MODTramiteDetalle');
+        $this->res = $this->objFunSeguridad->tramiteCorregido($this->objParam);
+        //imprime respuesta en formato JSON
+        $this->res->imprimirRespuesta($this->res->generarJson());
+
+    }
 }
 
 ?>

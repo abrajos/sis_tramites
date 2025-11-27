@@ -30,6 +30,7 @@ class CustomReport extends TCPDF {
         $y = $this->GetY();
         $this->SetFontSize(14);
         $this->SetFont('', 'B');
+        $this->Ln(18);
         //$this->Cell(0, $longHeight, '', '', 0, 'C', false, '', 0, false, 'T', 'C');
         $this->Cell(180, $longHeight, ' FORMULARIO DE SOLICITUD DE TRAMITE', ' ', 0, 'C', false, '', 0, false, 'T', 'C');
 
@@ -117,7 +118,7 @@ Class RFormularioTramite extends Report {
            
 
 				
-			
+			$pdf->Ln(10);
 			$pdf->SetFontSize(12);
 			$pdf->SetFont('', 'N');
             $pdf->Cell($w = 110, $h = $hMedium, $txt = '  ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	

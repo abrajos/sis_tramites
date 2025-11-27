@@ -491,7 +491,7 @@ Phx.vista.Abogado=Ext.extend(Phx.gridInterfaz,{
             this.getBoton('matricula').disable();
 			this.getBoton('corregido').disable();
             this.getBoton('rmta').disable();
-			this.getBoton('datoslegal').disable();
+			//this.getBoton('datoslegal').disable();
 		    }
           else {
           
@@ -507,7 +507,7 @@ Phx.vista.Abogado=Ext.extend(Phx.gridInterfaz,{
 		 this.getBoton('matricula').enable();
 		 this.getBoton('corregido').disable();
 		 this.getBoton('rmta').enable();
-		 this.getBoton('datoslegal').enable();
+		// this.getBoton('datoslegal').enable();
 		 }
 	   else {
 	   

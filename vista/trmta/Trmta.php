@@ -50,8 +50,42 @@ Phx.vista.Trmta=Ext.extend(Phx.gridInterfaz,{
 		},
 		{
 			config:{
+				name: 'tipo',
+				fieldLabel: 'Tipo',
+				allowBlank: true,
+				anchor: '40%',
+                gwidth: 80,
+                typeAhead: true,
+                triggerAction: 'all',
+                lazyRender: true,
+                mode: 'local',
+                store: ['R.M.T.A.','R.A.M.']
+			},
+				type:'ComboBox',
+				filters:{pfiltro:'rmta.tipo',type:'list', options:['R.M.T.A.','R.A.M.']},
+				id_grupo:0,
+				grid:true,
+				form:true
+		},
+		{
+			config:{
+				name: 'nro_rmta',
+				fieldLabel: 'Nro.',
+				allowBlank: false,
+				anchor: '80%',
+				gwidth: 100,
+				maxLength:100
+			},
+				type:'TextField',
+				filters:{pfiltro:'rmta.nro_rmta',type:'string'},
+				id_grupo:1,
+				grid:true,
+				form:true
+		},
+		{
+			config:{
 				name: 'fecha_rmta',
-				fieldLabel: 'Fecha R.M.T.A.',
+				fieldLabel: 'Fecha ',
 				allowBlank: false,
 				anchor: '80%',
 				gwidth: 100,
@@ -81,6 +115,21 @@ Phx.vista.Trmta=Ext.extend(Phx.gridInterfaz,{
 		},
 		{
 			config:{
+				name: 'complemento',
+				fieldLabel: 'Complementaria',
+				allowBlank: true,
+				anchor: '80%',
+				gwidth: 100,
+				maxLength:200
+			},
+				type:'TextField',
+				filters:{pfiltro:'rmta.complemento',type:'string'},
+				id_grupo:1,
+				grid:true,
+				form:true
+		},
+		{
+			config:{
 				name: 'estado_reg',
 				fieldLabel: 'Estado Reg.',
 				allowBlank: true,
@@ -94,21 +143,7 @@ Phx.vista.Trmta=Ext.extend(Phx.gridInterfaz,{
 				grid:true,
 				form:false
 		},
-		{
-			config:{
-				name: 'nro_rmta',
-				fieldLabel: 'Nro R.M.T.A.',
-				allowBlank: false,
-				anchor: '80%',
-				gwidth: 100,
-				maxLength:100
-			},
-				type:'TextField',
-				filters:{pfiltro:'rmta.nro_rmta',type:'string'},
-				id_grupo:1,
-				grid:true,
-				form:true
-		},
+		
 		{
 			config:{
 				name: 'id_usuario_ai',
@@ -223,7 +258,8 @@ Phx.vista.Trmta=Ext.extend(Phx.gridInterfaz,{
 		{name:'fecha_mod', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
 		{name:'usr_reg', type: 'string'},
 		{name:'usr_mod', type: 'string'},
-		
+		{name:'tipo', type: 'string'},
+		{name:'complemento', type: 'string'},
 	],
 	sortInfo:{
 		field: 'id_rmta',

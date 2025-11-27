@@ -117,10 +117,6 @@ Class RInformeLegal extends Report {
 		//$pdf->SetFontSize(12);
 		//if ($dataSource->getParameter('mostrar_costos') != 'no') {
 				
-           
-
-				
-			
 			$pdf->SetFontSize(10);
 			$pdf->SetFont('', 'B');
             $pdf->Cell($w = 15, $h = $hMedium, $txt = 'A: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
@@ -224,46 +220,128 @@ Class RInformeLegal extends Report {
             $pdf->Cell($w = 19, $h = $hMedium, $txt = 'FUNDAMENTO LEGAL.- ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
             $pdf->Ln(8);
             $pdf->SetFont('', 'N');
+/*aqui estamos poniendo algo para subir */
 
             if($dataSource->getParameter('aprobacion') == 'no' ){
-                $pdf->MultiCell(180, $h = $hMedium, 'Que, Según la Ley 411 de fecha 26 de octubre de 2004, Capitulo II Reglamento Técnica de Edificaciones en su Artículo 25. (Alcances específico para Regularización Técnica de Edificaciones) podrán acoger de manera voluntaria al proceso de regularización Técnica de edificaciones, aquellos ciudadanos que no cuenten con planos aprobados y/o que teniendo planos aprobados de contrucción estos hayan sido contruidos res´petando las disposiciones Municipales vigentes.', 0, 'J', 0, 0, '', '', true);
-                $pdf->Ln(28);
-                $pdf->MultiCell(180, $h = $hMedium, 'Que, Según el PLANUR O.M. 0004/2004 de fecha 13 de febrero de 2004 en su artículo 109, Constrcciones Fuera de Norma.- Las contrucciones que no cumplen son los planos debidamente aprobados y que no cumplan con lo establesido en el presente reglamento serán paralizadas, en su caso demolidas. Por todo lo Expuesto se verifica que la construcción ya está consolidad sin haber tenido un plano de lote aprobada por lo que según reglamento y normas vigentes procede al rechazo de dicho trámite, Aprobación de Plano de Vivienda Multifamiliar, debidamente la misma proceder en primera instancia al Trámite de aprobación de plano de lote.', 0, 'J', 0, 0, '', '', true);
-                $pdf->Ln(30);
-                //$pdf->addPage();
-                $pdf->AddPage();
-                $pdf->Ln(2);
-                $pdf->MultiCell(180, $h = $hMedium, 'Que, Según el reglamento par Urbanismo y Edificaciones PLANUR de fecha 13 de febrero de 2004 en su Art. 107 Inciso de la construcción.- para iniciar la constrcción de una edificación de cualquier naturaleza es necesario contar con el respectivo Plano arquitectonico aprobado por la alcaldia de Colcapirhua, no siento suficiente que el tramite se encuentra en curso de aprobación.', 0, 'J', 0, 0, '', '', true);
-                $pdf->Ln(20);
-                $pdf->MultiCell(180, $h = $hMedium, 'Que, Según el reglamento para Urbanizaciones y Edificaciones PLANUR de fecha 13 de febrero de 2004 en su Art. 112.- Tipos de Infracción.- se considerará infracción los siguientes actos cometidos por el propietario, diseñador y/o contrucción: * Contruir edificaciones sin contar previamente con los planos aprobados por la Alcaldia del lote o del proyecto arquitectónico.', 0, 'J', 0, 0, '', '', true);
-                $pdf->Ln(15);
+                if ($dataSource->getParameter('tipo_rechazo') == "FRU"){
+                    /*
+                    * FRU
+                    * */
+                    $pdf->MultiCell(180, $h = $hMedium, 'Que, la Ley N° 2341 de Procedimiento Administrativo, en el inc. K) del Art. 4 establece que los procedimientos administrativos, deben responder a los principios de economía, simplicidad y celeridad, evitando la realización de trámites, formalismos o diligencias innecesarias.', 0, 'J', 0, 0, '', '', true);
+                    $pdf->Ln(28);
+                    $pdf->MultiCell(180, $h = $hMedium, 'Que, de acuerdo a la Resolución Municipal Bi-Secretarial N° 1/2020 de fecha 11 de diciembre de 2020 emitida por Secretaria Municipal Técnica del Gobierno Autónomo Municipal de Colcapirhua, los contribuyentes deben cumplir con los procedimientos y requisitos para los trámites administrativos y técnicos de la Dirección de Urbanismo y Catastro.', 0, 'J', 0, 0, '', '', true);
+                    $pdf->Ln(28);
+                    $pdf->MultiCell(180, $h = $hMedium, 'Que, según el límite de homologación 100/2018 de fecha 12 de abril de 2018, emitido por el ministerio de la presidencia, el predio se encuentra fuera del radio urbano (FRU) del municipio de Colcapirhua.', 0, 'J', 0, 0, '', '', true);
+                    $pdf->Ln(30);
+                    $pdf->SetFont('', 'B');
+                    $pdf->Cell($w = 19, $h = $hMedium, $txt = 'CONCLUSIONES y RECOMENDACION.- ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
+                    $pdf->Ln(8);
+                    $pdf->SetFont('', 'N');
+                    $pdf->MultiCell(180, $h = $hMedium, 'Que, según el límite de homologación 100/2018 de fecha 12 de abril de 2018, emitido por el ministerio de la presidencia, el predio se encuentra fuera del radio urbano (FRU) del municipio de Colcapirhua.', 0, 'L', 0, 0, '', '', true);
+                    $pdf->Ln(28);
+                    $pdf->MultiCell(180, $h = $hMedium, 'Es cuanto informo para fines consiguientes.', 0, 'L', 0, 0, '', '', true);
+                } elseif ($dataSource->getParameter('tipo_rechazo') == "INOVAR"){
+                    /*
+                    * INNOVAR
+                    * */
+                    $pdf->MultiCell(180, $h = $hMedium, 'Que, Según el <b>Código de Procedimiento Civil en su Art. 9. (Obligatoriedad).-</b> Las decisiones de las autoridades judiciales deben ser acatadas por todas las autoridades y personas individuales o colectivas. Las autoridades en general están en la obligación de prestar asistencia para el cumplimiento de las resoluciones judiciales.', 0, 'J', 0, 0, '', '', true);
+                    $pdf->Ln(28);
+                    $pdf->MultiCell(180, $h = $hMedium, 'Que, De acuerdo el <b>Código de Procedimiento Civil en su Art. 5. (Normas Procesales).-</b> Las  normas procesales son de orden público y en consecuencia, de obligado acatamiento, tanto por la autoridad judicial como por las partes y eventuales terceros. Se exceptúan de estas reglas, las normas que, aunque procesales, sean de carácter facultativo, por referirse a intereses privados de las partes.', 0, 'J', 0, 0, '', '', true);
+                    $pdf->Ln(30);
+                    $pdf->SetFont('', 'B');
+                    $pdf->Cell($w = 19, $h = $hMedium, $txt = 'CONCLUSIONES y RECOMENDACION.- ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
+                    $pdf->Ln(8);
+                    $pdf->SetFont('', 'N');
+                    $pdf->MultiCell(180, $h = $hMedium, 'Realizado el Informe legal, conforme los antecedentes líneas arriba, quien es propietario Osvaldo Mercado Arias, en la cual teniendo un pronunciamiento de la Ene. En Sistemas de Información Geográfica Catastral, Informe CITE GOP 118/2025 de fecha 11 de julio de 2025, emitido por la Lic. Greny Olgueza Ponce, y en virtud a 10 determinado por Auto de fecha 02/05/2025 <b>Prohibición de  Innovar</b>, emitido por autoridad competente; por lo que NO corresponde la prosecución del trámite, para lo cual se <b>RECOMIENDA</b> efectuar la Resolución de Rechazo del trámite previo análisis, bajo el principio de buena fe que solicito el propietario.', 0, 'L', 0, 0, '', '', true);
+                    $pdf->Ln(28);
+                    $pdf->MultiCell(180, $h = $hMedium, 'Es cuanto informo para fines consiguientes.', 0, 'L', 0, 0, '', '', true);
+                } elseif ($dataSource->getParameter('tipo_rechazo') == "APAU"){
+                    /*
+                    * APAU
+                    * */
+                    $pdf->MultiCell(180, $h = $hMedium, '<b>LA LEY 715 DE SERVICIO DE REFORMA AGRARIA</b> establece en su <b>Artículo 48. (Indivisibilidad)</b>.', 0, 'J', 0, 0, '', '', true);
+                    $pdf->Ln(28);
+                    $pdf->MultiCell(180, $h = $hMedium, '"La propiedad agraria, bajo ningún título podrá dividirse en superficies menores a las establecidas para la pequeña propiedad. Las sucesiones hereditarias se mantendrán bajo régimen de indivisión forzosa. Con excepción del solar campesino, la propiedad agraria tampoco podrá titularse en superficies menores a la pequeña propiedad".', 0, 'J', 0, 0, '', '', true);
+                    $pdf->Ln(28);
+                    $pdf->MultiCell(180, $h = $hMedium, '<b>La Ley 442 LEY ESPECIAL DE CONSOLIDACIÓN, PLANIFICACIÓN, REGULARIZACIÓN TECNICA Y ADMINISTRATIVA Y TRATAMIENTO ESPECIAL DE ZONAS LIMITROFES DE LA JURISDICCIÓN DEL GOBIERNO AUTÓNOMO MUNICIPAL DE COLCAPIRHUA"</b> refiere en el numeral 5, articulo 7 (definiciones).', 0, 'J', 0, 0, '', '', true);
+                    $pdf->Ln(28);
+                    $pdf->MultiCell(180, $h = $hMedium, '<b>Área productiva Agropecuaria Urbana;</b> Porción de territorio urbano con uso de suelo agropecuario, forestal, piscicola, que mantendrá este uso por al menos diez (10) anos.', 0, 'J', 0, 0, '', '', true);
+                    $pdf->Ln(28);
+                    $pdf->SetFont('', 'B');
+                    $pdf->MultiCell(180, $h = $hMedium, '<>EL DECRETO SUPREMO 5065 establece en su artículo único', 0, 'J', 0, 0, '', '', true);
+                    $pdf->Ln(28);
+                    $pdf->SetFont('', 'N');
+                    $pdf->MultiCell(180, $h = $hMedium, 'A fin de efectivizar los mecanismos de resguardo de las áreas productivas para garantizar la seguridad alimentaria con soberanía, se modifica el Parágrafo I del Artículo 3 del Decreto Supremo N° 1809, de 27 de noviembre de 2013, con el siguiente texto:', 0, 'J', 0, 0, '', '', true);
+                    $pdf->Ln(28);
+                    $pdf->SetFont('', 'B');
+                    $pdf->MultiCell(180, $h = $hMedium, '"l. Las áreas productivas agropecuarias urbanas no podrán ser objeto de cambio de uso de suelo ni urbanizadas en un plazo de quince (15) años, a partir de la publicación del presente Decreto  Supremo."', 0, 'J', 0, 0, '', '', true);
+                    $pdf->Ln(30);
+                    $pdf->Cell($w = 19, $h = $hMedium, $txt = 'CONCLUSIONES y RECOMENDACION.- ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
+                    $pdf->Ln(8);
+                    $pdf->SetFont('', 'N');
+                    $pdf->MultiCell(180, $h = $hMedium, 'En virtud a los antecedentes  descritos y la normativa  vigente,  se establecen  los siguientes aspectos:', 0, 'L', 0, 0, '', '', true);
+                    $pdf->Ln(28);
+                    $pdf->MultiCell(180, $h = $hMedium, 'De acuerdo a documentación presentada se puede observar un fraccionamiento del predio y el registro en derechos reales de la parte fraccionada, el cual al ser un terreno ubicado en <b>área productiva agropecuaria NO es susceptible a ser fraccionado</b>, toda vez que la regularización del predio se debe realizar sobre la totalidad de la superficie y no así sobre una parte fraccionada, pudiendo efectuarse la urbanización y fraccionamiento una vez se efectúe el cambio de uso de suelo.', 0, 'L', 0, 0, '', '', true);
+                    $pdf->Ln(28);
+                    $pdf->MultiCell(180, $h = $hMedium, 'En cumplimiento a la normativa vigente al encontrarse el terreno en <b>área   productiva agropecuaria</b> y al no ser objeto de cambio de uso de suelo ni urbanizable en el plazo de 15 años a partir de la publicación del Decreto Supremo N° 1809, de 27 de noviembre de 2013, solamente se podrá efectuar la aprobación del predio en Area Productiva Agropecuaria sobre la totalidad de la superficie, es decir la <b>extensión superficial de 6.187,02  m2</b> y no así sobre los 3.093,65 m2, por lo que NO corresponde la prosecución del trámite, para lo cual se <b>RECOMIENDA</b> efectuar la Resolución de Rechazo del trámite previo análisis y emisión de un informe, de la parte técnica, asimismo se deberá remitir el trámite a la <b>Dirección de Asesoría Legal del Gobierno Autónomo Municipal de Colcapirhua</b>, para que en coordinación con las Oficinas de Derechos Reales se pueda corroborar la legalidad y veracidad de la documentación técnica - legal bajo el principio de buena fe que solicito el propietario derivando el mismo al fraccionamiento y posterior inscripción del predio que se encuentra ubicado actualmente en <b>Área Productiva (A.P.A.U.)</b>, sin contar con alguna Resolución de tipo Municipal, Agraria o Nacional para este efecto', 0, 'L', 0, 0, '', '', true);
+                    $pdf->Ln(28);
+                    $pdf->MultiCell(180, $h = $hMedium, 'En virtud a los antecedentes  descritos y la normativa  vigente,  se establecen  los siguientes aspectos:', 0, 'L', 0, 0, '', '', true);
+                    $pdf->Ln(28);
+                    $pdf->MultiCell(180, $h = $hMedium, 'Es cuanto se informa y se pone en conocimiento para fines consiguientes.', 0, 'L', 0, 0, '', '', true);
+                } elseif ($dataSource->getParameter('tipo_rechazo') == "DOBLE"){
+                    /*
+                    * Doble
+                    * */
+                    $pdf->MultiCell(180, $h = $hMedium, '<b>Que, De acuerdo al Art. 86 de la Ley 2341 (Conocimiento del T1ramite).-<b> "Los administrados que intervengan en un procedimiento, sus representantes o abogados, tendrá derecho a conocer en cualquier momento el estado del trámite ya tomar vista de las actuaciones".', 0, 'J', 0, 0, '', '', true);
+                    $pdf->Ln(28);
+                    $pdf->MultiCell(180, $h = $hMedium, '<b>Que, de acuerdo a la Resolución Municipal BI - Secretarial N° 1/2020 de fecha 11 de diciembre de 2020<b> emitida por Secretaria Municipal Técnica de Gobierno Autónomo Municipal de Colcapirhua, los contribuyentes deben cumplir con los procedimientos y requisitos para los trámites administrativos y técnicos de la Dirección de Urbanismo y Catastro.', 0, 'J', 0, 0, '', '', true);
+                    $pdf->Ln(30);
+                    $pdf->SetFont('', 'B');
+                    $pdf->Cell($w = 19, $h = $hMedium, $txt = 'CONCLUSIONES y RECOMENDACION.- ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
+                    $pdf->Ln(8);
+                    $pdf->SetFont('', 'N');
+                    $pdf->MultiCell(180, $h = $hMedium, 'Realizado el Informe legal, conforme los antecedentes líneas arriba, en la cual teniendo un pronunciamiento Informe de Jefatura de Catastro CITE/CAT/T-IS,ClNo 0005/2025, de fecha 24/03/2025, emitido por el Ar. Richard Franco Condori Rocha, Arquitecto Técnico 1 servicios catastrales, Informe Técnico de los inmuebles para los tramite urba-No 000070 y 0000472, se puede observar que en posesión en derecho propietario a la valoración de los tramites 472 y 720 en la cual los interesados deberán regularizar el mejor derecho propietario ante la instancia llamada por Ley, para lo cual se <b>RECOMIENDA</b> efectuar la Resolución de Rechazo del trámite previo análisis, bajo el principio de buena fe.', 0, 'L', 0, 0, '', '', true);
+                    $pdf->Ln(28);
+                    $pdf->MultiCell(180, $h = $hMedium, 'Es cuanto informo para fines consiguientes.', 0, 'L', 0, 0, '', '', true);
+                } else {
+                    $pdf->MultiCell(180, $h = $hMedium, 'Que, Según la Ley 411 de fecha 26 de octubre de 2004, Capitulo II Reglamento Técnica de Edificaciones en su Artículo 25. (Alcances específico para Regularización Técnica de Edificaciones) podrán acoger de manera voluntaria al proceso de regularización Técnica de edificaciones, aquellos ciudadanos que no cuenten con planos aprobados y/o que teniendo planos aprobados de contrucción estos hayan sido contruidos res´petando las disposiciones Municipales vigentes.', 0, 'J', 0, 0, '', '', true);
+                    $pdf->Ln(28);
+                    $pdf->MultiCell(180, $h = $hMedium, 'Que, Según el PLANUR O.M. 0004/2004 de fecha 13 de febrero de 2004 en su artículo 109, Constrcciones Fuera de Norma.- Las contrucciones que no cumplen son los planos debidamente aprobados y que no cumplan con lo establesido en el presente reglamento serán paralizadas, en su caso demolidas. Por todo lo Expuesto se verifica que la construcción ya está consolidad sin haber tenido un plano de lote aprobada por lo que según reglamento y normas vigentes procede al rechazo de dicho trámite, Aprobación de Plano de Vivienda Multifamiliar, debidamente la misma proceder en primera instancia al Trámite de aprobación de plano de lote.', 0, 'J', 0, 0, '', '', true);
+                    $pdf->Ln(30);
+                    //$pdf->addPage();
+                    $pdf->AddPage();
+                    $pdf->Ln(2);
+                    $pdf->MultiCell(180, $h = $hMedium, 'Que, Según el reglamento par Urbanismo y Edificaciones PLANUR de fecha 13 de febrero de 2004 en su Art. 107 Inciso de la construcción.- para iniciar la constrcción de una edificación de cualquier naturaleza es necesario contar con el respectivo Plano arquitectonico aprobado por la alcaldia de Colcapirhua, no siento suficiente que el tramite se encuentra en curso de aprobación.', 0, 'J', 0, 0, '', '', true);
+                    $pdf->Ln(20);
+                    $pdf->MultiCell(180, $h = $hMedium, 'Que, Según el reglamento para Urbanizaciones y Edificaciones PLANUR de fecha 13 de febrero de 2004 en su Art. 112.- Tipos de Infracción.- se considerará infracción los siguientes actos cometidos por el propietario, diseñador y/o contrucción: * Contruir edificaciones sin contar previamente con los planos aprobados por la Alcaldia del lote o del proyecto arquitectónico.', 0, 'J', 0, 0, '', '', true);
+                    $pdf->Ln(15);
 
-                $pdf->Ln(8);
-                $pdf->SetFont('', 'B');
-                $pdf->Cell($w = 19, $h = $hMedium, $txt = 'CONCLUSIONES y RECOMENDACION.- ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-                $pdf->Ln(8);
-                $pdf->SetFont('', 'N');
-                $pdf->MultiCell(180, $h = $hMedium, 'Realizado el Informe Legal, conforme los antecedentes lineas arriba, quien es propietario: ', 0, 'L', 0, 0, '', '', true);
-                $pdf->Ln(5);
-                foreach ($dataSource->getDataSet() as $row) {
-                    $tipo_persona = $row['tipo_persona'];
-                    //var_dump("tipo: ",$tipo_persona); 
-                    if ( $tipo_persona == "propietario"){
-                        $pdf->SetFont('', 'B');
-                        $pdf->Cell($w = 70, $h = $hMedium, $txt = $row['nombre_completo1'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-                        $pdf->SetFont('', 'N');
-                        $pdf->Cell($w = 18, $h = $hMedium, $txt = 'con C.I. N°: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-                        $pdf->SetFont('', 'B');
-                        $pdf->Cell($w = 12, $h = $hMedium, $txt = $row['ci'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-                        $pdf->Cell($w = 7, $h = $hMedium, $txt = '  ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   	
-                        $pdf->Cell($w = 5, $h = $hMedium, $txt = $row['expedicion'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-                        $pdf->Ln();
-                    };                 
-                };
-                $pdf->SetFont('', 'N');
-                $pdf->MultiCell(180, $h = $hMedium, 'En la cual teniendo un pronunciamiento de la Jefatura de Urbanismo - Arq.'.$dataSource->getParameter('via').', se puede observar que la construcción de vivienda se encuentra infringiendo a la norma vigente e incumpliendo al PLANUR, Resolución Municipal BI-Secretarial N° 01/2020 de 11/12/2020 de la resolución Municipal BI-Secretarial y con lo establecido en el Decreto Municipal 007/2016 de fecha 16/09/2016; por lo que NO corresponde la prosecución del trámite, para lo cual se'.' RECOMIENDA'.' efectuar la Resolución de Rechazo del trámite previo análisis, bajo el principio de buena fe que solicito el propietario.', 0, 'J', 0, 0, '', '', true);
-                $pdf->Ln(30);        
-
+                    $pdf->Ln(8);
+                    $pdf->SetFont('', 'B');
+                    $pdf->Cell($w = 19, $h = $hMedium, $txt = 'CONCLUSIONES y RECOMENDACION.- ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
+                    $pdf->Ln(8);
+                    $pdf->SetFont('', 'N');
+                    $pdf->MultiCell(180, $h = $hMedium, 'Realizado el Informe Legal, conforme los antecedentes lineas arriba, quien es propietario: ', 0, 'L', 0, 0, '', '', true);
+                    $pdf->Ln(5);
+                    foreach ($dataSource->getDataSet() as $row) {
+                        $tipo_persona = $row['tipo_persona'];
+                        //var_dump("tipo: ",$tipo_persona); 
+                        if ( $tipo_persona == "propietario"){
+                            $pdf->SetFont('', 'B');
+                            $pdf->Cell($w = 70, $h = $hMedium, $txt = $row['nombre_completo1'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+                            $pdf->SetFont('', 'N');
+                            $pdf->Cell($w = 18, $h = $hMedium, $txt = 'con C.I. N°: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
+                            $pdf->SetFont('', 'B');
+                            $pdf->Cell($w = 12, $h = $hMedium, $txt = $row['ci'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+                            $pdf->Cell($w = 7, $h = $hMedium, $txt = '  ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   	
+                            $pdf->Cell($w = 5, $h = $hMedium, $txt = $row['expedicion'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+                            $pdf->Ln();
+                        };                 
+                    };
+                    $pdf->SetFont('', 'N');
+                    $pdf->MultiCell(180, $h = $hMedium, 'En la cual teniendo un pronunciamiento de la Jefatura de Urbanismo - Arq.'.$dataSource->getParameter('via').', se puede observar que la construcción de vivienda se encuentra infringiendo a la norma vigente e incumpliendo al PLANUR, Resolución Municipal BI-Secretarial N° 01/2020 de 11/12/2020 de la resolución Municipal BI-Secretarial y con lo establecido en el Decreto Municipal 007/2016 de fecha 16/09/2016; por lo que NO corresponde la prosecución del trámite, para lo cual se'.' RECOMIENDA'.' efectuar la Resolución de Rechazo del trámite previo análisis, bajo el principio de buena fe que solicito el propietario.', 0, 'J', 0, 0, '', '', true);
+                    $pdf->Ln(30);
+                }
             } 
 
                 /*APAU*/

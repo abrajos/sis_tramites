@@ -109,17 +109,21 @@ Phx.vista.DatosLegal=Ext.extend(Phx.gridInterfaz,{
 		{
 			config:{
 				name: 'aux',
-				fieldLabel: 'aux',
+				fieldLabel: 'Tipo Rechazo',
 				allowBlank: true,
-				anchor: '80%',
-				gwidth: 100,
-				maxLength:5
+				anchor: '40%',
+                gwidth: 80,
+                typeAhead: true,
+                triggerAction: 'all',
+                lazyRender: true,
+                mode: 'local',
+                store: ['APAU','Doble','FRU','Innova']
 			},
-				type:'TextField',
-				filters:{pfiltro:'datleg.aux',type:'string'},
+				type:'ComboBox',
+				filters:{pfiltro:'datleg.aux',type:'list', options:['APAU','Doble','FRU','Innova']},
 				id_grupo:0,
-				grid:false,
-				form:false
+				grid:true,
+				form:true
 		},
 		
 	

@@ -500,7 +500,21 @@ Phx.vista.Abogado=Ext.extend(Phx.gridInterfaz,{
 			this.getBoton('matricula').enable();
           };
 		  	
-		  
+		  if(data.estado_reg=="activo"){
+         
+		 this.getBoton('edit').enable();
+		 this.getBoton('Derivar').enable();
+		 this.getBoton('matricula').enable();
+		 this.getBoton('corregido').disable();
+		 this.getBoton('rmta').enable();
+		 this.getBoton('datoslegal').enable();
+		 }
+	   else {
+	   
+		 this.getBoton('edit').disable();
+		 this.getBoton('Derivar').disable();
+		 this.getBoton('matricula').disable();
+	   };
            
            
 		  return tb

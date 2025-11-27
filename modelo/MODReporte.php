@@ -187,7 +187,8 @@ class MODReporte extends MODbase {
         $this->captura('cod_catastral', 'varchar');
         $this->captura('ddrr_registro', 'varchar');
         $this->captura('kami', 'varchar');
-       
+        $this->captura('tipo_rechazo', 'varchar');
+
         $this->armarConsulta();
 		//echo $this->consulta;exit;
         $this->ejecutarConsulta();

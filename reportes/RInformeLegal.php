@@ -215,9 +215,15 @@ Class RInformeLegal extends Report {
             $pdf->Cell($w = 160, $h = $hMedium, $txt = 'Aprobado mediante: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
             $pdf->Ln(7);
 
-            $pdf->Cell($w = 90, $h = $hMedium, $txt = 'R.M.T.A. N°: '.$dataSource->getParameter('nro_rmta'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+            $pdf->Cell($w = 90, $h = $hMedium, $txt = $dataSource->getParameter('tipo').' N°: '.$dataSource->getParameter('nro_rmta'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
             $pdf->Cell($w = 90, $h = $hMedium, $txt = 'De Fecha: '.$dataSource->getParameter('fecha_rmta'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
             $pdf->Ln(7);
+
+            $pdf->Cell($w = 180, $h = $hMedium, $txt = 'Tipo aprobación: '.$dataSource->getParameter('tipo_aprobacion'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
+            $pdf->Ln(7);
+            $pdf->Cell($w = 180, $h = $hMedium, $txt = 'Complementaria: '.$dataSource->getParameter('complemento'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
+            $pdf->Ln(7);
+
             $pdf->Cell($w = 90, $h = $hMedium, $txt = 'Código Catastral N°: '.$dataSource->getParameter('cod_catastral'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
             $pdf->Cell($w = 90, $h = $hMedium, $txt = ' ', $border = '', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
             $pdf->Ln(10);
@@ -233,38 +239,41 @@ Class RInformeLegal extends Report {
             //console.log();
            // var_dump($dataSource->getParameter('tipo_rechazo'));
             if($dataSource->getParameter('aprobacion') == 'no' ){
+                $propietarios = explode("|", $propietariosList);
+                $propName = '';
+                if (count($propietarios) ==  1) {
+                    $propName = $propietariosList;
+                } elseif (count($propietarios) <  3) {
+                    $propName = $propietarios[0]." y ".$propietarios[1];
+                } else {
+                    for ($i=0; $i < count($propietarios); $i++) { 
+                        if ($i == 0) {
+                            $propName = $propietarios[0];
+                        } elseif ($i > 0 && $i < count($propietarios) - 2) {
+                            $propName .= ", ".$propietarios[$i];
+                        } else {
+                            $propName .= " y ".$propietarios[$i];
+                        }
+                    }
+                } 
                 if ($dataSource->getParameter('tipo_rechazo') == "FRU"){
                     /*
                     * FRU
                     * */
                     //
-                    $propietarios = explode("|", $propietariosList);
-                    $propName = '';
-                    if (count($propietarios) ==  1) {
-                        $propName = $propietariosList;
-                    } elseif (count($propietarios) <  3) {
-                        $propName = $propietarios[0]." y ".$propietarios[1];
-                    } else {
-                        for ($i=0; $i < count($propietarios); $i++) { 
-                            if ($i == 0) {
-                                $propName = $propietarios[0];
-                            } elseif ($i > 0 && $i < count($propietarios) - 2) {
-                                $propName .= ", ".$propietarios[$i];
-                            } else {
-                                $propName .= " y ".$propietarios[$i];
-                            }
-                        }
-                    } 
-
                     $pdf->writeHTMLCell(180, 0, '', '', 'Que, la Ley N° 2341 de Procedimiento Administrativo, en el inc. K) del Art. 4 establece que los procedimientos administrativos, deben responder a los principios de economía, simplicidad y celeridad, evitando la realización de trámites, formalismos o diligencias innecesarias.', 0, 1, 0, true, 'J', true);
                     $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
                     $pdf->writeHTMLCell(180, 0, '', '', 'Que, de acuerdo a la Resolución Municipal Bi-Secretarial N° 1/2020 de fecha 11 de diciembre de 2020 emitida por Secretaria Municipal Técnica del Gobierno Autónomo Municipal de Colcapirhua, los contribuyentes deben cumplir con los procedimientos y requisitos para los trámites administrativos y técnicos de la Dirección de Urbanismo y Catastro.', 0, 1, 0, true, 'J', true);
                     $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
                     $pdf->writeHTMLCell(180, 0, '', '', 'Que, según el límite de homologación 100/2018 de fecha 12 de abril de 2018, emitido por el ministerio de la presidencia, el predio se encuentra fuera del radio urbano (FRU) del municipio de Colcapirhua.', 0, 1, 0, true, 'J', true);
                     $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+                    if($dataSource->getParameter('observacion') != ''){
+                        $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('observacion'), 0, 1, 0, true, 'J', true);
+                        $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+                    }
                     $pdf->writeHTMLCell(180, 0, '', '', '<b>CONCLUSIONES Y RECOMENDACION.-</b>', 0, 1, 0, true, 'J', true);
                     $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
-                    $pdf->writeHTMLCell(180, 0, '', '', 'Realizado el Informe legal, conforme los antecedentes líneas arriba, quien es propietario <b>'.count($propietarios)." ".$propName.'</b>, en la cual teniendo un pronunciamiento del Arq. Wilfredo Camacho Pardo, Arquitecto 11de la Dirección de Urbanismo, Informe Técnico de fecha 28 de octubre de 2025, se puede observar que se encuentra la Ubicado el predio Fuera del Área Urbano (FRU), la Resolución Municipal BI-Secretarial N° 01/2020 de 11/12/2020 de la resolución Municipal BI-Secretarial y con lo establecido en el Decreto Municipal 007/2016 de fecha 16/09/2016; por lo que NO corresponde la prosecución del trámite, para lo cual se <b>RECOMIENDA</b> efectuar la Resolución de Rechazo del trámite previo análisis, bajo el principio de buena fe que solicito el propietario.', 0, 1, 0, true, 'J', true);
+                    $pdf->writeHTMLCell(180, 0, '', '', 'Realizado el Informe legal, conforme los antecedentes líneas arriba, quien es propietario <b>'.$propName.'</b>, en la cual teniendo un '.$dataSource->getParameter('conclusion').', se puede observar que se encuentra la Ubicado el predio Fuera del Área Urbano (FRU), la Resolución Municipal BI-Secretarial N° 01/2020 de 11/12/2020 de la resolución Municipal BI-Secretarial y con lo establecido en el Decreto Municipal 007/2016 de fecha 16/09/2016; por lo que NO corresponde la prosecución del trámite, para lo cual se <b>RECOMIENDA</b> efectuar la Resolución de Rechazo del trámite previo análisis, bajo el principio de buena fe que solicito el propietario.', 0, 1, 0, true, 'J', true);
                     $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
                     $pdf->writeHTMLCell(180, 0, '', '', 'Es cuanto informo para fines consiguientes.', 0, 1, 0, true, 'J', true);
                     $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
@@ -276,9 +285,13 @@ Class RInformeLegal extends Report {
                     $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
                     $pdf->writeHTMLCell(180, 0, '', '', 'Que, De acuerdo el <b>Código de Procedimiento Civil en su Art. 5. (Normas Procesales).-</b> Las  normas procesales son de orden público y en consecuencia, de obligado acatamiento, tanto por la autoridad judicial como por las partes y eventuales terceros. Se exceptúan de estas reglas, las normas que, aunque procesales, sean de carácter facultativo, por referirse a intereses privados de las partes.', 0, 1, 0, true, 'J', true);
                     $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+                    if($dataSource->getParameter('observacion') != ''){
+                        $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('observacion'), 0, 1, 0, true, 'J', true);
+                        $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+                    }
                     $pdf->writeHTMLCell(180, 0, '', '', '<b>CONCLUSIONES Y RECOMENDACION.-</b>', 0, 1, 0, true, 'J', true);
                     $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
-                    $pdf->writeHTMLCell(180, 0, '', '', 'Realizado el Informe legal, conforme los antecedentes líneas arriba, quien es propietario Osvaldo Mercado Arias, en la cual teniendo un pronunciamiento de la Ene. En Sistemas de Información Geográfica Catastral, Informe CITE GOP 118/2025 de fecha 11 de julio de 2025, emitido por la Lic. Greny Olgueza Ponce, y en virtud a 10 determinado por Auto de fecha 02/05/2025 <b>Prohibición de Innovar</b>, emitido por autoridad competente; por lo que NO corresponde la prosecución del trámite, para lo cual se <b>RECOMIENDA</b> efectuar la Resolución de Rechazo del trámite previo análisis, bajo el principio de buena fe que solicito el propietario.', 0, 1, 0, true, 'J', true);
+                    $pdf->writeHTMLCell(180, 0, '', '', 'Realizado el Informe legal, conforme los antecedentes líneas arriba, quien es propietario <b>'.$propName.'</b>, en la cual teniendo un pronunciamiento de la Ene. En Sistemas de Información Geográfica Catastral, '.$dataSource->getParameter('conclusion').' <b>Prohibición de Innovar</b>, emitido por autoridad competente; por lo que NO corresponde la prosecución del trámite, para lo cual se <b>RECOMIENDA</b> efectuar la Resolución de Rechazo del trámite previo análisis, bajo el principio de buena fe que solicito el propietario.', 0, 1, 0, true, 'J', true);
                     $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
                     $pdf->writeHTMLCell(180, 0, '', '', 'Es cuanto informo para fines consiguientes.', 0, 1, 0, true, 'J', true);
                     $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
@@ -315,6 +328,11 @@ Class RInformeLegal extends Report {
                     $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
                     $pdf->AddPage();
                     $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+                    if($dataSource->getParameter('observacion') != ''){
+                        $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('observacion'), 0, 1, 0, true, 'J', true);
+                        $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+                    }
+
                     $pdf->writeHTMLCell(180, 0, '', '', '<b>CONCLUSIONES Y RECOMENDACION.-</b>', 0, 1, 0, true, 'J', true);
                     $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
                     $htmlAPAU8 = 'En virtud a los antecedentes descritos y la normativa vigente, se establecen los siguientes aspectos:';
@@ -338,9 +356,13 @@ Class RInformeLegal extends Report {
                     $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
                     $pdf->writeHTMLCell(180, 0, '', '', '<b>Que, de acuerdo a la Resolución Municipal BI - Secretarial N° 1/2020 de fecha 11 de diciembre de 2020<b> emitida por Secretaria Municipal Técnica de Gobierno Autónomo Municipal de Colcapirhua, los contribuyentes deben cumplir con los procedimientos y requisitos para los trámites administrativos y técnicos de la Dirección de Urbanismo y Catastro.', 0, 1, 0, true, 'J', true);
                     $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+                    if($dataSource->getParameter('observacion') != ''){
+                        $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('observacion'), 0, 1, 0, true, 'J', true);
+                        $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+                    }
                     $pdf->writeHTMLCell(180, 0, '', '', '<b>CONCLUSIONES Y RECOMENDACION.-</b>', 0, 1, 0, true, 'J', true);
                     $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
-                    $pdf->writeHTMLCell(180, 0, '', '', 'Realizado el Informe legal, conforme los antecedentes líneas arriba, en la cual teniendo un pronunciamiento Informe de Jefatura de Catastro CITE/CAT/T-IS,ClNo 0005/2025, de fecha 24/03/2025, emitido por el Ar. Richard Franco Condori Rocha, Arquitecto Técnico 1 servicios catastrales, Informe Técnico de los inmuebles para los tramite urba-No 000070 y 0000472, se puede observar que en posesión en derecho propietario a la valoración de los tramites 472 y 720 en la cual los interesados deberán regularizar el mejor derecho propietario ante la instancia llamada por Ley, para lo cual se <b>RECOMIENDA</b> efectuar la Resolución de Rechazo del trámite previo análisis, bajo el principio de buena fe.', 0, 1, 0, true, 'J', true);
+                    $pdf->writeHTMLCell(180, 0, '', '', 'Realizado el Informe legal, conforme los antecedentes líneas arriba, en la cual teniendo un pronunciamiento '.$dataSource->getParameter('conclusion').', Informe Técnico de los inmuebles para los tramite urba-No 000070 y 0000472, se puede observar que en posesión en derecho propietario a la valoración de los tramites 472 y 720 en la cual los interesados deberán regularizar el mejor derecho propietario ante la instancia llamada por Ley, para lo cual se <b>RECOMIENDA</b> efectuar la Resolución de Rechazo del trámite previo análisis, bajo el principio de buena fe.', 0, 1, 0, true, 'J', true);
                     $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
                     $pdf->writeHTMLCell(180, 0, '', '', 'Es cuanto informo para fines consiguientes.', 0, 1, 0, true, 'J', true);
                     $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!

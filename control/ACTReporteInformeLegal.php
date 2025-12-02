@@ -80,6 +80,7 @@ class ACTReporteInformeLegal extends ACTbase{
 		$complemento = $resultData[0]['complemento'];
 		$tipo_aprobacion = $resultData[0]['tipo_aprobacion'];
 		$complemento_matri = $resultData[0]['complemento_matri'];
+		$tipo_rechazo = $resultData[0]['tipo_rechazo'];
 		
 		/*$this->objFunc = $this->create('MODReporte');
 		$resultlistarCuerpoInformeLegal = $this->objFunc->listarCuerpoInformeLegal($this->objParam);
@@ -163,6 +164,7 @@ class ACTReporteInformeLegal extends ACTbase{
 		$dataSource->putParameter('complemento', $complemento);
 		$dataSource->putParameter('tipo_aprobacion', $tipo_aprobacion);
 		$dataSource->putParameter('complemento_matri', $complemento_matri);
+		$dataSource->putParameter('tipo_rechazo', $tipo_rechazo);
 
 		$dataSourceArray = Array();
         $dataSourceClasificacion = new DataSource();

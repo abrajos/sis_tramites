@@ -167,6 +167,7 @@ class MODReporte extends MODbase {
         $this->captura('complemento', 'varchar');
         $this->captura('tipo_aprobacion', 'varchar');
         $this->captura('complemento_matri', 'varchar');
+        $this->captura('tipo_rechazo', 'varchar');
 		
         $this->armarConsulta();
 		//echo $this->consulta;exit;

@@ -311,22 +311,17 @@ Phx.vista.DatosLegal=Ext.extend(Phx.gridInterfaz,{
 				grid:true,
 				form:false
 		},
+		
 		{
 			config:{
 				name: 'zona',
 				fieldLabel: 'Zona',
 				allowBlank: false,
 				anchor: '80%',
-				origen: 'CATALOGO',
-					gdisplayField: 'zona',
-					gwidth: 100,
-					baseParams:{
-						cod_subsistema:'SISTRA',
-						catalogo_tipo:'tdato_tecnico_zona'
-					},
-					renderer:function (value, p, record){return String.format('{0}', record.data['zona']);}
-	       		},
-	       		type:'ComboRec',
+				gwidth: 100,
+				maxLength:50
+			},
+				type:'TextField',
 				filters:{pfiltro:'datleg.zona',type:'string'},
 				id_grupo:1,
 				grid:true,

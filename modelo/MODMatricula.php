@@ -41,6 +41,7 @@ class MODMatricula extends MODbase{
 		$this->captura('fecha_mod','timestamp');
 		$this->captura('usr_reg','varchar');
 		$this->captura('usr_mod','varchar');
+		$this->captura('complemento','varchar');
 		
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -69,6 +70,7 @@ class MODMatricula extends MODbase{
 		$this->setParametro('nombre_notario','nombre_notario','varchar');
 		$this->setParametro('id_tramite_detalle','id_tramite_detalle','int4');
 		$this->setParametro('nro_testimonio','nro_testimonio','varchar');
+		$this->setParametro('complemento','complemento','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -98,6 +100,7 @@ class MODMatricula extends MODbase{
 		$this->setParametro('nombre_notario','nombre_notario','varchar');
 		$this->setParametro('id_tramite_detalle','id_tramite_detalle','int4');
 		$this->setParametro('nro_testimonio','nro_testimonio','varchar');
+		$this->setParametro('complemento','complemento','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();

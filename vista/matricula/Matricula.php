@@ -65,52 +65,6 @@ Phx.vista.Matricula=Ext.extend(Phx.gridInterfaz,{
 		},
 		{
 			config:{
-				name: 'asiento',
-				fieldLabel: 'Asiento',
-				allowBlank: true,
-				anchor: '80%',
-				gwidth: 100,
-				maxLength:200
-			},
-				type:'TextField',
-				filters:{pfiltro:'matri.asiento',type:'string'},
-				id_grupo:1,
-				grid:true,
-				form:true
-		},
-		{
-			config:{
-				name: 'decreto_registrador',
-				fieldLabel: 'Decreto Registrador',
-				allowBlank: true,
-				anchor: '80%',
-				gwidth: 100,
-				maxLength:200
-			},
-				type:'TextField',
-				filters:{pfiltro:'matri.decreto_registrador',type:'string'},
-				id_grupo:1,
-				grid:true,
-				form:true
-		},
-		{
-			config:{
-				name: 'fecha_testimonio',
-				fieldLabel: 'Fecha Testimonio',
-				allowBlank: true,
-				anchor: '80%',
-				gwidth: 100,
-							format: 'd/m/Y', 
-							renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
-			},
-				type:'DateField',
-				filters:{pfiltro:'matri.fecha_testimonio',type:'date'},
-				id_grupo:1,
-				grid:true,
-				form:true
-		},
-		{
-			config:{
 				name: 'nro_matricula',
 				fieldLabel: 'Nro Matricula',
 				allowBlank: false,
@@ -126,18 +80,18 @@ Phx.vista.Matricula=Ext.extend(Phx.gridInterfaz,{
 		},
 		{
 			config:{
-				name: 'estado_reg',
-				fieldLabel: 'Estado Reg.',
+				name: 'asiento',
+				fieldLabel: 'Asiento',
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
-				maxLength:10
+				maxLength:200
 			},
 				type:'TextField',
-				filters:{pfiltro:'matri.estado_reg',type:'string'},
+				filters:{pfiltro:'matri.asiento',type:'string'},
 				id_grupo:1,
 				grid:true,
-				form:false
+				form:true
 		},
 		{
 			config:{
@@ -151,37 +105,6 @@ Phx.vista.Matricula=Ext.extend(Phx.gridInterfaz,{
 			},
 				type:'DateField',
 				filters:{pfiltro:'matri.fecha_asiento',type:'date'},
-				id_grupo:1,
-				grid:true,
-				form:true
-		},
-		{
-			config:{
-				name: 'nro_notario',
-				fieldLabel: 'Nro Notario',
-				allowBlank: true,
-				anchor: '80%',
-				gwidth: 100,
-				maxLength:200
-			},
-				type:'TextField',
-				filters:{pfiltro:'matri.nro_notario',type:'string'},
-				id_grupo:1,
-				grid:true,
-				form:true
-		},
-		{
-			config:{
-				name: 'fecha_decreto',
-				fieldLabel: 'Fecha Decreto',
-				allowBlank: true,
-				anchor: '80%',
-				gwidth: 100,
-							format: 'd/m/Y', 
-							renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
-			},
-				type:'DateField',
-				filters:{pfiltro:'matri.fecha_decreto',type:'date'},
 				id_grupo:1,
 				grid:true,
 				form:true
@@ -204,6 +127,21 @@ Phx.vista.Matricula=Ext.extend(Phx.gridInterfaz,{
 		
 		{
 			config:{
+				name: 'nro_notario',
+				fieldLabel: 'Nro Notario',
+				allowBlank: true,
+				anchor: '80%',
+				gwidth: 100,
+				maxLength:200
+			},
+				type:'TextField',
+				filters:{pfiltro:'matri.nro_notario',type:'string'},
+				id_grupo:1,
+				grid:true,
+				form:true
+		},
+		{
+			config:{
 				name: 'nro_testimonio',
 				fieldLabel: 'Nro Testimonio',
 				allowBlank: true,
@@ -217,6 +155,85 @@ Phx.vista.Matricula=Ext.extend(Phx.gridInterfaz,{
 				grid:true,
 				form:true
 		},
+		{
+			config:{
+				name: 'fecha_testimonio',
+				fieldLabel: 'Fecha Testimonio',
+				allowBlank: true,
+				anchor: '80%',
+				gwidth: 100,
+							format: 'd/m/Y', 
+							renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
+			},
+				type:'DateField',
+				filters:{pfiltro:'matri.fecha_testimonio',type:'date'},
+				id_grupo:1,
+				grid:true,
+				form:true
+		},
+		{
+			config:{
+				name: 'decreto_registrador',
+				fieldLabel: 'Decreto Registrador',
+				allowBlank: true,
+				anchor: '80%',
+				gwidth: 100,
+				maxLength:200
+			},
+				type:'TextField',
+				filters:{pfiltro:'matri.decreto_registrador',type:'string'},
+				id_grupo:1,
+				grid:true,
+				form:true
+		},
+		{
+			config:{
+				name: 'fecha_decreto',
+				fieldLabel: 'Fecha Decreto',
+				allowBlank: true,
+				anchor: '80%',
+				gwidth: 100,
+							format: 'd/m/Y', 
+							renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
+			},
+				type:'DateField',
+				filters:{pfiltro:'matri.fecha_decreto',type:'date'},
+				id_grupo:1,
+				grid:true,
+				form:true
+		},
+		{
+			config:{
+				name: 'complemento',
+				fieldLabel: 'Complemento',
+				allowBlank: true,
+				anchor: '80%',
+				gwidth: 100,
+				maxLength:200
+			},
+				type:'TextField',
+				filters:{pfiltro:'matri.complemento',type:'string'},
+				id_grupo:1,
+				grid:true,
+				form:true
+		},
+		{
+			config:{
+				name: 'estado_reg',
+				fieldLabel: 'Estado Reg.',
+				allowBlank: true,
+				anchor: '80%',
+				gwidth: 100,
+				maxLength:10
+			},
+				type:'TextField',
+				filters:{pfiltro:'matri.estado_reg',type:'string'},
+				id_grupo:1,
+				grid:true,
+				form:false
+		},
+		
+
 		{
 			config:{
 				name: 'id_usuario_ai',
@@ -338,6 +355,7 @@ Phx.vista.Matricula=Ext.extend(Phx.gridInterfaz,{
 		{name:'fecha_mod', type: 'date',dateFormat:'Y-m-d H:i:s.u'},
 		{name:'usr_reg', type: 'string'},
 		{name:'usr_mod', type: 'string'},
+		{name:'complemento', type: 'string'},
 		
 	],
 	sortInfo:{

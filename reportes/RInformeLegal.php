@@ -211,6 +211,8 @@ Class RInformeLegal extends Report {
             $pdf->Cell($w = 90, $h = $hMedium, $txt = 'Con Asiento N°: '.$dataSource->getParameter('asiento'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
             $pdf->Cell($w = 90, $h = $hMedium, $txt = 'de fecha: '.$dataSource->getParameter('fecha_asiento'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
             $pdf->Ln(7);
+            $pdf->Cell($w = 180, $h = $hMedium, $txt = 'Complemento: '.$dataSource->getParameter('complemento_matri'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
+            $pdf->Ln(7);
 
             $pdf->Cell($w = 160, $h = $hMedium, $txt = 'Aprobado mediante: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
             $pdf->Ln(7);
@@ -237,7 +239,7 @@ Class RInformeLegal extends Report {
             $pdf->SetFont('', 'N');
 /*aqui estamos poniendo algo para subir */
             //console.log();
-           // var_dump($dataSource->getParameter('tipo_rechazo'));
+           //var_dump($dataSource->getParameter('tipo_rechazo'));
             if($dataSource->getParameter('aprobacion') == 'no' ){
                 $propietarios = explode("|", $propietariosList);
                 $propName = '';
@@ -337,7 +339,7 @@ Class RInformeLegal extends Report {
                     $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
                     $htmlAPAU8 = 'En virtud a los antecedentes descritos y la normativa vigente, se establecen los siguientes aspectos:';
                     $htmlAPAU9 = 'De acuerdo a documentación presentada se puede observar un fraccionamiento del predio y el registro en derechos reales de la parte fraccionada, el cual al ser un terreno ubicado en <b>área productiva agropecuaria NO es susceptible a ser fraccionado</b>, toda vez que la regularización del predio se debe realizar sobre la totalidad de la superficie y no así sobre una parte fraccionada, pudiendo efectuarse la urbanización y fraccionamiento una vez se efectúe el cambio de uso de suelo.';
-                    $htmlAPAU10 = 'En cumplimiento a la normativa vigente al encontrarse el terreno en <b>área productiva agropecuaria</b> y al no ser objeto de cambio de uso de suelo ni urbanizable en el plazo de 15 años a partir de la publicación del Decreto Supremo N° 1809, de 27 de noviembre de 2013, solamente se podrá efectuar la aprobación del predio en Area Productiva Agropecuaria sobre la totalidad de la superficie, es decir la <b>extensión superficial de 6.187,02  m2</b> y no así sobre los 3.093,65 m2, por lo que NO corresponde la prosecución del trámite, para lo cual se <b>RECOMIENDA</b> efectuar la Resolución de Rechazo del trámite previo análisis y emisión de un informe, de la parte técnica, asimismo se deberá remitir el trámite a la <b>Dirección de Asesoría Legal del Gobierno Autónomo Municipal de Colcapirhua</b>, para que en coordinación con las Oficinas de Derechos Reales se pueda corroborar la legalidad y veracidad de la documentación técnica - legal bajo el principio de buena fe que solicito el propietario derivando el mismo al fraccionamiento y posterior inscripción del predio que se encuentra ubicado actualmente en <b>Área Productiva (A.P.A.U.)</b>, sin contar con alguna Resolución de tipo Municipal, Agraria o Nacional para este efecto';
+                    $htmlAPAU10 = 'En cumplimiento a la normativa vigente al encontrarse el terreno en <b>área productiva agropecuaria</b> y al no ser objeto de cambio de uso de suelo ni urbanizable en el plazo de 15 años a partir de la publicación del Decreto Supremo N° 1809, de 27 de noviembre de 2013, solamente se podrá efectuar la aprobación del predio en Area Productiva Agropecuaria sobre la totalidad de la superficie, '.$dataSource->getParameter('conclusion').', por lo que NO corresponde la prosecución del trámite, para lo cual se <b>RECOMIENDA</b> efectuar la Resolución de Rechazo del trámite previo análisis y emisión de un informe, de la parte técnica, asimismo se deberá remitir el trámite a la <b>Dirección de Asesoría Legal del Gobierno Autónomo Municipal de Colcapirhua</b>, para que en coordinación con las Oficinas de Derechos Reales se pueda corroborar la legalidad y veracidad de la documentación técnica - legal bajo el principio de buena fe que solicito el propietario derivando el mismo al fraccionamiento y posterior inscripción del predio que se encuentra ubicado actualmente en <b>Área Productiva (A.P.A.U.)</b>, sin contar con alguna Resolución de tipo Municipal, Agraria o Nacional para este efecto';
                     
                     $htmlViñetas2 = '<ul>';
                     $htmlViñetas2 .= '<li style="tesxt-align: justify">' . $htmlAPAU9 . '</li>';

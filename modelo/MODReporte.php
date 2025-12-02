@@ -163,6 +163,9 @@ class MODReporte extends MODbase {
         $this->captura('manzana', 'varchar');
         $this->captura('superficie_leg', 'numeric');
         $this->captura('zona', 'varchar');
+        $this->captura('tipo', 'varchar');
+        $this->captura('complemento', 'varchar');
+        $this->captura('tipo_aprobacion', 'varchar');
 		
         $this->armarConsulta();
 		//echo $this->consulta;exit;

@@ -76,6 +76,9 @@ class ACTReporteInformeLegal extends ACTbase{
 		$ddrr_registro = $resultData[0]['ddrr_registro'];
 		$kami = $resultData[0]['kami'];
 		$superficie_leg = $resultData[0]['superficie_leg'];
+		$tipo = $resultData[0]['tipo'];
+		$complemento = $resultData[0]['complemento'];
+		$tipo_aprobacion = $resultData[0]['tipo_aprobacion'];
 		
 		/*$this->objFunc = $this->create('MODReporte');
 		$resultlistarCuerpoInformeLegal = $this->objFunc->listarCuerpoInformeLegal($this->objParam);
@@ -155,7 +158,9 @@ class ACTReporteInformeLegal extends ACTbase{
 		$dataSource->putParameter('ddrr_registro', $ddrr_registro);
 		$dataSource->putParameter('kami', $kami);
 		$dataSource->putParameter('superficie_leg', $superficie_leg);
-
+		$dataSource->putParameter('tipo', $tipo);
+		$dataSource->putParameter('complemento', $complemento);
+		$dataSource->putParameter('tipo_aprobacion', $tipo_aprobacion);
 		
 		$dataSourceArray = Array();
         $dataSourceClasificacion = new DataSource();

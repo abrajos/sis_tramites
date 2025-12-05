@@ -1,7 +1,7 @@
 <?php
 /**
 *@package pXP
-*@file gen-Tramite.php
+*@file gen-Resolucion.php
 *@author  (admin)
 *@date 26-03-2025 01:17:18
 *@description Archivo con la interfaz de usuario que permite la ejecucion de todas las funcionalidades del sistema
@@ -10,50 +10,28 @@
 header("content-type: text/javascript; charset=UTF-8");
 ?>
 <script>
-Phx.vista.Tramite=Ext.extend(Phx.gridInterfaz,{
+Phx.vista.Resolucion=Ext.extend(Phx.gridInterfaz,{
 
 	constructor:function(config){
 		this.maestro=config.maestro;
     	//llama al constructor de la clase padre
-		Phx.vista.Tramite.superclass.constructor.call(this,config);
+		Phx.vista.Resolucion.superclass.constructor.call(this,config);
 		this.init();
    
    console.log("load::", this);
    
 		this.load({params:{start:0, limit:this.tam_pag}});
 
-		this.addButton('tramitePersona', {
-                argument: {imprimir: 'Registro Personas'},
-                text: ' Registro Personas', /*iconCls:'' ,*/
-                iconCls: 'task',
-				disabled: false,
-                handler: this.tramitePersona
-            });
 		
-		this.addButton('imprimirFor', {
-				text: 'Imprimir Formulario',
-				iconCls: 'bavion',
-				disabled: false,
-				handler: this.BFormularioSolicitud,
-				tooltip: '<b>Imprimir Formulario</b><br/>Impresión del formulario'
-			});	
 
-		this.addButton('Derivar', {
-				text : 'Derivar',
-				iconCls : 'badelante',
-				disabled : false,
-				handler : this.BDerivar,
-				tooltip : '<b>Derivar</b><br/>Deriva al funcionario asignado'
-			});
-			 console.log(config);
 		
-	/*	this.addButton('imprimirRes', {
+		this.addButton('imprimirRes', {
 				text: 'Imprimir Resolucion',
 				iconCls: 'bprint',
 				disabled: false,
 				handler: this.BResolucion,
 				tooltip: '<b>Imprimir Resolucion</b><br/>Impresión de Resolución'
-			});	*/
+			});	
 },
 			
 	Atributos:[
@@ -447,14 +425,16 @@ Phx.vista.Tramite=Ext.extend(Phx.gridInterfaz,{
 		field: 'id_tramite',
 		direction: 'ASC'
 	},
-	bdel:true,
-	bsave:true,
-	south:{
+	bdel:false,
+	bsave:false,
+	bnew:false,
+
+	/*south:{
 		url:'../../../sis_tramites/vista/tramite_detalle/TramiteDetalle.php',
         title:'Detalle Tramite',
         height:'50%',
         cls:'TramiteDetalle'
-   		},
+   		},*/
 	/*tabsouth:[{
         url:'../../../sis_tramites/vista/tramite_detalle/TramiteDetalle.php',
         title:'Detalle Tramite',
@@ -519,78 +499,6 @@ Phx.vista.Tramite=Ext.extend(Phx.gridInterfaz,{
 		
 	},
 
-BDerivar : function() {
-
-var rec = this.sm.getSelected();
-var id_tramite = this.sm.getSelected().data.id_tramite;
-var id_funcionario = this.sm.getSelected().data.id_funcionario;
-if (confirm('Esta seguro de DERIVAR el tramite?')){
- Phx.CP.loadingShow();
-Ext.Ajax.request({
-	url : '../../sis_tramites/control/Tramite/derivarTramite',
-	params : {
-		id_tramite : id_tramite,
-		id_funcionario  : id_funcionario
-		/*id_correspondencia : id_correspondencia,
-		id_origen          : this.maestro.id_origen*/
-		},
-		success : this.successDerivar,
-		failure : this.conexionFailure,
-		timeout : this.timeout,
-		scope : this
-		});
-		}
-	},
-successDerivar : function(resp) {
-
-	Phx.CP.loadingHide();
-	var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
-	if (!reg.ROOT.error) {
-		alert(reg.ROOT.detalle.mensaje)
-	}
-	this.reload();
-
-	},
-
-	tramitePersona: function () {
-		var rec = this.getSelectedData();
-		this.getComponente('id_tramite').setValue(rec.id_tramite);
-		//enviamos el id seleccionado para cual el archivo se deba subir
-		/*rec.datos_extras_id = rec.id_tramite_detalle;
-		rec.datos_extras_id = rec.id_tramite;
-		//enviamos el nombre de la tabla
-		rec.datos_extras_tabla = 'tdato_tecnico';
-		//enviamos el codigo ya que una tabla puede tener varios archivos diferentes como ci,pasaporte,contrato,slider,fotos,etc
-		rec.datos_extras_codigo = 'dato tecnico';*/
-
-		//esto es cuando queremos darle una ruta personalizada
-		//rec.datos_extras_ruta_personalizada = './../../../uploaded_files/favioVideos/videos/';
-			console.log(rec.id_tramite);
-		Phx.CP.loadWindows('../../../sis_tramites/vista/tramite_persona/TramitePersona.php',
-			'TramitePersona',
-			{
-				width: 900,
-				height: 400
-			}, rec, this.idContenedor, 'TramitePersona');
-
-	},
-
-	BFormularioSolicitud:function () {
-			var rec = this.sm.getSelected();
-			Phx.CP.loadingShow();
-			Ext.Ajax.request({
-				url: '../../sis_tramites/control/Tramite/formularioSolicitud',
-				params: {
-					id_tramite: rec.data.id_tramite,
-					id_usuario_reg: rec.data.id_usuario_reg
-				},
-				success: this.successExport,
-				failure: this.conexionFailure,
-				timeout: this.timeout,
-				scope: this
-			});
-	
-		},
 
 		BResolucion:function () {
 			var rec = this.sm.getSelected();

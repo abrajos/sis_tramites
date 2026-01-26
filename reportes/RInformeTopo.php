@@ -163,13 +163,12 @@ Class RInformeTopo extends Report {
 	        $pdf->Cell($w = 180, $h = $hMedium, $txt = 'REF:       '.strtoupper($dataSource->getParameter('referencia')), 'B', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
 			$pdf->Ln(8);
             $pdf->SetFont('', 'N');
-            $pdf->Cell($w = 63, $h = $hMedium, $txt = 'Señor Arquitecto ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-            $pdf->Ln(9);
-            $pdf->MultiCell(180, $h = $hMedium, 'Se procede a la inspección y verificación técnica del expediente del trámite administrativo N°  '.$dataSource->getParameter('cite_tramite').', Con referencia a la aprobación de: '.strtoupper($dataSource->getParameter('nombre_tramite')), 0, 'J', 0, 0, '', '', true);
-            $pdf->Ln(9);
-            $pdf->SetFont('', 'N');
-            $pdf->MultiCell(180, $h = $hMedium, 'Corresponde informar que el predio se encuentra dentro de la jurisdicción de Colcapirhua ubicado en: ', 0, 'J', 0, 0, '', '', true);
-            $pdf->Ln(7);
+            $pdf->writeHTMLCell(180, 0, '', '', 'Señor Arquitecto', 0, 1, 0, true, 'J', true);
+            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+            $pdf->writeHTMLCell(180, 0, '', '', 'Se procede a la inspección y verificación técnica del expediente del trámite administrativo N°  '.$dataSource->getParameter('cite_tramite').', Con referencia a la aprobación de: '.strtoupper($dataSource->getParameter('nombre_tramite')), 0, 1, 0, true, 'J', true);
+            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+            $pdf->writeHTMLCell(180, 0, '', '', 'Corresponde informar que el predio se encuentra dentro de la jurisdicción de Colcapirhua ubicado en:', 0, 1, 0, true, 'J', true);
+            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
             
 /*
             if ( $dataSource->getParameter('tipo_persona') == "tramitador"){
@@ -197,10 +196,9 @@ Class RInformeTopo extends Report {
                 };
 
 */
-               
+            /*
             $pdf->Cell($w = 90, $h = $hMedium, $txt = 'Distrito: '.$dataSource->getParameter('distrito'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
             $pdf->Cell($w = 90, $h = $hMedium, $txt = 'Zona: '.$dataSource->getParameter('zona'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            
             $pdf->Ln(7);
             $pdf->Cell($w = 60, $h = $hMedium, $txt = 'Manzano: '.$dataSource->getParameter('manzana'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
             $pdf->Cell($w = 60, $h = $hMedium, $txt = 'Lote: '.$dataSource->getParameter('nombre_lote'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
@@ -209,9 +207,51 @@ Class RInformeTopo extends Report {
             $pdf->Cell($w = 180, $h = $hMedium, $txt = 'Calle: '.$dataSource->getParameter('calle'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
             $pdf->Ln(7);	   
             $pdf->Cell($w = 180, $h = $hMedium, $txt = 'Avenida: '.$dataSource->getParameter('avenida'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-                        
-            $pdf->Ln(8);
+            */
 
+            $table0 = '<table border="1" style="width: 100%; border-collapse: collapse;">
+                        <tr>
+                            <td colspan="3" style="text-align: left;"><b>Distrito: '.$dataSource->getParameter('distrito').'</b></td>
+                            <td colspan="3" style="text-align: left;"><b>Zona:' .$dataSource->getParameter('zona').'</b></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" style="text-align: left;"><b>Manzano: '.$dataSource->getParameter('manzana').'</b></td>
+                            <td colspan="2" style="text-align: left;"><b>Lote: '.$dataSource->getParameter('nombre_lote').'</b></td>
+                            <td colspan="2" style="text-align: left;"><b>Tipo de Calle: '.$dataSource->getParameter('tipo_calle').'</b></td>
+                        </tr>
+                        <tr>
+                            <td colspan="6" style="text-align: left;"><b>Calle: '.$dataSource->getParameter('calle').'</b></td>
+                        </tr>
+                        <tr>
+                            <td colspan="6" style="text-align: left;"><b>Avenida: '.$dataSource->getParameter('avenida').'</b></td>
+                        </tr>
+                    </table>';
+            
+            $pdf->writeHTMLCell(180, 0, '', '', $table0, 0, 1, 0, true, 'J', true);
+            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+            $pdf->writeHTMLCell(180, 0, '', '', 'El predio se encuentra en RASANTE MUNICIPAL y tiene como colindantes:', 0, 1, 0, true, 'J', true);
+            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+            $table1 = '<table border="1" style="width: 100%; border-collapse: collapse;">
+                            <tr>
+                                <td style="text-align: right; width: 18%;"><b>NORTE:</b></td><td style="text-align: left; width: 82%;">'.$dataSource->getParameter('colindante_norte').'</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right;"><b>ESTE:</b></td><td>'.$dataSource->getParameter('colindante_este').'</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right;"><b>SUD:</b></td><td>'.$dataSource->getParameter('colindante_sur').'</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right;"><b>OESTE:</b></td><td>'.$dataSource->getParameter('colindante_oeste').'</td>
+                            </tr>
+                        </table>';
+            // 110 es la posición X (210mm menos el ancho de la celda y márgenes)
+            $pdf->writeHTMLCell(180, 0, '', '', $table1, 0, 1, 0, true, 'J', true);
+            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+
+
+            
+/*
             $pdf->Cell($w = 160, $h = $hMedium, $txt = 'El predio '.$dataSource->getParameter('rasante_municipal').' se encuentra en RASANTE MUNICIPAL y tiene como colindantes:', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
             $pdf->Ln(8);
 
@@ -223,10 +263,55 @@ Class RInformeTopo extends Report {
             $pdf->Ln(7);  
             $pdf->Cell($w = 180, $h = $hMedium, $txt = 'Oeste: '.$dataSource->getParameter('colindante_oeste'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
             $pdf->Ln(7);
-
-            $pdf->Cell($w = 160, $h = $hMedium, $txt = 'RELACION DE SUPERFICIE ES LA SIGUIENTE: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-            $pdf->Ln(7);
+*/
             
+
+            $pdf->writeHTMLCell(180, 0, '', '', '<b>RELACIÓN DE SUPERFICIE ES LA SIGUIENTE:</b>', 0, 1, 0, true, 'J', true);
+            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+            $table2 = '<table border="1" cellpadding="4" width="80%" style="margin-left: auto;">
+                            <tr>
+                                <td style="text-align: center;" width="50%"><b>DETALLE</b></td>
+                                <td style="text-align: center;" width="25%"><b>CANT.</b></td>
+                                <td style="text-align: center;" width="25%"><b>UNIDAD</b></td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right;"><b>SUP. LOTE SEGÚN ESCRITURA</b></td>
+                                <td style="text-align: right;">'.$dataSource->getParameter('super_escritura').'</td>
+                                <td style="text-align: left;">M2</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right;"><b>SUP. LOTE SEGÚN MENSURA</b></td>
+                                <td style="text-align: right;">'.$dataSource->getParameter('super_mensura').'</td>
+                                <td style="text-align: left;">M2</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right;"><b>SUPERFICIE EXCEDENTE</b></td>
+                                <td style="text-align: right;">'.$dataSource->getParameter('super_mensura').'</td>
+                                <td style="text-align: left;">M2</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right;"><b>SUPERFICIE INEXISTENTE</b></td>
+                                <td style="text-align: right;">'.$dataSource->getParameter('super_mensura').'</td>
+                                <td style="text-align: left;">M2</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right;"><b>SUPERFICIE ÚTIL</b></td>
+                                <td style="text-align: right;">'.$dataSource->getParameter('super_total').'</td>
+                                <td style="text-align: left;">M2</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right;"><b>LONGITUD RASANTE</b></td>
+                                <td style="text-align: right;">'.$dataSource->getParameter('long_rasante').'</td>
+                                <td style="text-align: left;">M</td>
+                            </tr>
+                        </table>';
+            //$pdf->writeHTMLCell(180, 0, '', '', $htmlTable0, 0, 1, 0, true, 'J', true);
+
+            //$pdf->writeHTMLCell(120, 0, '', 60, $htmlTable2, 0, 1, 0, true, 'R', true);
+            $pdf->writeHTMLCell(160, 0, 40, '', $table2, 0, 1, 0, true, 'R', true);
+            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+
+            /*
             $pdf->Cell($w = 20, $h = $hMedium, $txt = ' ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
             $pdf->Cell($w = 60, $h = $hMedium, $txt = 'DETALLE ', $border = 'LRTB', $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
             $pdf->Cell($w = 40, $h = $hMedium, $txt = 'CANT. ', $border = 'LRTB', $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
@@ -265,21 +350,46 @@ Class RInformeTopo extends Report {
             $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('long_rasante'), $border = 'LRTB', $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
             $pdf->Cell($w = 30, $h = $hMedium, $txt = 'M', $border = 'LRTB', $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
             $pdf->Ln(10);
+            */
 
             if($dataSource->getParameter('lote')=="si"){
                 $pdf->Cell($w = 160, $h = $hMedium, $txt = 'La relación y division de lotes, esta anexo al informe. ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
                 $pdf->Ln(7);
             };
-            $pdf->SetFont('', 'B');
-            $pdf->Cell($w = 19, $h = $hMedium, $txt = 'OBSERVACIONES.- ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-            $pdf->Ln(8);
-            $pdf->SetFont('', 'N');
-            $pdf->MultiCell(180, $h = $hMedium, $dataSource->getParameter('observacion'), 0, 'J', 0, 0, '', '', true);
-            $pdf->Ln(35);
+
+            $pdf->writeHTMLCell(180, 0, '', '', '<b>OBSERVACIONES.- </b>', 0, 1, 0, true, 'J', true);
+            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+            $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('observacion'), 0, 1, 0, true, 'J', true);
+            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+            $pdf->writeHTMLCell(180, 0, '', '', 'Los servicios que tienen son:', 0, 1, 0, true, 'J', true);
+            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
             
+            $table3 = '<table border="1" cellpadding="4" width="100%" style="margin-left: auto;">
+                        <tr>
+                            <td style="text-align: right;" width="22%"><b>Vías:</b></td><td style="text-align: left;" width="25%">'.$dataSource->getParameter('vias').'</td>
+                            <td style="text-align: right;" width="28%"><b>Agua Potable:</b></td><td style="text-align: left;" width="25%">'.$dataSource->getParameter('agua_potable').'</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: right;"><b>Alcantarillado:</b></td><td style="text-align: left;">'.$dataSource->getParameter('alcantarillado').'</td>
+                            <td style="text-align: right;"><b>Alumbrado Público:</b></td><td style="text-align: left;">'.$dataSource->getParameter('alumbrado_publico').'</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: right;"><b>Teléfono:</b></td><td style="text-align: left;">'.$dataSource->getParameter('telefonia').'</td>
+                            <td style="text-align: right;"><b>Equipamento:</b></td><td style="text-align: left;">'.$dataSource->getParameter('equipamiento').'</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: right;"><b>Transporte:</b></td><td style="text-align: left;" colspan="3">'.$dataSource->getParameter('transporte').'</td>
+                        </tr>
+                    </table>';
             
-            $pdf->Cell($w = 160, $h = $hMedium, $txt = 'Los servicios que tienen son: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-            $pdf->Ln(7);
+            $pdf->writeHTMLCell(160, 0, 25, '', $table3, 0, 1, 0, true, 'R', true);
+            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+            $pdf->writeHTMLCell(180, 0, '', '', '<b>CONCLUSIONES.- </b>', 0, 1, 0, true, 'J', true);
+            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+            $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('conclusion'), 0, 1, 0, true, 'J', true);
+            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+
+            /*
             $pdf->Cell($w = 90, $h = $hMedium, $txt = 'Vias: '.$dataSource->getParameter('vias'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
             $pdf->Cell($w = 90, $h = $hMedium, $txt = 'Agua Potable: '.$dataSource->getParameter('agua_potable'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
             $pdf->Ln(7);
@@ -292,26 +402,17 @@ Class RInformeTopo extends Report {
             $pdf->Cell($w = 90, $h = $hMedium, $txt = 'Transporte: '.$dataSource->getParameter('transporte'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
             $pdf->Cell($w = 90, $h = $hMedium, $txt = ' ', $border = '', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
             $pdf->Ln(9);
+            */
             //$pdf->AddPage();
-            $pdf->SetFont('', 'B');
-            $pdf->Cell($w = 19, $h = $hMedium, $txt = 'CONCLUSIONES.- ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-            $pdf->Ln(8);
-            $pdf->SetFont('', 'N');
-            $pdf->MultiCell(180, $h = $hMedium, $dataSource->getParameter('conclusion'), 0, 'J', 0, 0, '', '', true);
-                    
-            $pdf->Ln(20);
+            
             
            
             
             
-            $pdf->SetFont('', 'N');
-            $pdf->Cell($w = 180, $h = $hMedium, $txt = 'Es cuanto informo de la inspección realizada.', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-            $pdf->Ln(30);
-            $pdf->Cell($w = 180, $h = $hMedium, $txt = $dataSource->getParameter('de'), $border = 0, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-            $pdf->SetFont('', 'B');
-            $pdf->Ln(5);
-            $pdf->Cell($w = 180, $h = $hMedium, $txt = $dataSource->getParameter('cargode'), $border = 0, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-            $pdf->Ln(5);
+            $pdf->writeHTMLCell(180, 0, '', '', 'Es cuanto informo de la inspección realizada.', 0, 1, 0, true, 'J', true);
+            $pdf->Ln(18.5); // ⬅️ ¡Aquí está el cambio!
+            $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('de').'<br>'.$dataSource->getParameter('cargode'), 0, 1, 0, true, 'C', true);
+            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
           
             
 

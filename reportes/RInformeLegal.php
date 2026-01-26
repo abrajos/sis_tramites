@@ -111,7 +111,6 @@ Class RInformeLegal extends Report {
         $hGlobal = 5;
         $hMedium = 7.5;
         $hLong = 15;
-
         //var_dump($dataSource); exit;
 		
         //$pdf->Cell($w = 30, $h = $hGlobal, $txt = '', $border = 0, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
@@ -273,7 +272,8 @@ Class RInformeLegal extends Report {
                         $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('observacion'), 0, 1, 0, true, 'J', true);
                         $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
                     }
-                    $pdf->writeHTMLCell(180, 0, '', '', '<b>CONCLUSIONES Y RECOMENDACION.-</b>', 0, 1, 0, true, 'J', true);
+                    $pdf->AddPage();
+                    $pdf->writeHTMLCell(180, 0, '', '', '<br><br><b>CONCLUSIONES Y RECOMENDACION.-</b>', 0, 1, 0, true, 'J', true);
                     $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
                     $pdf->writeHTMLCell(180, 0, '', '', 'Realizado el Informe legal, conforme los antecedentes líneas arriba, quien es propietario <b>'.$propName.'</b>, en la cual teniendo un '.$dataSource->getParameter('conclusion').', se puede observar que se encuentra la Ubicado el predio Fuera del Área Urbano (FRU), la Resolución Municipal BI-Secretarial N° 01/2020 de 11/12/2020 de la resolución Municipal BI-Secretarial y con lo establecido en el Decreto Municipal 007/2016 de fecha 16/09/2016; por lo que NO corresponde la prosecución del trámite, para lo cual se <b>RECOMIENDA</b> efectuar la Resolución de Rechazo del trámite previo análisis, bajo el principio de buena fe que solicito el propietario.', 0, 1, 0, true, 'J', true);
                     $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
@@ -408,28 +408,43 @@ Class RInformeLegal extends Report {
                     $pdf->Ln(30);
                 }
             } 
-
-                /*APAU*/
-            if( $dataSource->getParameter('id_tipo_tramite') == 20 && $dataSource->getParameter('aprobacion') == 'si'){
-                $pdf->MultiCell(180, $h = $hMedium, 'De conformidad al Art. 24 Constitución Politica del Estado Plurinacional, art. 24, Toda persona tiene derecho a la petición, de forma individual o colectiva, oral o escrita. Además, garantiza el derecho a recibir una respuesta formal y pronta sin más requisito que la identificación del peticionario, asi tambien menciona en su art.56 inc. l.- Toda persona tiene derecho a la propiedad privada individual o colectiva, siempre que esta cumpla una función social. ll. Se garantiza la propiedad privada siempre que el uso que se haga de ella no sea perjudicial al interes colectivo.', 0, 'J', 0, 0, '', '', true);
-                $pdf->Ln(28);
+            /*APAU*/
+            if ($dataSource->getParameter('area_agro') == "si" && $dataSource->getParameter('aprobacion') == 'si') {
+                $propietarios = explode("|", $propietariosList);
+                $propName = '';
+                if (count($propietarios) ==  1) {
+                    $propName = $propietariosList;
+                } elseif (count($propietarios) <  3) {
+                    $propName = $propietarios[0]." y ".$propietarios[1];
+                } else {
+                    for ($i=0; $i < count($propietarios); $i++) { 
+                        if ($i == 0) {
+                            $propName = $propietarios[0];
+                        } elseif ($i > 0 && $i < count($propietarios) - 2) {
+                            $propName .= ", ".$propietarios[$i];
+                        } else {
+                            $propName .= " y ".$propietarios[$i];
+                        }
+                    }
+                } 
+                
+                $pdf->MultiCell(180, $h = $hMedium, 'De conformidad al Art. 24 Constitución Politica del Estado Plurinacional, art. 24, Toda persona tiene derecho a la petición, de forma individual o colectiva, oral o escrita. Además, garantiza el derecho a recibir una respuesta formal y pronta sin más requisito que la identificación del peticionario, asi tambien menciona en su art.56 inc. l.- Toda persona tiene derecho a la propiedad privada individual o colectiva, siempre que esta cumpla una función social. ll. Se garantiza la propiedad privada siempre que el uso que se haga de ella no sea perjudicial al interes colectivo.', 0, 'J', 0, 0, '', '', true); //
+                $pdf->Ln(28); // ⬅️ ¡Aquí está el cambio!
                 $pdf->MultiCell(180, $h = $hMedium, 'Que, en virtud a la Ley N° 2341 de procedimiento Administrativo, en inc. k) del art. 4 establece que los procedimientos administrativos, deben responder a los principios de economia, simplicidad y celeridad, evitando la realizacion de tramites, formalismos o diligencias innecesarias.', 0, 'J', 0, 0, '', '', true);
-                $pdf->Ln(22);
+                $pdf->Ln(18); // ⬅️ ¡Aquí está el cambio!
                 $pdf->MultiCell(180, $h = $hMedium, 'Que de acuerdo a la Resolución Municipal Bi-Secretarial N° 1/2020 de fecha 11 de diciembre de 2020 emitida por Secretaria Municipal Técnica del Gobierno Autónomo Municipal de Colcapirhua, los contribuyentes deben cumplir con los procedimientos y requisitos para los tramites administrativos y técnicos de la Dirección de urbanismo y Catastro.', 0, 'J', 0, 0, '', '', true);
-                $pdf->Ln(30);
-                //$pdf->addPage();
-                $pdf->AddPage();
-                $pdf->Ln(2);
-                $pdf->MultiCell(180, $h = $hMedium, 'Que, en virtud al Decreto Supremo N° 5056 de fecha 22 de noviembre de 2023; decreta en su Articulo Unico que: A fin de efectivizar los mecanismos de resguardo de las áreas productivas para garantizar la seguridad alimentaria con soberania, se modifica el parrafo l del Articulo 3 del Decreto Supremo N° 1809 de fecha 27 de noviembre de 2013 con el siguiente texto; "l.- Las áreas productivas agropecuarias urbanas (A.P.A.U.) no podrán ser cambio de uso y de suelo, ni urbanizables en un plazo de (15) años a partir de la publicación del ´presente Decreto Supremo".', 0, 'J', 0, 0, '', '', true);
-                $pdf->Ln(20);
-              
-                $pdf->Ln(8);
-                $pdf->SetFont('', 'B');
-                $pdf->Cell($w = 19, $h = $hMedium, $txt = 'CONCLUSIONES y RECOMENDACION.- ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-                $pdf->Ln(8);
-                $pdf->SetFont('', 'N');
-                $pdf->MultiCell(180, $h = $hMedium, 'Se concluye que el o los Sr.: ', 0, 'L', 0, 0, '', '', true);
-                $pdf->Ln(5);
+                $pdf->addPage();
+                $pdf->writeHTMLCell(180, 0, '', '', '<br><br><b>CONCLUSIONES Y RECOMENDACION.-</b>', 0, 1, 0, true, 'J', true);
+                $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+                $pdf->writeHTMLCell(180, 0, '', '', 'Se concluye que el (los):', 0, 1, 0, true, 'J', true);
+                $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+                $pdf->writeHTMLCell(180, 0, '', '', '<b>'.$propName.' expedicion</b> legitimo(s) propietario(s) de un predio con una extensión superficial de '.$dataSource->getParameter('superficie_leg').' m2.; debidamente registrado en oficinas de Derechos Reales; Conforme Testimonio W de fecha '.$dataSource->getParameter('fecha_testimonio').', otorgado por la Notaria de Fe Pública N° '.$dataSource->getParameter('nro_notario').', '.$dataSource->getParameter('nombre_notario').', (Escritura Pública de transferencia de un lote de terreno), dando cumplimientoa los que se establece el Decreto Supremo W 5056 de fecha 22 de noviembre de 2023; decreta en su Artículo Único que: A fin de efectivizar los mecanismos de resguardo de las areas productivas para garantizar la seguridad alimentaria con soberania, se modifica el párrafo I del Artículo 3 del Decreto Supremo W 1809 de fecha 27 de noviembre de 2013 con el siguiente texto:', 0, 1, 0, true, 'J', true);
+                $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+                $pdf->writeHTMLCell(180, 0, '', '', '<b>"1.- Las áreas productivas agropecuarias urbanas (A.P.A.U.)no podrán ser cambio de uso y de suelo. ni urbanizables en un plazo de (15) años a partir de la publicación del presente Decreto Supremo"</b>; por lo que se recomienda la prosecución del expediente administrativo, faltando la aprobación de la parte técnica del plano solicitado a ser aprobado.', 0, 1, 0, true, 'J', true);
+                $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+                $pdf->writeHTMLCell(180, 0, '', '', '<b>El presente informe Legal no define el Derecho Propietario, Si existiera doble titularidad de derecho propietario será quien alegue ser probada por la via llamada por ley, el mismo será de entera y total responsabilidad del interesado y se aplicara según Normativa Vigente. Los Planos a ser aprobados, no contravienen a las normas legales en vigencia y cumple con todos los requisitos, faltando que la parte técnica remita los informes técnicos de topografía y Normas urbanas y/o presenten observaciones al trámite a ser aprobado.</b>', 0, 1, 0, true, 'J', true);
+                $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+            } else {
                 foreach ($dataSource->getDataSet() as $row) {
                     $tipo_persona = $row['tipo_persona'];
                     //var_dump("tipo: ",$tipo_persona); 
@@ -445,28 +460,26 @@ Class RInformeLegal extends Report {
                         $pdf->Ln();
                     };                 
                 };
-                $pdf->SetFont('', 'N');
-                $pdf->MultiCell(180, $h = $hMedium, ' es legitimo propietario de un predio con una extensión superficial de '.$dataSource->getParameter('superficie').' m2; debidamente registrado en oficinas de Derechos Reales; Conforme Testimonio N° '.$dataSource->getParameter('nro_testimonio').' de fecha '.$dataSource->getParameter('fecha_testimonio').', otorgsdo por la Notaria de Fe Publica N°'.$dataSource->getParameter('nro_notario').', '.$dataSource->getParameter('nombre_notario').'. (Escritura Pública de transferencia de un lote de terreno), dando cumplimiento a lo que se establece el Decreto SupremoN° 5056 de fecha 22 de noviembre de 2023; decreta en su Articulo Unico que ; A fin de efectivizar los mecanismos de resguardo de las áreas productivas para garantizar la sesguridad alimentaria con soberanía, se modifica el parrafo l del Artículo 3 del Decreto Supremo N° 1809 de fecha 27 de noviembre de 2013 con el siguiente texto: "l.- Las áreas productivas agropecuarias urbanas (A.P.A.U.) no podrán ser cambio de uso y de suelo, ni urbanizables en un plazo de (15) años a partir de la publicación del ´presente Decreto Supremo"; por lo que se recomienda la prosecución del expediente administrativo, faltando la aprobación de la parte técnica del plano solicitado a ser aprobado.', 0, 'J', 0, 0, '', '', true);
-                $pdf->Ln(45);        
-                $pdf->MultiCell(180, $h = $hMedium, '   El presente Informe Legal no define el Derecho Propietario, Si existiera doble titularidad de derecho propietario será quien alegue ser probada por la vía llamada por ley, el mismo será de entera y total responsabilidad del interesado y se aplicara según Normativa Vigente. Los planos a ser aprobados, no contravienen a las normas legales en vigencia y cumple con todos los requisitos, faltando que la parte técnica remita los informes técnicos de topografía y Normas Urbanas y/o presentenobservaciones al trámite a ser aprobado.', 0, 'J', 0, 0, '', '', true);
-                $pdf->Ln(40);        
 
-            } else{
-                /*if (  $dataSource->getParameter('id_tipo_tramite') == 20 && $dataSource->getParameter('aprobacion') == 'si'){
-                        
-                    $pdf->MultiCell(180, $h = $hMedium, 'De conformidad al Art. 24 Constitución Politica del Estado Plurinacional, art 24, Toda persona tiene derecho a la Petición de manera individual o colectiva, sea oral o escrita, y a la obtención de respuesta formal y pronta. Para el ejercicio de este derecho no exigirá mas requisito que la identificación del peticionante, así tembién menciona en su art. 56 inc I.- Toda persona tiene derecho a la pro´piedad privada individual o colectiva, siempre que esta cumpla una función social. II. Se garantiza la propiedad privada siempre que el uso que se haga de ella no sea perjudicial al interes colectivo. ', 0, 'J', 0, 0, '', '', true);
+                if( $dataSource->getParameter('id_tipo_tramite') == 20 && $dataSource->getParameter('aprobacion') == 'si'){
+                    $pdf->MultiCell(180, $h = $hMedium, 'De conformidad al Art. 24 Constitución Politica del Estado Plurinacional, art. 24, Toda persona tiene derecho a la petición, de forma individual o colectiva, oral o escrita. Además, garantiza el derecho a recibir una respuesta formal y pronta sin más requisito que la identificación del peticionario, asi tambien menciona en su art.56 inc. l.- Toda persona tiene derecho a la propiedad privada individual o colectiva, siempre que esta cumpla una función social. ll. Se garantiza la propiedad privada siempre que el uso que se haga de ella no sea perjudicial al interes colectivo.', 0, 'J', 0, 0, '', '', true);
                     $pdf->Ln(28);
-                    $pdf->MultiCell(180, $h = $hMedium, 'Que, en virtud a la Ley 2341 de procedimiento Administrativo, en inc. k) del art. 4 establece que los procedimientos administrativos, deben responder a los principios de economia, simplicidad y celeridad, evitando la realizacion de tramites, formalismos o diligencias innecesarias.', 0, 'J', 0, 0, '', '', true);
-                    $pdf->Ln(15);
-                    $pdf->MultiCell(180, $h = $hMedium, 'Que de acuerdo a la resolución Municipal Bi-Secretarial N° 1/2020 de fecha 11 de diciembre de 2020 emitida por Secretaria Municipal Técnica del Gobierno Autónomo Municipal de Colcapirhua, los contribuyentes deben cumplir con los procedimientos y requisitos para los trámites administrativos y técnicos de la Dirección de Urbanismo y Catastro', 0, 'J', 0, 0, '', '', true);
-                    $pdf->Ln(30);
+                    $pdf->MultiCell(180, $h = $hMedium, 'Que, en virtud a la Ley N° 2341 de procedimiento Administrativo, en inc. k) del art. 4 establece que los procedimientos administrativos, deben responder a los principios de economia, simplicidad y celeridad, evitando la realizacion de tramites, formalismos o diligencias innecesarias.', 0, 'J', 0, 0, '', '', true);
+                    $pdf->Ln(28);
+                    $pdf->MultiCell(180, $h = $hMedium, 'Que de acuerdo a la Resolución Municipal Bi-Secretarial N° 1/2020 de fecha 11 de diciembre de 2020 emitida por Secretaria Municipal Técnica del Gobierno Autónomo Municipal de Colcapirhua, los contribuyentes deben cumplir con los procedimientos y requisitos para los tramites administrativos y técnicos de la Dirección de urbanismo y Catastro.', 0, 'J', 0, 0, '', '', true);
+                    $pdf->Ln(28);
+                    //$pdf->addPage();
                     $pdf->AddPage();
+                    $pdf->Ln(2);
+                    $pdf->MultiCell(180, $h = $hMedium, 'Que, en virtud al Decreto Supremo N° 5056 de fecha 22 de noviembre de 2023; decreta en su Articulo Unico que: A fin de efectivizar los mecanismos de resguardo de las áreas productivas para garantizar la seguridad alimentaria con soberania, se modifica el parrafo l del Articulo 3 del Decreto Supremo N° 1809 de fecha 27 de noviembre de 2013 con el siguiente texto; "l.- Las áreas productivas agropecuarias urbanas (A.P.A.U.) no podrán ser cambio de uso y de suelo, ni urbanizables en un plazo de (15) años a partir de la publicación del ´presente Decreto Supremo".', 0, 'J', 0, 0, '', '', true);
+                    $pdf->Ln(20);
+                
                     $pdf->Ln(8);
                     $pdf->SetFont('', 'B');
                     $pdf->Cell($w = 19, $h = $hMedium, $txt = 'CONCLUSIONES y RECOMENDACION.- ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
                     $pdf->Ln(8);
                     $pdf->SetFont('', 'N');
-                    $pdf->MultiCell(180, $h = $hMedium, 'Se concluye que el (los):', 0, 'L', 0, 0, '', '', true);
+                    $pdf->MultiCell(180, $h = $hMedium, 'Se concluye que el o los Sr.: ', 0, 'L', 0, 0, '', '', true);
                     $pdf->Ln(5);
                     foreach ($dataSource->getDataSet() as $row) {
                         $tipo_persona = $row['tipo_persona'];
@@ -484,63 +497,99 @@ Class RInformeLegal extends Report {
                         };                 
                     };
                     $pdf->SetFont('', 'N');
-                    $pdf->MultiCell(180, $h = $hMedium, 'legitimo(s) propietario de un predio con una extensión superficial de '.$dataSource->getParameter('superficie').' m2.; debidamente registrado en oficinas de Derechos Reales; Conforme Testimonio N° '.$dataSource->getParameter('nro_testimonio').' de fecha '.$dataSource->getParameter('fecha_testimonio').', otorgado por la Notaria de Fe Pública N° '.$dataSource->getParameter('nro_notario').', '.$dataSource->getParameter('nombre_notario').', (Escritura Pública de transferencia de un lote de terreno), dando cumplimientoa los que se establece el Decreto Supremo N° 5056 de fecha 22 de noviembre de 2023; decreta en su Artículo Único que: A fin de efectivizar los mecanismos de resguardo de las areas productivas para garantizar la seguridad alimentaria con soberania, se modifica el párrafo I del Artículo 3 del Decreto Supremo N° 1809 de fecha 27 de noviembre de 2013 con el siguiente texto: ', 0, 'J', 0, 0, '', '', true);
-                    $pdf->Ln(30);        
-                    $pdf->SetFont('', 'B');
-                    $pdf->MultiCell(180, $h = $hMedium, '"I.- Las áreas productivas agropecuarias urbanas (A.P.A.U.) no podrán ser cambio de uso y de suelo. ni urbanizables en un plazo de (15) años a partir de la publicación del presente Decreto Supremo";', 0, 'J', 0, 0, '', '', true);
-                    $pdf->Ln(10);        
-                    $pdf->SetFont('', 'N');
-                    $pdf->MultiCell(180, $h = $hMedium, 'por lo que se recomienda la prosecución del expediente administrativo, faltando la aprobación de la parte técnica del plano solicitado a ser aprobado.', 0, 'J', 0, 0, '', '', true);
-                    $pdf->Ln(10);        
-                    $pdf->SetFont('', 'B');
-                    $pdf->MultiCell(180, $h = $hMedium, '         El presente informe Legal no define el Derecho Propietario, Si existiera doble titularidad de derecho propietario será quien alegue ser probada por la via llamada por ley, el mismo será de entera y total responsabilidad del interesado y se aplicara según Normativa Vigente. Los Planos a ser aprobados, no contravienen a las normas legales en vigencia y cumple con todos los requisitos, faltando que la parte técnica remita los informes técnicos de topografía y Normas urbanas y/o presenten observaciones al trámite a ser aprobado.', 0, 'J', 0, 0, '', '', true);
-                    $pdf->Ln(20);        
-                    $pdf->Ln(8);
-                    
-                };  */
-                $tramites_id = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19];
-                if (in_array($dataSource->getParameter('id_tipo_tramite'),$tramites_id ) && $dataSource->getParameter('aprobacion') == 'si'){
+                    $pdf->MultiCell(180, $h = $hMedium, ' es legitimo propietario de un predio con una extensión superficial de '.$dataSource->getParameter('superficie').' m2; debidamente registrado en oficinas de Derechos Reales; Conforme Testimonio N° '.$dataSource->getParameter('nro_testimonio').' de fecha '.$dataSource->getParameter('fecha_testimonio').', otorgsdo por la Notaria de Fe Publica N°'.$dataSource->getParameter('nro_notario').', '.$dataSource->getParameter('nombre_notario').'. (Escritura Pública de transferencia de un lote de terreno), dando cumplimiento a lo que se establece el Decreto SupremoN° 5056 de fecha 22 de noviembre de 2023; decreta en su Articulo Unico que ; A fin de efectivizar los mecanismos de resguardo de las áreas productivas para garantizar la sesguridad alimentaria con soberanía, se modifica el parrafo l del Artículo 3 del Decreto Supremo N° 1809 de fecha 27 de noviembre de 2013 con el siguiente texto: "l.- Las áreas productivas agropecuarias urbanas (A.P.A.U.) no podrán ser cambio de uso y de suelo, ni urbanizables en un plazo de (15) años a partir de la publicación del ´presente Decreto Supremo"; por lo que se recomienda la prosecución del expediente administrativo, faltando la aprobación de la parte técnica del plano solicitado a ser aprobado.', 0, 'J', 0, 0, '', '', true);
+                    $pdf->Ln(45);        
+                    $pdf->MultiCell(180, $h = $hMedium, '   El presente Informe Legal no define el Derecho Propietario, Si existiera doble titularidad de derecho propietario será quien alegue ser probada por la vía llamada por ley, el mismo será de entera y total responsabilidad del interesado y se aplicara según Normativa Vigente. Los planos a ser aprobados, no contravienen a las normas legales en vigencia y cumple con todos los requisitos, faltando que la parte técnica remita los informes técnicos de topografía y Normas Urbanas y/o presentenobservaciones al trámite a ser aprobado.', 0, 'J', 0, 0, '', '', true);
+                    $pdf->Ln(40);        
+
+                } else{
+                    /*if (  $dataSource->getParameter('id_tipo_tramite') == 20 && $dataSource->getParameter('aprobacion') == 'si'){
+                            
+                        $pdf->MultiCell(180, $h = $hMedium, 'De conformidad al Art. 24 Constitución Politica del Estado Plurinacional, art 24, Toda persona tiene derecho a la Petición de manera individual o colectiva, sea oral o escrita, y a la obtención de respuesta formal y pronta. Para el ejercicio de este derecho no exigirá mas requisito que la identificación del peticionante, así tembién menciona en su art. 56 inc I.- Toda persona tiene derecho a la pro´piedad privada individual o colectiva, siempre que esta cumpla una función social. II. Se garantiza la propiedad privada siempre que el uso que se haga de ella no sea perjudicial al interes colectivo. ', 0, 'J', 0, 0, '', '', true);
+                        $pdf->Ln(28);
+                        $pdf->MultiCell(180, $h = $hMedium, 'Que, en virtud a la Ley 2341 de procedimiento Administrativo, en inc. k) del art. 4 establece que los procedimientos administrativos, deben responder a los principios de economia, simplicidad y celeridad, evitando la realizacion de tramites, formalismos o diligencias innecesarias.', 0, 'J', 0, 0, '', '', true);
+                        $pdf->Ln(15);
+                        $pdf->MultiCell(180, $h = $hMedium, 'Que de acuerdo a la resolución Municipal Bi-Secretarial N° 1/2020 de fecha 11 de diciembre de 2020 emitida por Secretaria Municipal Técnica del Gobierno Autónomo Municipal de Colcapirhua, los contribuyentes deben cumplir con los procedimientos y requisitos para los trámites administrativos y técnicos de la Dirección de Urbanismo y Catastro', 0, 'J', 0, 0, '', '', true);
+                        $pdf->Ln(30);
+                        $pdf->AddPage();
+                        $pdf->Ln(8);
+                        $pdf->SetFont('', 'B');
+                        $pdf->Cell($w = 19, $h = $hMedium, $txt = 'CONCLUSIONES y RECOMENDACION.- ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
+                        $pdf->Ln(8);
+                        $pdf->SetFont('', 'N');
+                        $pdf->MultiCell(180, $h = $hMedium, 'Se concluye que el (los):', 0, 'L', 0, 0, '', '', true);
+                        $pdf->Ln(5);
+                        foreach ($dataSource->getDataSet() as $row) {
+                            $tipo_persona = $row['tipo_persona'];
+                            //var_dump("tipo: ",$tipo_persona); 
+                            if ( $tipo_persona == "propietario"){
+                                $pdf->SetFont('', 'B');
+                                $pdf->Cell($w = 70, $h = $hMedium, $txt = $row['nombre_completo1'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+                                $pdf->SetFont('', 'N');
+                                $pdf->Cell($w = 18, $h = $hMedium, $txt = 'con C.I. N°: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
+                                $pdf->SetFont('', 'B');
+                                $pdf->Cell($w = 12, $h = $hMedium, $txt = $row['ci'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+                                $pdf->Cell($w = 7, $h = $hMedium, $txt = '  ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   	
+                                $pdf->Cell($w = 5, $h = $hMedium, $txt = $row['expedicion'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+                                $pdf->Ln();
+                            };                 
+                        };
+                        $pdf->SetFont('', 'N');
+                        $pdf->MultiCell(180, $h = $hMedium, 'legitimo(s) propietario de un predio con una extensión superficial de '.$dataSource->getParameter('superficie').' m2.; debidamente registrado en oficinas de Derechos Reales; Conforme Testimonio N° '.$dataSource->getParameter('nro_testimonio').' de fecha '.$dataSource->getParameter('fecha_testimonio').', otorgado por la Notaria de Fe Pública N° '.$dataSource->getParameter('nro_notario').', '.$dataSource->getParameter('nombre_notario').', (Escritura Pública de transferencia de un lote de terreno), dando cumplimientoa los que se establece el Decreto Supremo N° 5056 de fecha 22 de noviembre de 2023; decreta en su Artículo Único que: A fin de efectivizar los mecanismos de resguardo de las areas productivas para garantizar la seguridad alimentaria con soberania, se modifica el párrafo I del Artículo 3 del Decreto Supremo N° 1809 de fecha 27 de noviembre de 2013 con el siguiente texto: ', 0, 'J', 0, 0, '', '', true);
+                        $pdf->Ln(30);        
+                        $pdf->SetFont('', 'B');
+                        $pdf->MultiCell(180, $h = $hMedium, '"I.- Las áreas productivas agropecuarias urbanas (A.P.A.U.) no podrán ser cambio de uso y de suelo. ni urbanizables en un plazo de (15) años a partir de la publicación del presente Decreto Supremo";', 0, 'J', 0, 0, '', '', true);
+                        $pdf->Ln(10);        
+                        $pdf->SetFont('', 'N');
+                        $pdf->MultiCell(180, $h = $hMedium, 'por lo que se recomienda la prosecución del expediente administrativo, faltando la aprobación de la parte técnica del plano solicitado a ser aprobado.', 0, 'J', 0, 0, '', '', true);
+                        $pdf->Ln(10);        
+                        $pdf->SetFont('', 'B');
+                        $pdf->MultiCell(180, $h = $hMedium, '         El presente informe Legal no define el Derecho Propietario, Si existiera doble titularidad de derecho propietario será quien alegue ser probada por la via llamada por ley, el mismo será de entera y total responsabilidad del interesado y se aplicara según Normativa Vigente. Los Planos a ser aprobados, no contravienen a las normas legales en vigencia y cumple con todos los requisitos, faltando que la parte técnica remita los informes técnicos de topografía y Normas urbanas y/o presenten observaciones al trámite a ser aprobado.', 0, 'J', 0, 0, '', '', true);
+                        $pdf->Ln(20);        
+                        $pdf->Ln(8);
                         
-                    $pdf->MultiCell(180, $h = $hMedium, 'De conformidad al Art. 24 Constitución Politica del Estado Plurinacional. Toda persona tiene derecho a la Petición de manera individual o colectiva, sea oral o escrita, y a la obtención de respuesta formal y pronta. Para el ejercicio de este derecho no exigirá mas requisito que la identificación del peticionante, así tembién menciona en su art. 56 inc I.- Toda persona tiene derecho a la pro´piedad privada individual o colectiva, siempre que esta cumpla una función social. II. Se garantiza la propiedad privada siempre que el uso que se haga de ella no sea perjudicial al interes colectivo. ', 0, 'J', 0, 0, '', '', true);
-                    $pdf->Ln(28);
-                    $pdf->MultiCell(180, $h = $hMedium, 'Que, la Ley N° 2341 de procedimiento Administrativo, en inc. k) del art. 4 establece que los procedimientos administrativos, deben responder a los principios de economia, simplicidad y celeridad, evitando la realizacion de tramites, formalismos o diligencias innecesarias.', 0, 'J', 0, 0, '', '', true);
-                    $pdf->Ln(15);
-                    $pdf->MultiCell(180, $h = $hMedium, 'Que de acuerdo a la resolución Municipal Bi-Secretarial N° 1/2020 de fecha 11 de diciembre de 2020 emitida por Secretaria Municipal Técnica del Gobierno Autónomo Municipal de Colcapirhua, los contribuyentes deben cumplir con los procedimientos y requisitos para los trámites administrativos y técnicos de la Dirección de Urbanismo y Catastro', 0, 'J', 0, 0, '', '', true);
-                    $pdf->Ln(30);
-                    $pdf->AddPage();
-                    $pdf->Ln(8);
-                    $pdf->SetFont('', 'B');
-                    $pdf->Cell($w = 19, $h = $hMedium, $txt = 'CONCLUSIONES y RECOMENDACION.- ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-                    $pdf->Ln(8);
-                    $pdf->SetFont('', 'N');
-                    $pdf->MultiCell(180, $h = $hMedium, 'Realizado el informe legal, conforme los antecedentes lineas arriba, quien es (son) propietario(s):', 0, 'L', 0, 0, '', '', true);
-                    $pdf->Ln(5);
-                    foreach ($dataSource->getDataSet() as $row) {
-                        $tipo_persona = $row['tipo_persona'];
-                        //var_dump("tipo: ",$tipo_persona); 
-                        if ( $tipo_persona == "propietario"){
-                            $pdf->SetFont('', 'B');
-                            $pdf->Cell($w = 70, $h = $hMedium, $txt = $row['nombre_completo1'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-                            $pdf->SetFont('', 'N');
-                            $pdf->Cell($w = 18, $h = $hMedium, $txt = 'con C.I. N°: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-                            $pdf->SetFont('', 'B');
-                            $pdf->Cell($w = 12, $h = $hMedium, $txt = $row['ci'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-                            $pdf->Cell($w = 7, $h = $hMedium, $txt = '  ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   	
-                            $pdf->Cell($w = 5, $h = $hMedium, $txt = $row['expedicion'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-                            $pdf->Ln();
-                        };                 
-                    };
-                    $pdf->SetFont('', 'N');
-                    $pdf->MultiCell(180, $h = $hMedium, 'conforme la escritura Privada de fecha '. $dataSource->getParameter('fecha_testimonio').', otorgado por la Notaria de Fe Pública '.$dataSource->getParameter('nombre_notario').'cumple con los requisitos de la R.M. Bi-Secretarial N° 01/2020 de 11/12/2020 de la resolución Municipal Bi-Secretarial y con lo establecido en el Decreto Municipal 007/2016 de fecha 16/09/2016; por lo que se recomienda la prosecución del tramite administrativo, faltando la aprobacion de la parte técnica topográfica y normas urbanas del plano a ser aprobado. El presente informe Legal no define derecho propietario, Si existiera doble titularidad de derecho propietario será quien alegue deberá demostrarla mediante la Via judicial, siendo de responsabilidaddel interesado y se aplicará según normativa vigente.', 0, 'J', 0, 0, '', '', true);
-                    $pdf->Ln(30);        
-                           
-                    $pdf->Ln(8);
-                    
-                };  
-            };
-            
-            
-           
+                    };  */
+                    $tramites_id = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19];
+                    if (in_array($dataSource->getParameter('id_tipo_tramite'),$tramites_id ) && $dataSource->getParameter('aprobacion') == 'si') {
+                            
+                        $pdf->MultiCell(180, $h = $hMedium, 'De conformidad al Art. 24 Constitución Politica del Estado Plurinacional. Toda persona tiene derecho a la Petición de manera individual o colectiva, sea oral o escrita, y a la obtención de respuesta formal y pronta. Para el ejercicio de este derecho no exigirá mas requisito que la identificación del peticionante, así tembién menciona en su art. 56 inc I.- Toda persona tiene derecho a la pro´piedad privada individual o colectiva, siempre que esta cumpla una función social. II. Se garantiza la propiedad privada siempre que el uso que se haga de ella no sea perjudicial al interes colectivo. ', 0, 'J', 0, 0, '', '', true);
+                        $pdf->Ln(28);
+                        $pdf->MultiCell(180, $h = $hMedium, 'Que, la Ley N° 2341 de procedimiento Administrativo, en inc. k) del art. 4 establece que los procedimientos administrativos, deben responder a los principios de economia, simplicidad y celeridad, evitando la realizacion de tramites, formalismos o diligencias innecesarias.', 0, 'J', 0, 0, '', '', true);
+                        $pdf->Ln(15);
+                        $pdf->MultiCell(180, $h = $hMedium, 'Que de acuerdo a la resolución Municipal Bi-Secretarial N° 1/2020 de fecha 11 de diciembre de 2020 emitida por Secretaria Municipal Técnica del Gobierno Autónomo Municipal de Colcapirhua, los contribuyentes deben cumplir con los procedimientos y requisitos para los trámites administrativos y técnicos de la Dirección de Urbanismo y Catastro', 0, 'J', 0, 0, '', '', true);
+                        $pdf->Ln(30);
+                        $pdf->AddPage();
+                        $pdf->Ln(8);
+                        $pdf->SetFont('', 'B');
+                        $pdf->Cell($w = 19, $h = $hMedium, $txt = 'CONCLUSIONES y RECOMENDACION.- ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
+                        $pdf->Ln(8);
+                        $pdf->SetFont('', 'N');
+                        $pdf->MultiCell(180, $h = $hMedium, 'Realizado el informe legal, conforme los antecedentes lineas arriba, quien es (son) propietario(s):', 0, 'L', 0, 0, '', '', true);
+                        $pdf->Ln(5);
+                        foreach ($dataSource->getDataSet() as $row) {
+                            $tipo_persona = $row['tipo_persona'];
+                            //var_dump("tipo: ",$tipo_persona); 
+                            if ( $tipo_persona == "propietario"){
+                                $pdf->SetFont('', 'B');
+                                $pdf->Cell($w = 70, $h = $hMedium, $txt = $row['nombre_completo1'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+                                $pdf->SetFont('', 'N');
+                                $pdf->Cell($w = 18, $h = $hMedium, $txt = 'con C.I. N°: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
+                                $pdf->SetFont('', 'B');
+                                $pdf->Cell($w = 12, $h = $hMedium, $txt = $row['ci'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+                                $pdf->Cell($w = 7, $h = $hMedium, $txt = '  ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   	
+                                $pdf->Cell($w = 5, $h = $hMedium, $txt = $row['expedicion'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+                                $pdf->Ln();
+                            };                 
+                        };
+                        $pdf->SetFont('', 'N');
+                        $pdf->MultiCell(180, $h = $hMedium, 'conforme la escritura Privada de fecha '. $dataSource->getParameter('fecha_testimonio').', otorgado por la Notaria de Fe Pública '.$dataSource->getParameter('nombre_notario').'cumple con los requisitos de la R.M. Bi-Secretarial N° 01/2020 de 11/12/2020 de la resolución Municipal Bi-Secretarial y con lo establecido en el Decreto Municipal 007/2016 de fecha 16/09/2016; por lo que se recomienda la prosecución del tramite administrativo, faltando la aprobacion de la parte técnica topográfica y normas urbanas del plano a ser aprobado. El presente informe Legal no define derecho propietario, Si existiera doble titularidad de derecho propietario será quien alegue deberá demostrarla mediante la Via judicial, siendo de responsabilidaddel interesado y se aplicará según normativa vigente.', 0, 'J', 0, 0, '', '', true);
+                        $pdf->Ln(30);        
+                            
+                        $pdf->Ln(8);
+                        
+                    };  
+                }
+            }
             
             if($dataSource->getParameter('aprobacion') != 'no' &&  ($dataSource->getParameter('tipo_rechazo') != "FRU" && $dataSource->getParameter('tipo_rechazo') != "APAU" && $dataSource->getParameter('tipo_rechazo') != "Doble" && $dataSource->getParameter('tipo_rechazo') != "Innova")){
                 $pdf->SetFont('', 'N');

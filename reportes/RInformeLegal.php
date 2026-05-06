@@ -272,11 +272,14 @@ class RInformeLegal extends Report
                  * */
                 $pdf->verificarEspacio(50);
                 $pdf->writeHTMLCell(180, 0, '', '', 'Que, la Ley N° 2341 de Procedimiento Administrativo, en el inc. K) del Art. 4 establece que los procedimientos administrativos, deben responder a los principios de economía, simplicidad y celeridad, evitando la realización de trámites, formalismos o diligencias innecesarias.', 0, 1, 0, true, 'J', true);
-                $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+                $pdf->SetY($pdf->GetY() + 3);
+                //$pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
                 $pdf->writeHTMLCell(180, 0, '', '', 'Que, de acuerdo a la Resolución Municipal Bi-Secretarial N° 1/2020 de fecha 11 de diciembre de 2020 emitida por Secretaria Municipal Técnica del Gobierno Autónomo Municipal de Colcapirhua, los contribuyentes deben cumplir con los procedimientos y requisitos para los trámites administrativos y técnicos de la Dirección de Urbanismo y Catastro.', 0, 1, 0, true, 'J', true);
-                $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+                //$pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+                $pdf->SetY($pdf->GetY() + 3);
                 $pdf->writeHTMLCell(180, 0, '', '', 'Que, según el límite de homologación 100/2018 de fecha 12 de abril de 2018, emitido por el ministerio de la presidencia, el predio se encuentra fuera del radio urbano (FRU) del municipio de Colcapirhua.', 0, 1, 0, true, 'J', true);
-                $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+                //$pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+                $pdf->SetY($pdf->GetY() + 3);
                 if ($dataSource->getParameter('observacion') != '') {
                     $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('observacion'), 0, 1, 0, true, 'J', true);
                     $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
@@ -287,11 +290,14 @@ class RInformeLegal extends Report
                 //$pdf->AddPage();
                 $pdf->Ln(5); // Espacio extra antes de la sección de conclusiones
                 $pdf->writeHTMLCell(180, 0, '', '', '<br><br><b>CONCLUSIONES Y RECOMENDACION.-</b>', 0, 1, 0, true, 'J', true);
-                $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+                //$pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+                $pdf->SetY($pdf->GetY() + 3);
                 $pdf->writeHTMLCell(180, 0, '', '', 'Realizado el Informe legal, conforme los antecedentes líneas arriba, quien es propietario <b>' . $propName . '</b>, en la cual teniendo un ' . $dataSource->getParameter('conclusion') . ', se puede observar que se encuentra la Ubicado el predio Fuera del Área Urbano (FRU), la Resolución Municipal BI-Secretarial N° 01/2020 de 11/12/2020 de la resolución Municipal BI-Secretarial y con lo establecido en el Decreto Municipal 007/2016 de fecha 16/09/2016; por lo que NO corresponde la prosecución del trámite, para lo cual se <b>RECOMIENDA</b> efectuar la Resolución de Rechazo del trámite previo análisis, bajo el principio de buena fe que solicito el propietario.', 0, 1, 0, true, 'J', true);
-                $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+                //$pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+                $pdf->SetY($pdf->GetY() + 3);
                 $pdf->writeHTMLCell(180, 0, '', '', 'Es cuanto informo para fines consiguientes.', 0, 1, 0, true, 'J', true);
-                $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+                //$pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+                $pdf->SetY($pdf->GetY() + 3);
             } elseif ($dataSource->getParameter('tipo_rechazo') == "Innova") {
                 /** 
                  * Innova
@@ -551,18 +557,22 @@ class RInformeLegal extends Report
                     //$pdf->Ln(28);
                     $pdf->verificarEspacio(50);
                     $pdf->MultiCell(180, 0, 'Que, la Ley N° 2341 de procedimiento Administrativo, en inc. k) del art. 4 establece que los procedimientos administrativos, deben responder a los principios de economia, simplicidad y celeridad, evitando la realizacion de tramites, formalismos o diligencias innecesarias.', 0, 'J', 0, 0, '', '', true);
-                    $pdf->Ln(4); // Espacio pequeño y constante entre párrafos
+                    //$pdf->Ln(4); // Espacio pequeño y constante entre párrafos
+                    $pdf->SetY($pdf->GetY() + 3);
                     $pdf->MultiCell(180, 0, 'Que de acuerdo a la resolución Municipal Bi-Secretarial N° 1/2020 de fecha 11 de diciembre de 2020 emitida por Secretaria Municipal Técnica del Gobierno Autónomo Municipal de Colcapirhua, los contribuyentes deben cumplir con los procedimientos y requisitos para los trámites administrativos y técnicos de la Dirección de Urbanismo y Catastro', 0, 'J', 0, 0, '', '', true);
-                    $pdf->Ln(8);
+                    //$pdf->Ln(8);
+                    $pdf->SetY($pdf->GetY() + 3);
                     // --- Gestión Inteligente de Salto de Página ---
                     // Si quedan menos de 50mm, el sistema saltará de hoja solo (respetando Header/Footer)
                     //$pdf->checkPageBreak(50);
                     $pdf->SetFont('', 'B');
                     $pdf->Cell(180, 0, $txt = 'CONCLUSIONES y RECOMENDACION.- ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
                     $pdf->SetFont('', 'N');
-                    $pdf->Ln(2);
+                    //$pdf->Ln(2);
+                    $pdf->SetY($pdf->GetY() + 3);
                     $pdf->MultiCell(180, 0, 'Realizado el informe legal, conforme los antecedentes lineas arriba, quien es (son) propietario(s):', 0, 'L', 0, 0, '', '', true);
-                    $pdf->Ln(2);
+                    // $pdf->Ln(2);
+                    $pdf->SetY($pdf->GetY() + 3);
                     foreach ($dataSource->getDataSet() as $row) {
                         $tipo_persona = $row['tipo_persona'];
                         //var_dump("tipo: ",$tipo_persona); 

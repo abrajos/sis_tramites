@@ -294,12 +294,15 @@ class RInformeLegal extends Report
                 /** 
                  * FRU 
                  * */
-
+                $pdf->verificarEspacio(60);
                 $pdf->writeHTMLCell(180, 0, '', '', 'Que, la Ley N° 2341 de Procedimiento Administrativo, en el inc. K) del Art. 4 establece que los procedimientos administrativos, deben responder a los principios de economía, simplicidad y celeridad, evitando la realización de trámites, formalismos o diligencias innecesarias.', 0, 1, 0, true, 'J', true);
+                $pdf->verificarEspacio(60);
                 $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
                 $pdf->writeHTMLCell(180, 0, '', '', 'Que, de acuerdo a la Resolución Municipal Bi-Secretarial N° 1/2020 de fecha 11 de diciembre de 2020 emitida por Secretaria Municipal Técnica del Gobierno Autónomo Municipal de Colcapirhua, los contribuyentes deben cumplir con los procedimientos y requisitos para los trámites administrativos y técnicos de la Dirección de Urbanismo y Catastro.', 0, 1, 0, true, 'J', true);
+                $pdf->verificarEspacio(60);
                 $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
                 $pdf->writeHTMLCell(180, 0, '', '', 'Que, según el límite de homologación 100/2018 de fecha 12 de abril de 2018, emitido por el ministerio de la presidencia, el predio se encuentra fuera del radio urbano (FRU) del municipio de Colcapirhua.', 0, 1, 0, true, 'J', true);
+                $pdf->verificarEspacio(60);
                 $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
                 if ($dataSource->getParameter('observacion') != '') {
                     $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('observacion'), 0, 1, 0, true, 'J', true);
@@ -401,10 +404,12 @@ class RInformeLegal extends Report
                 /** 
                  * Doble
                  * */
-
+                $pdf->verificarEspacio(60);
                 $pdf->writeHTMLCell(180, 0, '', '', '<b>Que, De acuerdo al Art. 86 de la Ley 2341 (Conocimiento del T1ramite).-<b> "Los administrados que intervengan en un procedimiento, sus representantes o abogados, tendrá derecho a conocer en cualquier momento el estado del trámite ya tomar vista de las actuaciones".', 0, 1, 0, true, 'J', true);
+                $pdf->verificarEspacio(60);
                 $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
                 $pdf->writeHTMLCell(180, 0, '', '', '<b>Que, de acuerdo a la Resolución Municipal BI - Secretarial N° 1/2020 de fecha 11 de diciembre de 2020<b> emitida por Secretaria Municipal Técnica de Gobierno Autónomo Municipal de Colcapirhua, los contribuyentes deben cumplir con los procedimientos y requisitos para los trámites administrativos y técnicos de la Dirección de Urbanismo y Catastro.', 0, 1, 0, true, 'J', true);
+                $pdf->verificarEspacio(60);
                 $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
                 if ($dataSource->getParameter('observacion') != '') {
                     $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('observacion'), 0, 1, 0, true, 'J', true);
@@ -496,10 +501,10 @@ class RInformeLegal extends Report
             // Y puse el alto en 0 para que sea automático
             $pdf->MultiCell(180, 0, 'De conformidad al Art. 24 Constitución Politica del Estado Plurinacional, art. 24, Toda persona tiene derecho a la petición, de forma individual o colectiva, oral o escrita. Además, garantiza el derecho a recibir una respuesta formal y pronta sin más requisito que la identificación del peticionario, asi tambien menciona en su art.56 inc. l.- Toda persona tiene derecho a la propiedad privada individual o colectiva, siempre que esta cumpla una función social. ll. Se garantiza la propiedad privada siempre que el uso que se haga de ella no sea perjudicial al interes colectivo.', 0, 'J', 0, 1, '', '', true);
             $pdf->Ln(4); // Un pequeño espacio de separación entre párrafos
-
+            $pdf->verificarEspacio(60);
             $pdf->MultiCell(180, 0, 'Que, en virtud a la Ley N° 2341 de procedimiento Administrativo, en inc. k) del art. 4 establece que los procedimientos administrativos, deben responder a los principios de economia, simplicidad y celeridad, evitando la realizacion de tramites, formalismos o diligencias innecesarias.', 0, 'J', 0, 1, '', '', true);
             $pdf->Ln(4);
-
+            $pdf->verificarEspacio(60);
             $pdf->MultiCell(180, 0, 'Que de acuerdo a la Resolución Municipal Bi-Secretarial N° 1/2020 de fecha 11 de diciembre de 2020 emitida por Secretaria Municipal Técnica del Gobierno Autónomo Municipal de Colcapirhua, los contribuyentes deben cumplir con los procedimientos y requisitos para los tramites administrativos y técnicos de la Dirección de urbanismo y Catastro.', 0, 'J', 0, 1, '', '', true);
             $pdf->verificarEspacio(60);
             // Para las conclusiones, ya usas writeHTMLCell que suele manejar mejor el flujo

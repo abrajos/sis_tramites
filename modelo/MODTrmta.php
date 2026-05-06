@@ -34,6 +34,8 @@ class MODTrmta extends MODbase{
 		$this->captura('fecha_mod','timestamp');
 		$this->captura('usr_reg','varchar');
 		$this->captura('usr_mod','varchar');
+		$this->captura('tipo','varchar');
+		$this->captura('complemento','varchar');
 		
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -55,6 +57,8 @@ class MODTrmta extends MODbase{
 		$this->setParametro('tipo_aprobacion','tipo_aprobacion','varchar');
 		$this->setParametro('estado_reg','estado_reg','varchar');
 		$this->setParametro('nro_rmta','nro_rmta','varchar');
+		$this->setParametro('tipo','tipo','varchar');
+		$this->setParametro('complemento','complemento','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -77,6 +81,8 @@ class MODTrmta extends MODbase{
 		$this->setParametro('tipo_aprobacion','tipo_aprobacion','varchar');
 		$this->setParametro('estado_reg','estado_reg','varchar');
 		$this->setParametro('nro_rmta','nro_rmta','varchar');
+		$this->setParametro('tipo','tipo','varchar');
+		$this->setParametro('complemento','complemento','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();

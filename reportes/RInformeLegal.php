@@ -281,7 +281,7 @@ class RInformeLegal extends Report
                     $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('observacion'), 0, 1, 0, true, 'J', true);
                     $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
                 }
-
+                $pdf->verificarEspacio(60);
                 //$pdf->checkPageBreak(60);
                 //$pdf->verificarEspacio(60);
                 //$pdf->AddPage();
@@ -307,6 +307,7 @@ class RInformeLegal extends Report
                 }
                 //$pdf->checkPageBreak(60);
                 //$pdf->verificarEspacio(60);
+                $pdf->verificarEspacio(60);
                 $pdf->Ln(5); // Espacio extra antes de la sección de conclusiones
                 $pdf->writeHTMLCell(180, 0, '', '', '<b>CONCLUSIONES Y RECOMENDACION.-</b>', 0, 1, 0, true, 'J', true);
                 $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
@@ -351,6 +352,7 @@ class RInformeLegal extends Report
                 }
                 //$pdf->checkPageBreak(60);
                 //$pdf->verificarEspacio(60);
+                $pdf->verificarEspacio(60);
                 $pdf->Ln(5); // Espacio extra antes de la sección de conclusiones
                 $pdf->writeHTMLCell(180, 0, '', '', '<b>CONCLUSIONES Y RECOMENDACION.-</b>', 0, 1, 0, true, 'J', true);
                 $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!

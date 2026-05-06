@@ -76,6 +76,7 @@ class CustomReport extends TCPDF {
 Class RInformeArqui extends Report {
 
     function write($fileName) {
+        $propietariosList = "";
         $pdf = new CustomReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
         $pdf->setDataSource($this->getDataSource());
         $dataSource = $this->getDataSource();
@@ -113,12 +114,6 @@ Class RInformeArqui extends Report {
 
         //var_dump($dataSource); exit;
 		
-        //$pdf->Cell($w = 30, $h = $hGlobal, $txt = '', $border = 0, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-		//$pdf->SetFontSize(12);
-		//if ($dataSource->getParameter('mostrar_costos') != 'no') {
-				
-           
-
 				
 			
 			$pdf->SetFontSize(10);
@@ -157,16 +152,23 @@ Class RInformeArqui extends Report {
             $pdf->SetFont('', 'B');
 	        $pdf->Cell($w = 180, $h = $hMedium, $txt = 'REF:       '.strtoupper($dataSource->getParameter('referencia')), 'B', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
 			$pdf->Ln(8);
-            $pdf->SetFont('', 'B');
-            $pdf->Cell($w = 180, $h = $hMedium, $txt = '     1.   ANTECEDENTES ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-            $pdf->Ln(5);
             $pdf->SetFont('', 'N');
-            $pdf->Cell($w = 63, $h = $hMedium, $txt = 'De acuerdo al memorial dirigido a su autoridad y a documentación presentada a esta Jefatura por: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-            $pdf->Ln(5);
+            $pdf->writeHTMLCell(180, 0, '', '', '<b>     1.   ANTECEDENTES</b>', 0, 1, 0, true, 'J', true);
+            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+            
+            $names = "";
+            $counter = 0;
             foreach ($dataSource->getDataSet() as $row) {
                 $tipo_persona = $row['tipo_persona'];
                 //var_dump("tipo: ",$tipo_persona); 
                 if ( $tipo_persona == "propietario"){
+                    if ($counter == 0) {
+                        $names .= "<b>".$row['nombre_completo1']."</b> con C.I. N° <b>".$row['ci']." ".$row['expedicion']."</b>";
+                    } elseif ($counter > 0 ) {
+                        $names = $names.", <b>".$row['nombre_completo1']."</b> con C.I. N° <b>".$row['ci']." ".$row['expedicion']."</b>";
+                    }
+                    $counter++;
+                    /*
                     $pdf->SetFont('', 'B');
                     $pdf->Cell($w = 70, $h = $hMedium, $txt = $row['nombre_completo1'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
                     $pdf->SetFont('', 'N');
@@ -176,17 +178,35 @@ Class RInformeArqui extends Report {
                     $pdf->Cell($w = 7, $h = $hMedium, $txt = '  ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   	
                     $pdf->Cell($w = 5, $h = $hMedium, $txt = $row['expedicion'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
                     $pdf->Ln();
+                    */
                 };                 
             };
             
-            $pdf->SetFont('', 'N');
-            $pdf->MultiCell(180, $h = $hMedium, 'quien solicita la aprobación de : '.$dataSource->getParameter('nombre_tramite'), 0, 'J', 0, 0, '', '', true);
-            $pdf->Ln(7);
-            
-            $pdf->MultiCell(180, $h = $hMedium, 'Correspondiente al inmueble ubicado en el Municipio de Colcapirhua; Previo: ', 0, 'J', 0, 0, '', '', true);
-            $pdf->Ln(7);
+            //$names
+            //$pdf->writeHTMLCell(180, 0, '', '', '', 0, 1, 0, true, 'J', true);
+            $pdf->writeHTMLCell(180, 0, '', '', 'De acuerdo al memorial dirigido a su autoridad y a documentación presentada a esta Jefatura por: '.$names.' quien solicita la aprobación de : <b>'.$dataSource->getParameter('nombre_tramite').'</b>', 0, 1, 0, true, 'J', true);
+            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+            $pdf->writeHTMLCell(180, 0, '', '', 'Correspondiente al inmueble ubicado en el Municipio de Colcapirhua; <b>Previo</b>: ', 0, 1, 0, true, 'J', true);
+            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+
+            $htmlTable0 = '<table border="1" style="width: 100%; border-collapse: collapse;">
+                                <tr>
+                                    <td style="text-align: right;" width="22%"><b>Inf. Legal N°:</b></td><td style="text-align: left;" width="12%">'.$dataSource->getParameter('inf_leg').'</td>
+                                    <td style="text-align: right;" width="12%"><b>Fecha:</b></td><td width="12%">'.$dataSource->getParameter('fecha_leg').'</td>
+                                    <td style="text-align: right;" width="15%"><b>A cargo de:</b></td><td width="28%">'.$dataSource->getParameter('legal').'</td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align: right;"><b>Inf. Topografico N°:</b></td><td>'.$dataSource->getParameter('inf_top').'</td>
+                                    <td style="text-align: right;"><b>Fecha:</b></td><td>'.$dataSource->getParameter('fecha_top').'</td>
+                                    <td style="text-align: right;"><b>A cargo de:</b></td><td>'.$dataSource->getParameter('topo').'</td>
+                                </tr>
+                            </table>';
+            $pdf->writeHTMLCell(180, 0, '', '', $htmlTable0, 0, 1, 0, true, 'J', true);
+            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+
             $array1 = array(10,11,16);
             $array2 = array(3,4,5,6,7,8,9,12,13,14,15,17,18,19,20,21,22,23);
+
             if ( in_array($dataSource->getParameter('id_tipo_tramite'),$array1 )){
                     $pdf->Cell($w = 70, $h = $hMedium, $txt = 'Inf.Legal N°: '.$dataSource->getParameter('inf_leg'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
                     $pdf->Cell($w = 40, $h = $hMedium, $txt = 'Fecha: '.$dataSource->getParameter('fecha_leg'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
@@ -207,13 +227,30 @@ Class RInformeArqui extends Report {
                 $pdf->Cell($w = 70, $h = $hMedium, $txt = 'A cargo de: '.$dataSource->getParameter('topo'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
                 $pdf->Ln(9);
             }
-            $pdf->MultiCell(180, $h = $hMedium, 'Quien realizó la inscripción respectiva para la verificación de la relación de superficies, limites, rasantes y otros tipos de servicios con la siguiente relación de superficies, bajo el siguiente detalle:  ', 0, 'J', 0, 0, '', '', true);
-            $pdf->Ln(10);
-                       
-            $pdf->SetFont('', 'B');
-            $pdf->Cell($w = 180, $h = $hMedium, $txt = '     2.      UBICACION ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-            $pdf->Ln(1);
 
+            $pdf->writeHTMLCell(180, 0, '', '', 'Quien realizó la inscripción respectiva para la verificación de la relación de superficies, limites, rasantes y otros tipos de servicios con la siguiente relación de superficies, bajo el siguiente detalle: ', 0, 1, 0, true, 'J', true);
+            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+
+            $pdf->writeHTMLCell(180, 0, '', '', '<b>     3.   UBICACIÓN</b>', 0, 1, 0, true, 'J', true);
+            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+            $htmlTable1 = '<table border="1" style="width: 73%; border-collapse: collapse;">
+                            <tr>
+                                <td style="text-align: right;"><b>Zona:</b></td><td>'.$dataSource->getParameter('zona').'</td>
+                                <td style="text-align: right;"><b>Lote:</b></td><td>'.$dataSource->getParameter('lote').'</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right;"><b>Distrito:</b></td><td>'.$dataSource->getParameter('distrito').'</td>
+                                <td style="text-align: right;"><b>Calle:</b></td><td>'.$dataSource->getParameter('calle').'</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right;"><b>Manzana:</b></td><td>'.$dataSource->getParameter('manzana').'</td>
+                                <td style="text-align: right;"><b>Avenida:</b></td><td>'.$dataSource->getParameter('avenida').'</td>
+                            </tr>
+                        </table>';
+            // 110 es la posición X (210mm menos el ancho de la celda y márgenes)
+            $pdf->writeHTMLCell(120, 0, 60, '', $htmlTable1, 0, 1, 0, true, 'R', true);
+            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+            /*
             $pdf->SetFont('', 'N');
             $pdf->Cell($w = 40, $h = $hMedium, $txt = '', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
             $pdf->Cell($w = 40, $h = $hMedium, $txt = 'Zona: '.$dataSource->getParameter('zona'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
@@ -226,12 +263,46 @@ Class RInformeArqui extends Report {
             $pdf->Cell($w = 40, $h = $hMedium, $txt = '', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
             $pdf->Cell($w = 40, $h = $hMedium, $txt = 'Manzana: '.$dataSource->getParameter('manzana'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
             $pdf->Cell($w = 100, $h = $hMedium, $txt = 'Avenida: '.$dataSource->getParameter('avenida'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+             */
 
-            $pdf->Ln();
-                       
+            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+            $pdf->writeHTMLCell(180, 0, '', '', '<b>     2.   RELACIÓN DE SUPERFICIES</b>', 0, 1, 0, true, 'J', true);
+            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+            $htmlTable2 = '<table border="1" cellpadding="4" width="80%" style="margin-left: auto;">
+                            <tr>
+                                <td style="text-align: center;" width="50%"><b>DETALLE</b></td>
+                                <td style="text-align: center;" width="25%"><b>CANT.</b></td>
+                                <td style="text-align: center;" width="25%"><b>UNIDAD</b></td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: left;"><b>SUPERFICIE SEGÚN ESCRITURA</b></td>
+                                <td style="text-align: right;">'.$dataSource->getParameter('super_escritura').'</td>
+                                <td style="text-align: left;">m2</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: left;"><b>SUPERFICIE SEGÚN MENSURA</b></td>
+                                <td style="text-align: right;">'.$dataSource->getParameter('super_mensura').'</td>
+                                <td style="text-align: left;">m2</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: left;"><b>SUPERFICIE TOTAL ÚTIL</b></td>
+                                <td style="text-align: right;">'.$dataSource->getParameter('super_total').'</td>
+                                <td style="text-align: left;">m2</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: left;"><b>LONGITUD RASANTE</b></td>
+                                <td style="text-align: right;">'.$dataSource->getParameter('long_rasante').'</td>
+                                <td style="text-align: left;">m</td>
+                            </tr>
+                        </table>';
+            //$pdf->writeHTMLCell(180, 0, '', '', $htmlTable0, 0, 1, 0, true, 'J', true);
+
+            //$pdf->writeHTMLCell(120, 0, '', 60, $htmlTable2, 0, 1, 0, true, 'R', true);
+            $pdf->writeHTMLCell(160, 0, 40, '', $htmlTable2, 0, 1, 0, true, 'R', true);
+            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+            /*
+            
             $pdf->SetFont('', 'B');
-            $pdf->Cell($w = 180, $h = $hMedium, $txt = '     3.      RELACION DE SUPERFICIES ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-            $pdf->Ln();
             $pdf->Cell($w = 40, $h = $hMedium, $txt = '', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
             $pdf->Cell($w = 50, $h = $hMedium, $txt = 'DETALLE', $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
             $pdf->Cell($w = 30, $h = $hMedium, $txt = 'CANT.', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
@@ -260,10 +331,28 @@ Class RInformeArqui extends Report {
             $pdf->Cell($w = 30, $h = $hMedium, $txt = $dataSource->getParameter('long_rasante'), $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
             $pdf->Cell($w = 40, $h = $hMedium, $txt = ' m', $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
             $pdf->Ln();
+            */
+            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+            $pdf->writeHTMLCell(180, 0, '', '', '<b>     4.   COLINDANCIAS GENERALES</b>', 0, 1, 0, true, 'J', true);
+            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
 
-            $pdf->SetFont('', 'B');
-            $pdf->Cell($w = 180, $h = $hMedium, $txt = '     4.      COLINDANCIAS GENERALES ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-            $pdf->Ln();
+            $htmlTable3 = '<table border="1" style="width: 73%; border-collapse: collapse;">
+                            <tr>
+                                <td style="text-align: right;"><b>NORTE:</b></td><td>'.$dataSource->getParameter('colindante_norte').'</td>
+                                <td style="text-align: right;"><b>SUD:</b></td><td>'.$dataSource->getParameter('colindante_sur').'</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right;"><b>ESTE:</b></td><td>'.$dataSource->getParameter('colindante_este').'</td>
+                                <td style="text-align: right;"><b>OESTE:</b></td><td>'.$dataSource->getParameter('colindante_oeste').'</td>
+                            </tr>
+                        </table>';
+            // 110 es la posición X (210mm menos el ancho de la celda y márgenes)
+            $pdf->writeHTMLCell(120, 0, 60, '', $htmlTable3, 0, 1, 0, true, 'R', true);
+            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+
+
+            /*
             $pdf->SetFont('', 'N');
             //$pdf->Cell($w = 40, $h = $hMedium, $txt = '', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
             $pdf->Cell($w = 180, $h = 6.5, $txt = 'NORTE: '.$dataSource->getParameter('colindante_norte'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
@@ -275,30 +364,23 @@ Class RInformeArqui extends Report {
             $pdf->Ln();
             $pdf->Cell($w = 180, $h = 6.5, $txt = 'OESTE: '.$dataSource->getParameter('colindante_este'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
             $pdf->Ln(7);
-            $pdf->SetFont('', 'B');
-            //$pdf->Cell($w = 180, $h = $hMedium, $txt = ' ACLARACIONES: SUP. S/ESCRITURA: '.$dataSource->getParameter('super_escritura').' m2.', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-            $pdf->MultiCell(180, $h = $hMedium, 'ACLARACIONES: '.$dataSource->getParameter('observacion'), 0, 'J', 0, 0, '', '', true);
-            $pdf->Ln(8);
-            $pdf->MultiCell(180, $h = $hMedium, 'EL PREDIO CUENTA CON '.$dataSource->getParameter('tipo_aprobacion').' CON R.M.T.A. N° '.$dataSource->getParameter('nro_rmta').' DE FECHA '.$dataSource->getParameter('fecha_rmta'), 0, 'J', 0, 0, '', '', true);
-            $pdf->Ln(8);
-            $pdf->SetFont('', 'N');
-            $pdf->MultiCell(180, $h = $hMedium, 'Por tanto: ', 0, 'L', 0, 0, '', '', true);
-            $pdf->Ln();
-            
-            $pdf->MultiCell(180, $h = $hMedium, 'En el  Departamento de  Normas  Urbanas de la Dirección de Urbanismo y Catastro, revisado los informes adjuntos a la carpeta, se efectuó la  verificación  de los requisitos  según reglamentación general de urbanismo y de  subdivisión de  propiedades urbanas, así como el reglamento de edificaciones en actual vigencia, por lo  que  se  procedió  al  llenado  de la Boleta de Liquidación  No. '.$dataSource->getParameter('nro_boleta').'  de aprobación de planos relativos a  la  propiedad citada para la prosecución del trámite administrativo. ', 0, 'J', 0, 0, '', '', true);
-            $pdf->Ln(24);
-            $pdf->SetFont('', 'B');
-            $pdf->MultiCell(180, $h = $hMedium, 'Dando cumplimiento al decreto municipal N° 002 de fecha 18 de marzo de 2016 ', 0, 'L', 0, 0, '', '', true);
-            $pdf->Ln();
-            
-            $pdf->SetFont('', 'N');
-            $pdf->Cell($w = 180, $h = $hMedium, $txt = 'Es cuanto informo de la inspección realizada.', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-            $pdf->Ln(18);
-            $pdf->Cell($w = 180, $h = $hMedium, $txt = $dataSource->getParameter('de'), $border = 0, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-            $pdf->SetFont('', 'B');
-            $pdf->Ln(2);
-            $pdf->Cell($w = 180, $h = $hMedium, $txt = $dataSource->getParameter('cargode'), $border = 0, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-            
+            */
+
+            $pdf->writeHTMLCell(180, 0, '', '', '<b>ACLARACIONES: </b>'.$dataSource->getParameter('observacion'), 0, 1, 0, true, 'J', true);
+            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+            $pdf->writeHTMLCell(180, 0, '', '', '<b>EL PREDIO CUENTA CON '.$dataSource->getParameter('tipo_aprobacion'). ' CON R.M.T.A. N° '.$dataSource->getParameter('nro_rmta').' DE FECHA '.$dataSource->getParameter('fecha_rmta').'</b>', 0, 1, 0, true, 'J', true);
+            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+            $pdf->writeHTMLCell(180, 0, '', '', 'Por tanto:', 0, 1, 0, true, 'J', true);
+            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+            $pdf->writeHTMLCell(180, 0, '', '', 'En el  Departamento de  Normas  Urbanas de la Dirección de Urbanismo y Catastro, revisado los informes adjuntos a la carpeta, se efectuó la  verificación  de los requisitos  según reglamentación general de urbanismo y de  subdivisión de  propiedades urbanas, así como el reglamento de edificaciones en actual vigencia, por lo  que  se  procedió  al  llenado  de la Boleta de Liquidación  No. '.$dataSource->getParameter('nro_boleta').'  de aprobación de planos relativos a  la  propiedad citada para la prosecución del trámite administrativo.', 0, 1, 0, true, 'J', true);
+            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+            $pdf->writeHTMLCell(180, 0, '', '', 'Dando cumplimiento al decreto municipal N° 002 de fecha 18 de marzo de 2016', 0, 1, 0, true, 'J', true);
+            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+            $pdf->writeHTMLCell(180, 0, '', '', 'Es cuanto informo de la inspección realizada.', 0, 1, 0, true, 'J', true);
+            $pdf->Ln(18.5); // ⬅️ ¡Aquí está el cambio!
+            $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('de').'<br>'.$dataSource->getParameter('cargode'), 0, 1, 0, true, 'C', true);
+            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+
             
             
             /* foreach ($dataSource->getDataSet() as $row) {

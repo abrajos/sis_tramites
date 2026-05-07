@@ -7,12 +7,6 @@ require_once dirname(__FILE__) . '/pxpReport/DataSource.php';
 class CustomReport extends TCPDF
 {
     private $dataSource;
-
-    // --- AÑADE ESTO AQUÍ ---
-    public function verificarEspacio($h) {
-        return $this->checkPageBreak($h);
-    }
-
     public function setDataSource(DataSource $dataSource)
     {
         $this->dataSource = $dataSource;
@@ -22,30 +16,7 @@ class CustomReport extends TCPDF
     {
         return $this->dataSource;
     }
-    
-    public function Header() {
-        $dataSource = $this->getDataSource();
-        
-        // Posición inicial del Logo (sin usar SetXY que mueva el puntero global)
-        $logo = dirname(__FILE__) . '/../../lib' . $_SESSION['_DIR_LOGO'];
-        if (file_exists($logo)) {
-            $this->Image($logo, 16, 12, 36);
-        }
 
-        // Título y Número
-        $this->SetY(10); // Solo movemos el Y para el encabezado
-        $this->SetFontSize(16);
-        $this->SetFont('', 'B');
-        $this->Cell(180, 18, ' INFORME LEGAL', 0, 1, 'R');
-
-        $this->SetFontSize(12);
-        $this->Cell(180, 10, $dataSource->getParameter('num_informe'), 'B', 1, 'R');
-        
-        // ¡NO USES SetXY(15, 45) AQUÍ! 
-        // El margen superior definido en el objeto principal se encargará de esto.
-    }
-
-    /*
     public function Header()
     {
         $dataSource = $this->getDataSource();
@@ -77,7 +48,6 @@ class CustomReport extends TCPDF
         // empiece exactamente a los 45mm de altura, libre del header.
         $this->SetXY(15, 45);
     }
-    */
 
     public function Footer()
     {
@@ -294,24 +264,18 @@ class RInformeLegal extends Report
                 /** 
                  * FRU 
                  * */
-                $pdf->verificarEspacio(60);
+
                 $pdf->writeHTMLCell(180, 0, '', '', 'Que, la Ley N° 2341 de Procedimiento Administrativo, en el inc. K) del Art. 4 establece que los procedimientos administrativos, deben responder a los principios de economía, simplicidad y celeridad, evitando la realización de trámites, formalismos o diligencias innecesarias.', 0, 1, 0, true, 'J', true);
-                $pdf->verificarEspacio(60);
                 $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
                 $pdf->writeHTMLCell(180, 0, '', '', 'Que, de acuerdo a la Resolución Municipal Bi-Secretarial N° 1/2020 de fecha 11 de diciembre de 2020 emitida por Secretaria Municipal Técnica del Gobierno Autónomo Municipal de Colcapirhua, los contribuyentes deben cumplir con los procedimientos y requisitos para los trámites administrativos y técnicos de la Dirección de Urbanismo y Catastro.', 0, 1, 0, true, 'J', true);
-                $pdf->verificarEspacio(60);
                 $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
                 $pdf->writeHTMLCell(180, 0, '', '', 'Que, según el límite de homologación 100/2018 de fecha 12 de abril de 2018, emitido por el ministerio de la presidencia, el predio se encuentra fuera del radio urbano (FRU) del municipio de Colcapirhua.', 0, 1, 0, true, 'J', true);
-                $pdf->verificarEspacio(60);
                 $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
                 if ($dataSource->getParameter('observacion') != '') {
                     $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('observacion'), 0, 1, 0, true, 'J', true);
                     $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
                 }
-
-                //$pdf->checkPageBreak(60);
-                $pdf->verificarEspacio(60);
-
+                $pdf->checkPageBreak(60);
                 //$pdf->AddPage();
                 $pdf->Ln(5); // Espacio extra antes de la sección de conclusiones
                 $pdf->writeHTMLCell(180, 0, '', '', '<br><br><b>CONCLUSIONES Y RECOMENDACION.-</b>', 0, 1, 0, true, 'J', true);
@@ -333,10 +297,7 @@ class RInformeLegal extends Report
                     $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('observacion'), 0, 1, 0, true, 'J', true);
                     $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
                 }
-
-                //$pdf->checkPageBreak(60);
-                $pdf->verificarEspacio(60);
-
+                $pdf->checkPageBreak(60);
                 $pdf->Ln(5); // Espacio extra antes de la sección de conclusiones
                 $pdf->writeHTMLCell(180, 0, '', '', '<b>CONCLUSIONES Y RECOMENDACION.-</b>', 0, 1, 0, true, 'J', true);
                 $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
@@ -379,11 +340,7 @@ class RInformeLegal extends Report
                     $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('observacion'), 0, 1, 0, true, 'J', true);
                     $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
                 }
-
-                //$pdf->checkPageBreak(60);
-                $pdf->verificarEspacio(60);
-
-
+                $pdf->checkPageBreak(60);
                 $pdf->Ln(5); // Espacio extra antes de la sección de conclusiones
                 $pdf->writeHTMLCell(180, 0, '', '', '<b>CONCLUSIONES Y RECOMENDACION.-</b>', 0, 1, 0, true, 'J', true);
                 $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
@@ -404,18 +361,16 @@ class RInformeLegal extends Report
                 /** 
                  * Doble
                  * */
-                $pdf->verificarEspacio(60);
+
                 $pdf->writeHTMLCell(180, 0, '', '', '<b>Que, De acuerdo al Art. 86 de la Ley 2341 (Conocimiento del T1ramite).-<b> "Los administrados que intervengan en un procedimiento, sus representantes o abogados, tendrá derecho a conocer en cualquier momento el estado del trámite ya tomar vista de las actuaciones".', 0, 1, 0, true, 'J', true);
-                $pdf->verificarEspacio(60);
                 $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
                 $pdf->writeHTMLCell(180, 0, '', '', '<b>Que, de acuerdo a la Resolución Municipal BI - Secretarial N° 1/2020 de fecha 11 de diciembre de 2020<b> emitida por Secretaria Municipal Técnica de Gobierno Autónomo Municipal de Colcapirhua, los contribuyentes deben cumplir con los procedimientos y requisitos para los trámites administrativos y técnicos de la Dirección de Urbanismo y Catastro.', 0, 1, 0, true, 'J', true);
-                $pdf->verificarEspacio(60);
                 $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
                 if ($dataSource->getParameter('observacion') != '') {
                     $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('observacion'), 0, 1, 0, true, 'J', true);
                     $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
                 }
-                $pdf->verificarEspacio(60);
+                $pdf->checkPageBreak(60);
                 $pdf->Ln(5); // Espacio extra antes de la sección de conclusiones
                 $pdf->writeHTMLCell(180, 0, '', '', '<b>CONCLUSIONES Y RECOMENDACION.-</b>', 0, 1, 0, true, 'J', true);
                 $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
@@ -430,7 +385,7 @@ class RInformeLegal extends Report
                 $pdf->Ln(4); // Un espacio pequeño y constante entre párrafos
                 // --- Control de salto de página inteligente ---
                 // Antes de empezar los siguientes artículos, verificamos si caben (ej. 80mm)
-                $pdf->verificarEspacio(80);
+                $pdf->checkPageBreak(80);
                 // --- Párrafo 2 ---
                 $pdf->MultiCell(180, $h = $hMedium, 'Que, Según el reglamento par Urbanismo y Edificaciones PLANUR de fecha 13 de febrero de 2004 en su Art. 107 Inciso de la construcción.- para iniciar la constrcción de una edificación de cualquier naturaleza es necesario contar con el respectivo Plano arquitectonico aprobado por la alcaldia de Colcapirhua, no siento suficiente que el tramite se encuentra en curso de aprobación.', 0, 'J', 0, 0, '', '', true);
                 $pdf->Ln(4);
@@ -438,7 +393,7 @@ class RInformeLegal extends Report
                 $pdf->MultiCell(180, $h = $hMedium, 'Que, Según el reglamento para Urbanizaciones y Edificaciones PLANUR de fecha 13 de febrero de 2004 en su Art. 112.- Tipos de Infracción.- se considerará infracción los siguientes actos cometidos por el propietario, diseñador y/o contrucción: * Contruir edificaciones sin contar previamente con los planos aprobados por la Alcaldia del lote o del proyecto arquitectónico.', 0, 'J', 0, 0, '', '', true);
                 $pdf->Ln(8);
                 // --- Sección de Conclusiones ---
-                $pdf->verificarEspacio(50); // Asegura que el título y el inicio de la conclusión no se separen
+                $pdf->checkPageBreak(50); // Asegura que el título y el inicio de la conclusión no se separen
                 $pdf->SetFont('', 'B');
                 $pdf->Cell($w = 19, $h = $hMedium, $txt = 'CONCLUSIONES y RECOMENDACION.- ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
                 $pdf->SetFont('', 'N');
@@ -501,12 +456,12 @@ class RInformeLegal extends Report
             // Y puse el alto en 0 para que sea automático
             $pdf->MultiCell(180, 0, 'De conformidad al Art. 24 Constitución Politica del Estado Plurinacional, art. 24, Toda persona tiene derecho a la petición, de forma individual o colectiva, oral o escrita. Además, garantiza el derecho a recibir una respuesta formal y pronta sin más requisito que la identificación del peticionario, asi tambien menciona en su art.56 inc. l.- Toda persona tiene derecho a la propiedad privada individual o colectiva, siempre que esta cumpla una función social. ll. Se garantiza la propiedad privada siempre que el uso que se haga de ella no sea perjudicial al interes colectivo.', 0, 'J', 0, 1, '', '', true);
             $pdf->Ln(4); // Un pequeño espacio de separación entre párrafos
-            $pdf->verificarEspacio(60);
+
             $pdf->MultiCell(180, 0, 'Que, en virtud a la Ley N° 2341 de procedimiento Administrativo, en inc. k) del art. 4 establece que los procedimientos administrativos, deben responder a los principios de economia, simplicidad y celeridad, evitando la realizacion de tramites, formalismos o diligencias innecesarias.', 0, 'J', 0, 1, '', '', true);
             $pdf->Ln(4);
-            $pdf->verificarEspacio(60);
+
             $pdf->MultiCell(180, 0, 'Que de acuerdo a la Resolución Municipal Bi-Secretarial N° 1/2020 de fecha 11 de diciembre de 2020 emitida por Secretaria Municipal Técnica del Gobierno Autónomo Municipal de Colcapirhua, los contribuyentes deben cumplir con los procedimientos y requisitos para los tramites administrativos y técnicos de la Dirección de urbanismo y Catastro.', 0, 'J', 0, 1, '', '', true);
-            $pdf->verificarEspacio(60);
+
             // Para las conclusiones, ya usas writeHTMLCell que suele manejar mejor el flujo
             $pdf->writeHTMLCell(180, 0, '', '', '<br><br><b>CONCLUSIONES Y RECOMENDACION.-</b>', 0, 1, 0, true, 'J', true);
             $pdf->writeHTMLCell(180, 0, '', '', 'Se concluye que el (los):', 0, 1, 0, true, 'J', true);
@@ -537,21 +492,20 @@ class RInformeLegal extends Report
             if ($dataSource->getParameter('id_tipo_tramite') == 20 && $dataSource->getParameter('aprobacion') == 'si') {
                 $pdf->MultiCell(180, $h = $hMedium, 'De conformidad al Art. 24 Constitución Politica del Estado Plurinacional, art. 24, Toda persona tiene derecho a la petición, de forma individual o colectiva, oral o escrita. Además, garantiza el derecho a recibir una respuesta formal y pronta sin más requisito que la identificación del peticionario, asi tambien menciona en su art.56 inc. l.- Toda persona tiene derecho a la propiedad privada individual o colectiva, siempre que esta cumpla una función social. ll. Se garantiza la propiedad privada siempre que el uso que se haga de ella no sea perjudicial al interes colectivo.', 0, 'J', 0, 0, '', '', true);
                 $pdf->Ln(28);
-                $pdf->verificarEspacio(60);
                 $pdf->MultiCell(180, $h = $hMedium, 'Que, en virtud a la Ley N° 2341 de procedimiento Administrativo, en inc. k) del art. 4 establece que los procedimientos administrativos, deben responder a los principios de economia, simplicidad y celeridad, evitando la realizacion de tramites, formalismos o diligencias innecesarias.', 0, 'J', 0, 0, '', '', true);
                 $pdf->Ln(28);
-                $pdf->verificarEspacio(60);
                 $pdf->MultiCell(180, $h = $hMedium, 'Que de acuerdo a la Resolución Municipal Bi-Secretarial N° 1/2020 de fecha 11 de diciembre de 2020 emitida por Secretaria Municipal Técnica del Gobierno Autónomo Municipal de Colcapirhua, los contribuyentes deben cumplir con los procedimientos y requisitos para los tramites administrativos y técnicos de la Dirección de urbanismo y Catastro.', 0, 'J', 0, 0, '', '', true);
                 $pdf->Ln(5);
+
                 // --- Párrafo de Decreto Supremo ---
                 // Antes de este párrafo largo, verificamos si caben al menos 60mm
-                $pdf->verificarEspacio(60);
+                $pdf->checkPageBreak(60);
                 $pdf->MultiCell(180, 0, 'Que, en virtud al Decreto Supremo N° 5056 de fecha 22 de noviembre de 2023; decreta en su Articulo Unico que: A fin de efectivizar los mecanismos de resguardo de las áreas productivas para garantizar la seguridad alimentaria con soberania, se modifica el parrafo l del Articulo 3 del Decreto Supremo N° 1809 de fecha 27 de noviembre de 2013 con el siguiente texto; "l.- Las áreas productivas agropecuarias urbanas (A.P.A.U.) no podrán ser cambio de uso y de suelo, ni urbanizables en un plazo de (15) años a partir de la publicación del ´presente Decreto Supremo".', 0, 'J', 0, 0, '', '', true);
                 $pdf->Ln(8); // Espacio antes de la sección final
 
                 // --- Gestión de Conclusiones ---
                 // Verificamos que quepan el título Y el primer párrafo de la conclusión juntos (aprox 50mm)
-                $pdf->verificarEspacio(50);
+                $pdf->checkPageBreak(50);
                 $pdf->SetFont('', 'B');
                 $pdf->Cell(180, 0, $txt = 'CONCLUSIONES y RECOMENDACION.- ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
                 $pdf->SetFont('', 'N');
@@ -583,15 +537,13 @@ class RInformeLegal extends Report
                 if (in_array($dataSource->getParameter('id_tipo_tramite'), $tramites_id) && $dataSource->getParameter('aprobacion') == 'si') {
                     $pdf->MultiCell(180, $h = $hMedium, 'De conformidad al Art. 24 Constitución Politica del Estado Plurinacional. Toda persona tiene derecho a la Petición de manera individual o colectiva, sea oral o escrita, y a la obtención de respuesta formal y pronta. Para el ejercicio de este derecho no exigirá mas requisito que la identificación del peticionante, así tembién menciona en su art. 56 inc I.- Toda persona tiene derecho a la pro´piedad privada individual o colectiva, siempre que esta cumpla una función social. II. Se garantiza la propiedad privada siempre que el uso que se haga de ella no sea perjudicial al interes colectivo. ', 0, 'J', 0, 0, '', '', true);
                     $pdf->Ln(28);
-                    $pdf->verificarEspacio(60);
                     $pdf->MultiCell(180, 0, 'Que, la Ley N° 2341 de procedimiento Administrativo, en inc. k) del art. 4 establece que los procedimientos administrativos, deben responder a los principios de economia, simplicidad y celeridad, evitando la realizacion de tramites, formalismos o diligencias innecesarias.', 0, 'J', 0, 0, '', '', true);
                     $pdf->Ln(4); // Espacio pequeño y constante entre párrafos
-                    $pdf->verificarEspacio(60);
                     $pdf->MultiCell(180, 0, 'Que de acuerdo a la resolución Municipal Bi-Secretarial N° 1/2020 de fecha 11 de diciembre de 2020 emitida por Secretaria Municipal Técnica del Gobierno Autónomo Municipal de Colcapirhua, los contribuyentes deben cumplir con los procedimientos y requisitos para los trámites administrativos y técnicos de la Dirección de Urbanismo y Catastro', 0, 'J', 0, 0, '', '', true);
                     $pdf->Ln(8);
                     // --- Gestión Inteligente de Salto de Página ---
                     // Si quedan menos de 50mm, el sistema saltará de hoja solo (respetando Header/Footer)
-                    $pdf->verificarEspacio(50);
+                    $pdf->checkPageBreak(50);
                     $pdf->SetFont('', 'B');
                     $pdf->Cell(180, 0, $txt = 'CONCLUSIONES y RECOMENDACION.- ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
                     $pdf->SetFont('', 'N');

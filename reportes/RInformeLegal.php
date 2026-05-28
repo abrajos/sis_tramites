@@ -47,12 +47,16 @@ class CustomReport extends TCPDF
         $dataSource = $this->getDataSource();
         
         // Posicionarse a 15mm del final
-        $this->SetY(-15);
+        $this->SetY(-25);
         $this->SetFont('helvetica', 'I', 8);
         
-        // Texto del footer
-        $this->Cell(0, 10, 'Página '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, 0, 'C');
+        // Imprime los datos alineados a la izquierda
+        $this->Cell(180, 4, 'Usuario: '.$dataSource->getParameter('de'), 0, 1, 'L');
+        $this->Cell(180, 4, 'SISTEMA DE TRAMITES - G.A.M.C.', 0, 1, 'L'); 
         
+        // Imprime la página centrada (dejando el salto de línea al final)
+        $this->Cell(180, 4, 'Página: '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, 1, 'C');
+
         // Configuración del QR
         $style = array(
             'border' => 0,
@@ -252,7 +256,7 @@ class RInformeLegal extends Report
 
                 // --- SECCIÓN DE CONCLUSIONES ---
                 // Aquí es crítico verificar espacio para que el título y al menos 2 líneas del párrafo quepan juntos
-                $pdf->verificarEspacio(50); 
+                $pdf->verificarEspacio(25); 
                 $pdf->Ln(5); 
                 
                 // Quitamos los <br> manuales del HTML porque ya usamos Ln() y verificarEspacio
@@ -495,9 +499,17 @@ class RInformeLegal extends Report
 
             $pdf->verificarEspacio(25);
             $pdf->writeHTMLCell(180, 0, '', '', 'Que de acuerdo a la <b>Resolución Municipal Bi-Secretarial N° 1/2020</b>, los contribuyentes deben cumplir con los requisitos para los trámites administrativos ante la Dirección de Urbanismo.', 0, 1, 0, true, 'J', true);
-
+            
+            
+            //////////////////////////////////////////////////////////    
+            // AUMENTAR CONTENIDO 
+            $pdf->Ln(3);
+            $pdf->verificarEspacio(25);
+            $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('observacion'), 0, 1, 0, true, 'J', true);
+            //var_dump($dataSource); exit();
+            
             // 3. SECCIÓN CONCLUSIONES (Salto de página inteligente)
-            $pdf->verificarEspacio(60); 
+            $pdf->verificarEspacio(25); 
             $pdf->Ln(8);
             $pdf->writeHTMLCell(180, 0, '', '', '<b>CONCLUSIONES Y RECOMENDACIÓN.-</b>', 0, 1, 0, true, 'J', true);
             $pdf->Ln(2);
@@ -511,7 +523,7 @@ class RInformeLegal extends Report
             $pdf->Ln(3);
 
             // 5. Advertencia sobre el Decreto Supremo 5056
-            $pdf->verificarEspacio(40);
+            $pdf->verificarEspacio(20);
             $pdf->writeHTMLCell(180, 0, '', '', 'Dando cumplimiento al <b>Decreto Supremo N° 5056</b> de fecha 22 de noviembre de 2023, que modifica el párrafo I del Art. 3 del DS 1809, se establece que:', 0, 1, 0, true, 'J', true);
             $pdf->Ln(2);
             
@@ -522,6 +534,11 @@ class RInformeLegal extends Report
             // 6. Recomendación Final
             $pdf->verificarEspacio(30);
             $pdf->writeHTMLCell(180, 0, '', '', 'Por lo que se <b>RECOMIENDA</b> la prosecución del expediente administrativo, quedando pendiente la aprobación técnica del plano solicitado.', 0, 1, 0, true, 'J', true);
+            $pdf->Ln(3);
+            ///////////////////////////////////
+            // AUMENTAR CONCLUSION QUE ELLOS INDIQUEN
+            $pdf->verificarEspacio(25);
+            $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('conclusion'), 0, 1, 0, true, 'J', true);
             $pdf->Ln(3);
 
             $finalMsg = '<b>El presente informe Legal no define el Derecho Propietario. Si existiera doble titularidad, será la vía llamada por ley quien lo defina. Los planos no contravienen normas legales, siempre que la parte técnica remita los informes correspondientes.</b>';
@@ -554,8 +571,13 @@ class RInformeLegal extends Report
                 $htmlDS = 'Que, en virtud al <b>Decreto Supremo N° 5056</b> de fecha 22 de noviembre de 2023, se establece que: <i>"Las áreas productivas agropecuarias urbanas (A.P.A.U.) no podrán ser cambio de uso ni urbanizables en un plazo de (15) años..."</i>';
                 $pdf->writeHTMLCell(180, 0, '', '', $htmlDS, 0, 1, 0, true, 'J', true);
 
+                // AUMENTAR CONTENIDO 
+                $pdf->Ln(3);
+                $pdf->verificarEspacio(25);
+                $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('observacion'), 0, 1, 0, true, 'J', true);
+
                 // --- CONCLUSIONES CASO 20 ---
-                $pdf->verificarEspacio(70);
+                $pdf->verificarEspacio(25);
                 $pdf->Ln(8);
                 $pdf->writeHTMLCell(180, 0, '', '', '<b>CONCLUSIONES Y RECOMENDACIÓN.-</b>', 0, 1, 0, true, 'L', true);
                 $pdf->Ln(2);
@@ -567,6 +589,12 @@ class RInformeLegal extends Report
                 
                 $pdf->writeHTMLCell(180, 0, '', '', '<b>RECOMENDACIÓN:</b> Se recomienda la prosecución del expediente administrativo, faltando la aprobación de la parte técnica del plano solicitado. El presente informe no define derecho propietario...', 0, 1, 0, true, 'J', true);
 
+                ///////////////////////////////////
+                // AUMENTAR CONCLUSION QUE ELLOS INDIQUEN
+                $pdf->Ln(3);
+                $pdf->verificarEspacio(25);
+                $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('conclusion'), 0, 1, 0, true, 'J', true);
+                $pdf->Ln(3);
             // --- CASO B: Trámites Generales (1-19) ---
             } elseif (in_array($dataSource->getParameter('id_tipo_tramite'), range(1, 19)) && $dataSource->getParameter('aprobacion') == 'si') {
                 
@@ -577,8 +605,14 @@ class RInformeLegal extends Report
                 $pdf->verificarEspacio(30);
                 $pdf->writeHTMLCell(180, 0, '', '', 'Que, la <b>Ley N° 2341</b> y la <b>Resolución Municipal Bi-Secretarial N° 1/2020</b> establecen que los contribuyentes deben cumplir con los requisitos técnicos de la Dirección de Urbanismo.', 0, 1, 0, true, 'J', true);
 
+                // AUMENTAR CONTENIDO 
+                $pdf->Ln(3);
+                $pdf->verificarEspacio(25);
+                $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('observacion'), 0, 1, 0, true, 'J', true);
+                //var_dump($dataSource); exit();
+
                 // --- CONCLUSIONES TRÁMITES GENERALES ---
-                $pdf->verificarEspacio(60);
+                $pdf->verificarEspacio(25);
                 $pdf->Ln(8);
                 $pdf->writeHTMLCell(180, 0, '', '', '<b>CONCLUSIONES Y RECOMENDACIÓN.-</b>', 0, 1, 0, true, 'L', true);
                 $pdf->Ln(2);
@@ -589,6 +623,13 @@ class RInformeLegal extends Report
                 $pdf->Ln(4);
                 
                 $pdf->writeHTMLCell(180, 0, '', '', 'Por lo que se <b>RECOMIENDA</b> la prosecución del trámite administrativo, faltando la aprobación técnica topográfica. El presente informe legal no define derecho propietario...', 0, 1, 0, true, 'J', true);
+
+                ///////////////////////////////////
+                // AUMENTAR CONCLUSION QUE ELLOS INDIQUEN
+                $pdf->Ln(3);
+                $pdf->verificarEspacio(25);
+                $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('conclusion'), 0, 1, 0, true, 'J', true);
+                $pdf->Ln(3);
             }
             
             // Cierre común para ambos casos de aprobación

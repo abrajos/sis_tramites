@@ -506,10 +506,13 @@ class RInformeLegal extends Report
             
             //////////////////////////////////////////////////////////    
             // AUMENTAR CONTENIDO 
-            $pdf->Ln(3);
-            $pdf->verificarEspacio(25);
-            $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('observacion'), 0, 1, 0, true, 'J', true);
-            //var_dump($dataSource); exit();
+            if ($dataSource->getParameter('observacion') != '') {
+                $pdf->Ln(3);
+                $pdf->verificarEspacio(25);
+                $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('observacion'), 0, 1, 0, true, 'J', true);
+                //var_dump($dataSource); exit();
+            }
+            
             
             // 3. SECCIÓN CONCLUSIONES (Salto de página inteligente)
             $pdf->verificarEspacio(25); 
@@ -540,9 +543,11 @@ class RInformeLegal extends Report
             $pdf->Ln(3);
             ///////////////////////////////////
             // AUMENTAR CONCLUSION QUE ELLOS INDIQUEN
-            $pdf->verificarEspacio(25);
-            $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('conclusion'), 0, 1, 0, true, 'J', true);
-            $pdf->Ln(3);
+            if ($dataSource->getParameter('conclusion') != '') {
+                $pdf->verificarEspacio(25);
+                $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('conclusion'), 0, 1, 0, true, 'J', true);
+                $pdf->Ln(3);
+            }
 
             $finalMsg = '<b>El presente informe Legal no define el Derecho Propietario. Si existiera doble titularidad, será la vía llamada por ley quien lo defina. Los planos no contravienen normas legales, siempre que la parte técnica remita los informes correspondientes.</b>';
             $pdf->writeHTMLCell(180, 0, '', '', $finalMsg, 0, 1, 0, true, 'J', true);
@@ -575,10 +580,12 @@ class RInformeLegal extends Report
                 $pdf->writeHTMLCell(180, 0, '', '', $htmlDS, 0, 1, 0, true, 'J', true);
 
                 // AUMENTAR CONTENIDO 
-                $pdf->Ln(3);
-                $pdf->verificarEspacio(25);
-                $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('observacion'), 0, 1, 0, true, 'J', true);
-
+                if ($dataSource->getParameter('observacion') != '') {
+                    $pdf->Ln(3);
+                    $pdf->verificarEspacio(25);
+                    $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('observacion'), 0, 1, 0, true, 'J', true);
+                }
+                
                 // --- CONCLUSIONES CASO 20 ---
                 $pdf->verificarEspacio(25);
                 $pdf->Ln(8);
@@ -594,10 +601,14 @@ class RInformeLegal extends Report
 
                 ///////////////////////////////////
                 // AUMENTAR CONCLUSION QUE ELLOS INDIQUEN
-                $pdf->Ln(3);
-                $pdf->verificarEspacio(25);
-                $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('conclusion'), 0, 1, 0, true, 'J', true);
-                $pdf->Ln(3);
+                if ($dataSource->getParameter('conclusion') != '') {
+                    $pdf->Ln(3);
+                    $pdf->verificarEspacio(25);
+                    $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('conclusion'), 0, 1, 0, true, 'J', true);
+                    $pdf->Ln(3);
+                }
+
+
             // --- CASO B: Trámites Generales (1-19) ---
             } elseif (in_array($dataSource->getParameter('id_tipo_tramite'), range(1, 19)) && $dataSource->getParameter('aprobacion') == 'si') {
                 
@@ -609,10 +620,13 @@ class RInformeLegal extends Report
                 $pdf->writeHTMLCell(180, 0, '', '', 'Que, la <b>Ley N° 2341</b> y la <b>Resolución Municipal Bi-Secretarial N° 1/2020</b> establecen que los contribuyentes deben cumplir con los requisitos técnicos de la Dirección de Urbanismo.', 0, 1, 0, true, 'J', true);
 
                 // AUMENTAR CONTENIDO 
-                $pdf->Ln(3);
-                $pdf->verificarEspacio(25);
-                $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('observacion'), 0, 1, 0, true, 'J', true);
-                //var_dump($dataSource); exit();
+                if ($dataSource->getParameter('observacion') != '') {
+                    $pdf->Ln(3);
+                    $pdf->verificarEspacio(25);
+                    $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('observacion'), 0, 1, 0, true, 'J', true);
+                    //var_dump($dataSource); exit();
+                }
+                
 
                 // --- CONCLUSIONES TRÁMITES GENERALES ---
                 $pdf->verificarEspacio(25);
@@ -629,10 +643,12 @@ class RInformeLegal extends Report
 
                 ///////////////////////////////////
                 // AUMENTAR CONCLUSION QUE ELLOS INDIQUEN
-                $pdf->Ln(3);
-                $pdf->verificarEspacio(25);
-                $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('conclusion'), 0, 1, 0, true, 'J', true);
-                $pdf->Ln(3);
+                if ($dataSource->getParameter('conclusion') != '') {
+                    $pdf->Ln(3);
+                    $pdf->verificarEspacio(25);
+                    $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('conclusion'), 0, 1, 0, true, 'J', true);
+                    $pdf->Ln(3);
+                }
             }
             
             // Cierre común para ambos casos de aprobación

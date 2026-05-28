@@ -189,7 +189,10 @@ class RInformeLegal extends Report
         $pdf->Cell(90, $hMedium, 'de fecha: ' . $dataSource->getParameter('fecha_asiento'), 1, 1, 'L');
 
         // 4. Celdas de ancho completo (Ancho 180, ln=1)
-        $pdf->Cell(180, $hMedium, 'Complemento: ' . $dataSource->getParameter('complemento_matri'), 1, 1, 'L');
+        //$pdf->Cell(180, $hMedium, 'Complemento: ' . $dataSource->getParameter('complemento_matri'), 1, 1, 'L');
+        // --- CELDA DE ANCHO COMPLETO CON ALTO DINÁMICO ---
+        // Parámetros: Ancho (180), Alto inicial (0 para que sea dinámico), Texto, Borde (1), Alineación ('L'), Fondo (false), Salto de línea (1)
+        $pdf->MultiCell(180, 0, 'Complemento: ' . $dataSource->getParameter('complemento_matri'), 1, 'L', false, 1);
 
         $pdf->Ln(2);
         $pdf->Cell(180, $hMedium, 'Aprobado mediante: ', 0, 1, 'L');

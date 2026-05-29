@@ -142,6 +142,7 @@ class RInformeLegal extends Report
         foreach ($dataSource->getDataSet() as $row) {
             $tipo_persona = $row['tipo_persona'];
             //var_dump("tipo: ",$tipo_persona); 
+            /*
             if ($tipo_persona == "propietario") {
                 if ($count == 0) {
                     $propietariosList = $row['nombre_completo1'];
@@ -153,12 +154,32 @@ class RInformeLegal extends Report
                 $pdf->SetFont('', 'B');
                 $pdf->Cell($w = 70, $h = $hMedium, $txt = $row['nombre_completo1'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
                 $pdf->SetFont('', 'N');
-                $pdf->Cell($w = 18, $h = $hMedium, $txt = 'con C.I. N°: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+                $pdf->Cell($w = 18, $h = $hMedium, $txt = ' con C.I. N°: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
                 $pdf->SetFont('', 'B');
                 $pdf->Cell($w = 12, $h = $hMedium, $txt = $row['ci'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
                 $pdf->Cell($w = 7, $h = $hMedium, $txt = '  ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
                 $pdf->Cell($w = 5, $h = $hMedium, $txt = $row['expedicion'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
                 $pdf->Ln();
+            }
+                */
+            if ($tipo_persona == "propietario") {
+                if ($count == 0) {
+                    $propietariosList = $row['nombre_completo1'];
+                } else {
+                    $propietariosList .= "|" . $row['nombre_completo1'];
+                }
+                $count++;
+
+                // 1. Construimos el bloque de texto con etiquetas HTML sólidas para controlar las negritas
+                $htmlPropietario = '• <b>' . $row['nombre_completo1'] . '</b> con C.I. N°: <b>' . $row['ci'] . ' ' . $row['expedicion'] . '</b>';
+
+                // 2. Renderizamos en una sola celda HTML flexible que ocupa todo el ancho disponible (180mm)
+                // El '0' en el alto permite que crezca automáticamente de forma segura si el nombre es extremadamente largo
+                $pdf->SetFont('', 'N'); // Fuente base normal
+                $pdf->writeHTMLCell(180, 0, '', '', $htmlPropietario, 0, 1, 0, true, 'L', true);
+                
+                // Un pequeño espacio de separación natural entre cada propietario (opcional)
+                $pdf->Ln(1); 
             }
         }
 
@@ -451,6 +472,7 @@ class RInformeLegal extends Report
 
                 // --- LISTA DE PROPIETARIOS ---
                 foreach ($dataSource->getDataSet() as $row) {
+                    /*
                     if ($row['tipo_persona'] == "propietario") {
                         $pdf->verificarEspacio(7);
                         $pdf->SetFont('', 'B');
@@ -459,6 +481,21 @@ class RInformeLegal extends Report
                         $pdf->Cell(20, 7, ' con C.I. N°: ', 0, 0, 'L');
                         $pdf->SetFont('', 'B');
                         $pdf->Cell(30, 7, $row['ci'] . ' ' . $row['expedicion'], 0, 1, 'L');
+                    }*/
+                    if ($row['tipo_persona'] == "propietario") {
+                        // 1. Construimos la cadena HTML unificada manejando las negritas internamente
+                        $htmlPropietario = '• <b>' . $row['nombre_completo1'] . '</b> con C.I. N°: <b>' . $row['ci'] . ' ' . $row['expedicion'] . '</b>';
+
+                        // 2. Quitamos la tipografía Bold global para que respete las etiquetas <b> del HTML
+                        $pdf->SetFont('', 'N'); 
+
+                        // 3. Renderizamos en una sola fila continua y elástica de 180mm de ancho
+                        // El '0' en el alto (segundo parámetro) calcula el alto dinámicamente según el contenido
+                        // El '1' en el parámetro ln (sexto parámetro) indica que el siguiente elemento se dibuje abajo
+                        $pdf->writeHTMLCell(180, 0, '', '', $htmlPropietario, 0, 1, 0, true, 'L', true);
+                        
+                        // Añadimos un pequeño espacio de separación controlado de 1mm para que no se pegue al siguiente registro
+                        $pdf->Ln(1); 
                     }
                 }
 
@@ -809,6 +846,7 @@ class RInformeLegal extends Report
     private function renderPropietarios($pdf, $dataSource, $h) {
         $list = [];
         foreach ($dataSource->getDataSet() as $row) {
+            /*
             if ($row['tipo_persona'] == "propietario") {
                 $list[] = $row['nombre_completo1'];
                 $pdf->SetFont('', 'B');
@@ -817,6 +855,25 @@ class RInformeLegal extends Report
                 $pdf->Cell(20, $h, 'con C.I. N°: ', 0, 0, 'L');
                 $pdf->SetFont('', 'B');
                 $pdf->Cell(20, $h, $row['ci'] . ' ' . $row['expedicion'], 0, 1, 'L');
+            }
+                */
+            if ($row['tipo_persona'] == "propietario") {
+                // 1. Conservamos tu lógica de datos (llenar el array histórico)
+                $list[] = $row['nombre_completo1'];
+
+                // 2. Construimos la cadena HTML unificada con el formato de negritas correcto
+                $htmlPropietario = '• <b>' . $row['nombre_completo1'] . '</b> con C.I. N°: <b>' . $row['ci'] . ' ' . $row['expedicion'] . '</b>';
+
+                // 3. Reseteamos la fuente a Normal para que las etiquetas <b> funcionen nativamente
+                $pdf->SetFont('', 'N');
+
+                // 4. Renderizamos en una sola fila elástica de 180mm de ancho
+                // El segundo parámetro en '0' calcula el alto dinámicamente según el contenido
+                // El sexto parámetro en '1' fuerza el salto de línea al finalizar este bloque HTML
+                $pdf->writeHTMLCell(180, 0, '', '', $htmlPropietario, 0, 1, 0, true, 'L', true);
+                
+                // Pequeña separación controlada de 1mm para que los registros no queden totalmente pegados
+                $pdf->Ln(1);
             }
         }
         return implode("|", $list);

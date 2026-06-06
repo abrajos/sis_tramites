@@ -387,7 +387,7 @@ class RInformeLegal extends Report
                 $pdf->Ln(2);
 
                 $htmlAPAU9 = 'De acuerdo a documentación presentada se puede observar un fraccionamiento del predio y el registro en derechos reales de la parte fraccionada, el cual al ser un terreno ubicado en <b>área productiva agropecuaria NO es susceptible a ser fraccionado</b>, toda vez que la regularización del predio se debe realizar sobre la totalidad de la superficie y no así sobre una parte fraccionada, pudiendo efectuarse la urbanización y fraccionamiento una vez se efectúe el cambio de uso de suelo.';
-                $htmlAPAU10 = 'En cumplimiento a la normativa vigente al encontrarse el terreno en <b>área productiva agropecuaria</b> y al no ser objeto de cambio de uso de suelo ni urbanizable en el plazo de 15 años a partir de la publicación del Decreto Supremo N° 1809, de 27 de noviembre de 2013, solamente se podrá efectuar la aprobación del predio en Area Productiva Agropecuaria sobre la totalidad de la superficie, ' . $dataSource->getParameter('conclusion') . ', por lo que NO corresponde la prosecución del trámite, para lo cual se <b>RECOMIENDA</b> efectuar la Resolución de Rechazo del trámite previo análisis...';
+                $htmlAPAU10 = 'En cumplimiento a la normativa vigente al encontrarse el terreno en <b>área productiva agropecuaria</b> y al no ser objeto de cambio de uso de suelo ni urbanizable en el plazo de 15 años a partir de la publicación del Decreto Supremo N° 1809, de 27 de noviembre de 2013, solamente se podrá efectuar la aprobación del predio en Area Productiva Agropecuaria sobre la totalidad de la superficie, ' . $dataSource->getParameter('conclusion') . ', por lo que NO corresponde la prosecución del trámite, para lo cual se <b>RECOMIENDA</b> efectuar la Resolución de Rechazo del trámite previo análisis y emisión de un informe, de la parte técnica, asimismo se deberá remitir el trámite a la <b>Dirección de Asesoría Legal del Gobierno Autónomo Municipal de Colcapirhua</b>, para que en coordinación con las Oficinas de Derechos Reales se pueda corroborar la legalidad y veracidad de la documentación técnica - legal bajo el principio de buena fe que solicito el propietario derivando el mismo al fraccionamiento y posterior inscripción del predio que se encuentra ubicado actualmente en <b>Área Productiva (A.P.A.U.)</b>, sin contar con alguna Resolución de tipo Municipal, Agraria o Nacional para este efecto';
 
                 $htmlViñetas2 = '<ul>';
                 $htmlViñetas2 .= '<li style="text-align: justify">' . $htmlAPAU9 . '</li>';
@@ -442,17 +442,17 @@ class RInformeLegal extends Report
             } else {
                 // --- Párrafo 1: Ley 411 ---
                 $pdf->verificarEspacio(30);
-                $pdf->writeHTMLCell(180, 0, '', '', 'Que, Según la <b>Ley 411</b> de fecha 26 de octubre de 2004, Capitulo II Reglamento Técnica de Edificaciones en su <b>Artículo 25. (Alcances específicos)</b> podrán acoger de manera voluntaria al proceso de regularización Técnica de edificaciones, aquellos ciudadanos que no cuenten con planos aprobados...', 0, 1, 0, true, 'J', true);
+                $pdf->writeHTMLCell(180, 0, '', '', 'Que, Según la Ley 411 de fecha 26 de octubre de 2004, Capitulo II Reglamento Técnica de Edificaciones en su Artículo 25. (Alcances específico para Regularización Técnica de Edificaciones) podrán acoger de manera voluntaria al proceso de regularización Técnica de edificaciones, aquellos ciudadanos que no cuenten con planos aprobados y/o que teniendo planos aprobados de contrucción estos hayan sido contruidos res´petando las disposiciones Municipales vigentes.', 0, 1, 0, true, 'J', true);
                 $pdf->Ln(4);
 
                 // --- Párrafo 2: PLANUR Art. 109 ---
                 $pdf->verificarEspacio(40);
-                $pdf->writeHTMLCell(180, 0, '', '', 'Que, Según el <b>PLANUR O.M. 0004/2004</b> en su artículo 109, Construcciones Fuera de Norma.- Las construcciones que no cumplen con los planos debidamente aprobados serán paralizadas, en su caso demolidas. Por todo lo Expuesto se verifica que la construcción ya está consolidada sin haber tenido un plano de lote aprobado...', 0, 1, 0, true, 'J', true);
+                $pdf->writeHTMLCell(180, 0, '', '', 'Que, Según el PLANUR O.M. 0004/2004 de fecha 13 de febrero de 2004 en su artículo 109, Constrcciones Fuera de Norma.- Las contrucciones que no cumplen son los planos debidamente aprobados y que no cumplan con lo establesido en el presente reglamento serán paralizadas, en su caso demolidas. Por todo lo Expuesto se verifica que la construcción ya está consolidad sin haber tenido un plano de lote aprobada por lo que según reglamento y normas vigentes procede al rechazo de dicho trámite, Aprobación de Plano de Vivienda Multifamiliar, debidamente la misma proceder en primera instancia al Trámite de aprobación de plano de lote.', 0, 1, 0, true, 'J', true);
                 $pdf->Ln(4);
 
                 // --- Párrafo 3: PLANUR Art. 107 ---
                 $pdf->verificarEspacio(30);
-                $pdf->writeHTMLCell(180, 0, '', '', 'Que, Según el reglamento <b>PLANUR</b> en su <b>Art. 107 Inciso de la construcción</b>.- para iniciar la construcción de una edificación de cualquier naturaleza es necesario contar con el respectivo Plano arquitectónico aprobado por la alcaldía de Colcapirhua...', 0, 1, 0, true, 'J', true);
+                $pdf->writeHTMLCell(180, 0, '', '', 'Que, Según el reglamento par Urbanismo y Edificaciones PLANUR de fecha 13 de febrero de 2004 en su Art. 107 Inciso de la construcción.- para iniciar la constrcción de una edificación de cualquier naturaleza es necesario contar con el respectivo Plano arquitectonico aprobado por la alcaldia de Colcapirhua, no siento suficiente que el tramite se encuentra en curso de aprobación.', 0, 1, 0, true, 'J', true);
                 $pdf->Ln(4);
 
                 // --- Párrafo 4: PLANUR Art. 112 ---
@@ -502,7 +502,7 @@ class RInformeLegal extends Report
                 // --- PÁRRAFO FINAL DE CONCLUSIÓN ---
                 $pdf->SetFont('', 'N');
                 $pdf->Ln(4);
-                $conclusionFinal = 'En la cual teniendo un pronunciamiento de la Jefatura de Urbanismo - Arq. ' . $dataSource->getParameter('via') . ', se puede observar que la construcción de vivienda se encuentra infringiendo a la norma vigente e incumpliendo al PLANUR... por lo que NO corresponde la prosecución del trámite, para lo cual se <b>RECOMIENDA</b> efectuar la Resolución de Rechazo.';
+                $conclusionFinal = 'En la cual teniendo un pronunciamiento de la Jefatura de Urbanismo - Arq.' . $dataSource->getParameter('via') . ', se puede observar que la construcción de vivienda se encuentra infringiendo a la norma vigente e incumpliendo al PLANUR, Resolución Municipal BI-Secretarial N° 01/2020 de 11/12/2020 de la resolución Municipal BI-Secretarial y con lo establecido en el Decreto Municipal 007/2016 de fecha 16/09/2016; por lo que NO corresponde la prosecución del trámite, para lo cual se' . ' RECOMIENDA' . ' efectuar la Resolución de Rechazo del trámite previo análisis, bajo el principio de buena fe que solicito el propietario.';
                 
                 $pdf->writeHTMLCell(180, 0, '', '', $conclusionFinal, 0, 1, 0, true, 'J', true);
                 $pdf->Ln(5);
@@ -530,11 +530,12 @@ class RInformeLegal extends Report
 
             // 2. Fundamentos Legales (Correlativos)
             $pdf->verificarEspacio(35);
-            $pdf->writeHTMLCell(180, 0, '', '', 'De conformidad al <b>Art. 24 de la C.P.E.</b>, toda persona tiene derecho a la petición... así también menciona en su <b>art. 56</b> que se garantiza la propiedad privada siempre que cumpla una función social.', 0, 1, 0, true, 'J', true);
+            //$pdf->writeHTMLCell(180, 0, '', '', 'De conformidad al <b>Art. 24 de la C.P.E.</b>, toda persona tiene derecho a la petición... así también menciona en su <b>art. 56</b> que se garantiza la propiedad privada siempre que cumpla una función social.', 0, 1, 0, true, 'J', true);
+            $pdf->writeHTMLCell(180, 0, '', '', 'De conformidad al Art. 24 Constitución Politica del Estado Plurinacional. Toda persona tiene derecho a la Petición de manera individual o colectiva, sea oral o escrita, y a la obtención de respuesta formal y pronta. Para el ejercicio de este derecho no exigirá mas requisito que la identificación del peticionante, así tembién menciona en su art. 56 inc I.- Toda persona tiene derecho a la pro´piedad privada individual o colectiva, siempre que esta cumpla una función social. II. Se garantiza la propiedad privada siempre que el uso que se haga de ella no sea perjudicial al interes colectivo.', 0, 1, 0, true, 'J', true);
             $pdf->Ln(3);
 
             $pdf->verificarEspacio(25);
-            $pdf->writeHTMLCell(180, 0, '', '', 'Que, en virtud a la <b>Ley N° 2341</b> de procedimiento Administrativo, los procedimientos deben responder a los principios de economía, simplicidad y celeridad...', 0, 1, 0, true, 'J', true);
+            $pdf->writeHTMLCell(180, 0, '', '', 'Que, la Ley N° 2341 de Procedimiento Administrativo, en el inc. K) del Art. 4 establece que los procedimientos administrativos, deben responder a los principios de economía, simplicidad y celeridad, evitando la realización de trámites, formalismos o diligencias innecesarias.', 0, 1, 0, true, 'J', true);
             $pdf->Ln(3);
 
             $pdf->verificarEspacio(25);
@@ -571,7 +572,7 @@ class RInformeLegal extends Report
             $pdf->Ln(2);
             
             $pdf->SetFillColor(245, 245, 245); // Un ligero gris para resaltar el texto del decreto
-            $pdf->writeHTMLCell(180, 0, '', '', '<i>"1.- Las áreas productivas agropecuarias urbanas (A.P.A.U.) no podrán ser objeto de cambio de uso de suelo ni urbanizables en un plazo de (15) años..."</i>', 0, 1, 1, true, 'C', true);
+            $pdf->writeHTMLCell(180, 0, '', '', '<b>"1.- Las áreas productivas agropecuarias urbanas (A.P.A.U.)no podrán ser cambio de uso y de suelo. ni urbanizables en un plazo de (15) años a partir de la publicación del presente Decreto Supremo"</b>; por lo que se recomienda la prosecución del expediente administrativo, faltando la aprobación de la parte técnica del plano solicitado a ser aprobado.', 0, 1, 1, true, 'C', true);
             $pdf->Ln(3);
 
             // 6. Recomendación Final
@@ -605,15 +606,15 @@ class RInformeLegal extends Report
             if ($dataSource->getParameter('id_tipo_tramite') == 20 && $dataSource->getParameter('aprobacion') == 'si') {
                 
                 $pdf->verificarEspacio(35);
-                $pdf->writeHTMLCell(180, 0, '', '', 'De conformidad al <b>Art. 24 de la C.P.E.</b>, toda persona tiene derecho a la petición... así también menciona en su <b>art. 56</b> que se garantiza la propiedad privada siempre que cumpla una función social.', 0, 1, 0, true, 'J', true);
+                $pdf->writeHTMLCell(180, 0, '', '', 'De conformidad al Art. 24 Constitución Politica del Estado Plurinacional, art. 24, Toda persona tiene derecho a la petición, de forma individual o colectiva, oral o escrita. Además, garantiza el derecho a recibir una respuesta formal y pronta sin más requisito que la identificación del peticionario, asi tambien menciona en su art.56 inc. l.- Toda persona tiene derecho a la propiedad privada individual o colectiva, siempre que esta cumpla una función social. ll. Se garantiza la propiedad privada siempre que el uso que se haga de ella no sea perjudicial al interes colectivo.', 0, 1, 0, true, 'J', true);
                 $pdf->Ln(3);
 
                 $pdf->verificarEspacio(25);
-                $pdf->writeHTMLCell(180, 0, '', '', 'Que, en virtud a la <b>Ley N° 2341</b>, los procedimientos administrativos deben responder a los principios de economía, simplicidad y celeridad...', 0, 1, 0, true, 'J', true);
+                $pdf->writeHTMLCell(180, 0, '', '', 'Que, en virtud a la Ley N° 2341 de procedimiento Administrativo, en inc. k) del art. 4 establece que los procedimientos administrativos, deben responder a los principios de economia, simplicidad y celeridad, evitando la realizacion de tramites, formalismos o diligencias innecesarias.', 0, 1, 0, true, 'J', true);
                 $pdf->Ln(3);
 
                 $pdf->verificarEspacio(45);
-                $htmlDS = 'Que, en virtud al <b>Decreto Supremo N° 5056</b> de fecha 22 de noviembre de 2023, se establece que: <i>"Las áreas productivas agropecuarias urbanas (A.P.A.U.) no podrán ser cambio de uso ni urbanizables en un plazo de (15) años..."</i>';
+                $htmlDS = 'Que, en virtud al Decreto Supremo N° 5056 de fecha 22 de noviembre de 2023; decreta en su Articulo Unico que: A fin de efectivizar los mecanismos de resguardo de las áreas productivas para garantizar la seguridad alimentaria con soberania, se modifica el parrafo l del Articulo 3 del Decreto Supremo N° 1809 de fecha 27 de noviembre de 2013 con el siguiente texto; "l.- Las áreas productivas agropecuarias urbanas (A.P.A.U.) no podrán ser cambio de uso y de suelo, ni urbanizables en un plazo de (15) años a partir de la publicación del presente Decreto Supremo".';
                 $pdf->writeHTMLCell(180, 0, '', '', $htmlDS, 0, 1, 0, true, 'J', true);
 
                 // AUMENTAR CONTENIDO 
@@ -650,7 +651,10 @@ class RInformeLegal extends Report
             } elseif (in_array($dataSource->getParameter('id_tipo_tramite'), range(1, 19)) && $dataSource->getParameter('aprobacion') == 'si') {
                 
                 $pdf->verificarEspacio(35);
-                $pdf->writeHTMLCell(180, 0, '', '', 'De conformidad al <b>Art. 24 de la C.P.E.</b> y el <b>Art. 56</b> sobre el derecho a la propiedad privada individual o colectiva...', 0, 1, 0, true, 'J', true);
+
+                /// Se corrigio texto
+                //$pdf->writeHTMLCell(180, 0, '', '', 'De conformidad al <b>Art. 24 de la C.P.E.</b> y el <b>Art. 56</b> sobre el derecho a la propiedad privada individual o colectiva...', 0, 1, 0, true, 'J', true);
+                $pdf->writeHTMLCell(180, 0, '', '', 'De conformidad al Art. 24 Constitución Politica del Estado Plurinacional. Toda persona tiene derecho a la Petición de manera individual o colectiva, sea oral o escrita, y a la obtención de respuesta formal y pronta. Para el ejercicio de este derecho no exigirá mas requisito que la identificación del peticionante, así tembién menciona en su art. 56 inc I.- Toda persona tiene derecho a la pro´piedad privada individual o colectiva, siempre que esta cumpla una función social. II. Se garantiza la propiedad privada siempre que el uso que se haga de ella no sea perjudicial al interes colectivo.', 0, 1, 0, true, 'J', true);
                 $pdf->Ln(3);
 
                 $pdf->verificarEspacio(30);

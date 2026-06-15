@@ -1,773 +1,915 @@
 <?php
 require_once dirname(__FILE__) . '/pxpReport/Report.php';
 require_once dirname(__FILE__) . '/pxpReport/DataSource.php';
-//require_once dirname(__FILE__) . '/../../lib/tcpdf/tcpdf.php';
-//ini_set('display_errors', 'On');
-class CustomReport extends TCPDF {
 
+class CustomReport extends TCPDF
+{
     private $dataSource;
 
-    public function setDataSource(DataSource $dataSource) {
+    // --- AÑADE ESTO AQUÍ ---
+    public function verificarEspacio($h) {
+        return $this->checkPageBreak($h);
+    }
+
+    public function setDataSource(DataSource $dataSource)
+    {
         $this->dataSource = $dataSource;
     }
 
-    public function getDataSource() {
+    public function getDataSource()
+    {
         return $this->dataSource;
     }
 
     public function Header() {
         $dataSource = $this->getDataSource();
-        $height = 6;
-        $midHeight = 9;
-        $longHeight = 18;
-
-        $x = $this->GetX();
-        $y = $this->GetY();
-        $this->SetXY($x, $y);
-
-        $this->Image(dirname(__FILE__).'/../../lib'.$_SESSION['_DIR_LOGO'], 16, 12, 36);
-        $x = $this->GetX();
-        $y = $this->GetY();
-        $this->SetFontSize(16);
-        $this->SetFont('', 'B');
         
-        //$this->Cell(60, $longHeight, '', '', 0, 'C', false, '', 0, false, 'T', 'C');
-        $this->Cell(180, $longHeight, ' INFORME LEGAL', ' ', 0, 'R', false, '', 0, false, 'T', 'C');
-        $this->Ln(5);
-        $this->SetFontSize(12);
-        $this->Cell(180, $longHeight, $dataSource->getParameter('num_informe'), 'B', 0, 'R', false, '', 0, false, 'T', 'C');
-        $x = $this->GetX();
-        $y = $this->GetY();
+        // 1. Dibujar el Logo
+        $logo = dirname(__FILE__) . '/../../lib' . $_SESSION['_DIR_LOGO'];
+        if (file_exists($logo)) {
+            $this->Image($logo, 15, 10, 35); // Posición fija solo para la imagen
+        }
 
-       
+        // 2. Título del Informe
+        $this->SetY(10); // Iniciamos en la parte superior
+        $this->SetFont('helvetica', 'B', 16);
+        $this->Cell(0, 15, 'INFORME LEGAL', 0, 1, 'R');
+
+        // 3. Número de Informe con línea inferior
+        $this->SetFont('helvetica', 'B', 12);
+        // El '1' al final del Cell es VITAL para el salto de línea automático
+        $this->Cell(0, 8, $dataSource->getParameter('num_informe'), 'B', 1, 'R');
+        
+        // NO poner SetXY aquí. El margen superior hará el trabajo.
     }
 
     public function Footer() {
-        //TODO: implement the footer manager
         $dataSource = $this->getDataSource();
-        //$this->SetFooterMargin(PDF_MARGIN_FOOTER);
-        $x = $this->GetX();
-        $y = $this->GetY();
-        $this->SetY(-15);
-        $this->SetFont('helvetica', 'I', 6);
-        $this->Cell(180, 0, 'usuario: '.$dataSource->getParameter('de'), 0, 1, 'L');
-        $this->Cell(180, 10, 'Pagina: '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
-        $html = 'Numero Tramite: '.$dataSource->getParameter('num_informe')."\n".'Tramite: '.$dataSource->getParameter('nombre_tramite')."\n".'Usuario: '.$dataSource->getParameter('de')."\n".'Sistema de Tramites ';
+        
+        // Posicionarse a 15mm del final
+        $this->SetY(-25);
+        $this->SetFont('helvetica', 'I', 8);
+        
+        // Imprime los datos alineados a la izquierda
+        $this->Cell(180, 4, 'Usuario: '.$dataSource->getParameter('de'), 0, 1, 'L');
+        $this->Cell(180, 4, 'SISTEMA DE TRAMITES - G.A.M.C.', 0, 1, 'L'); 
+        
+        // Imprime la página centrada (dejando el salto de línea al final)
+        $this->Cell(180, 4, 'Página: '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, 1, 'C');
+
+        // Configuración del QR
         $style = array(
             'border' => 0,
             'vpadding' => 'auto',
             'hpadding' => 'auto',
             'fgcolor' => array(0,0,0),
-            'bgcolor' => false, //array(255,255,255)
-            'module_width' => 1, // width of a single module in points
-            'module_height' => 1 // height of a single module in points
+            'bgcolor' => false,
+            'module_width' => 1,
+            'module_height' => 1
         );
-        
-        $this->write2DBarcode($html, 'QRCODE,M', 170, 290, 30, 30, $style, 'N');
-        
-      //  $this->write2DBarcode($html, 'PDF417', $x+80, $y-5, 0, 30, $style, 'N');
-        //$this->Text(20, 25, 'QRCODE M');
-       // $this->Image(dirname(__FILE__) . '/../media/firma.png', 98, 220, 35, 35, '', '', '', false, 300, '', false, false, 0);
-        
-    } 
+
+        // QR fijo a la derecha, cerca del margen inferior
+        $this->write2DBarcode($dataSource->getParameter('num_informe'), 'QRCODE,M', 170, $this->getPageHeight() - 35, 25, 25, $style, 'N');
+    }
 
 }
 
-Class RInformeLegal extends Report {
-
-    function write($fileName) {
+class RInformeLegal extends Report
+{
+    function write($fileName)
+    {
+        // 1. Instancia con configuración de márgenes estrictos
         $pdf = new CustomReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
         $pdf->setDataSource($this->getDataSource());
         $dataSource = $this->getDataSource();
-        // set document information
-        $pdf->SetCreator(PDF_CREATOR);
-        /*$pdf->SetAuthor('Nicola Asuni');
-         $pdf->SetTitle('TCPDF Example 006');
-         $pdf->SetSubject('TCPDF Tutorial');
-         $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
-         */
 
-        // set default monospaced font
-        $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+        // Márgenes: Izquierdo=15, Superior=45 (espacio para Header), Derecho=15
+        $pdf->SetMargins(15, 45, 15);
+        $pdf->SetAutoPageBreak(TRUE, 40); // 40mm de margen inferior para el QR/Footer
+        $pdf->SetHeaderMargin(10);
+        $pdf->SetFooterMargin(10);
 
-        //set margins
-        $pdf->SetMargins(PDF_MARGIN_LEFT, 30, PDF_MARGIN_RIGHT);
-        $pdf->SetHeaderMargin(8);
-        $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+        $pdf->AddPage('P', array(215.9, 330)); // Tamaño Oficio
+        $pdf->SetFontSize(10);
 
-        //set auto page breaks
-        $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+        $pdf->SetFontSize(10);
+        $pdf->SetFont('', 'B');
+        $pdf->Cell($w = 15, $h = $hMedium, $txt = 'A: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+        $pdf->SetFont('', 'N');
+        $pdf->Cell($w = 5, $h = $hMedium, $txt = $dataSource->getParameter('nombrea'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+        $pdf->Ln(4);
+        $pdf->SetFont('', 'B');
+        $pdf->Cell($w = 15, $h = $hMedium, $txt = '   ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+        $pdf->Cell($w = 5, $h = $hMedium, $txt = $dataSource->getParameter('cargoa'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+        $pdf->Ln(5);
+        $pdf->SetFont('', 'B');
+        $pdf->Cell($w = 15, $h = $hMedium, $txt = 'Via: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+        $pdf->SetFont('', 'N');
+        $pdf->Cell($w = 10, $h = $hMedium, $txt = $dataSource->getParameter('via'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+        $pdf->Ln(4);
+        $pdf->SetFont('', 'B');
+        $pdf->Cell($w = 15, $h = $hMedium, $txt = '    ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+        $pdf->Cell($w = 10, $h = $hMedium, $txt = $dataSource->getParameter('cargovia'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+        $pdf->Ln(5);
+        $pdf->SetFont('', 'B');
+        $pdf->Cell($w = 15, $h = $hMedium, $txt = 'De: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+        $pdf->SetFont('', 'N');
+        $pdf->Cell($w = 10, $h = $hMedium, $txt = $dataSource->getParameter('de'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+        $pdf->Ln(4);
+        $pdf->SetFont('', 'B');
+        $pdf->Cell($w = 15, $h = $hMedium, $txt = '    ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+        $pdf->Cell($w = 10, $h = $hMedium, $txt = $dataSource->getParameter('cargode'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+        $pdf->Ln(5);
+        $pdf->SetFont('', 'B');
+        $pdf->Cell($w = 15, $h = $hMedium, $txt = 'Fecha: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+        $pdf->SetFont('', 'N');
+        $pdf->Cell($w = 10, $h = $hMedium, $txt = 'Colcapirhua, ' . $dataSource->getParameter('dia') . ' de ' . $dataSource->getParameter('mes') . ' de ' . $dataSource->getParameter('anio'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+        $pdf->Ln(5);
+        $pdf->SetFont('', 'B');
+        $pdf->Cell($w = 180, $h = $hMedium, $txt = 'REF:       ' . strtoupper($dataSource->getParameter('referencia')), 'B', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+        $pdf->Ln(8);
+        $pdf->SetFont('', 'B');
+        $pdf->Cell($w = 63, $h = $hMedium, $txt = 'ANTECEDENTES ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+        $pdf->Ln(8);
+        $pdf->SetFont('', 'N');
+        $pdf->Cell($w = 63, $h = $hMedium, $txt = 'De mi consideración: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+        $pdf->Ln(8);
+        $pdf->MultiCell(180, $h = $hMedium, 'Conforme a la documentación presentada por:', 0, 'L', 0, 0, '', '', true);
+        $pdf->Ln(5);
+        $count = 0;
 
-        //set image scale factor
-        $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
-
-        //set some language-dependent strings
-        // $pdf->setLanguageArray($l);
-
-        // Crea la pagina para mostrar los totales de los almacenes.
-        $pdf->AddPage('P', array(215.9, 330));
-
-        $hGlobal = 5;
-        $hMedium = 7.5;
-        $hLong = 15;
-
-        //var_dump($dataSource); exit;
-		
-        //$pdf->Cell($w = 30, $h = $hGlobal, $txt = '', $border = 0, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-		//$pdf->SetFontSize(12);
-		//if ($dataSource->getParameter('mostrar_costos') != 'no') {
-				
-			$pdf->SetFontSize(10);
-			$pdf->SetFont('', 'B');
-            $pdf->Cell($w = 15, $h = $hMedium, $txt = 'A: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-            $pdf->SetFont('', 'N');
-			$pdf->Cell($w = 5, $h = $hMedium, $txt = $dataSource->getParameter('nombrea'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-            $pdf->Ln(4);
-            $pdf->SetFont('', 'B');
-            $pdf->Cell($w = 15, $h = $hMedium, $txt = '   ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-			$pdf->Cell($w = 5, $h = $hMedium, $txt = $dataSource->getParameter('cargoa'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-            $pdf->Ln(5);           
-            $pdf->SetFont('', 'B');             
-	        $pdf->Cell($w = 15, $h = $hMedium, $txt = 'Via: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            $pdf->SetFont('', 'N');
-            $pdf->Cell($w = 10, $h = $hMedium, $txt = $dataSource->getParameter('via'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-            $pdf->Ln(4);
-            $pdf->SetFont('', 'B');
-	        $pdf->Cell($w = 15, $h = $hMedium, $txt = '    ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	  
-            $pdf->Cell($w = 10, $h = $hMedium, $txt = $dataSource->getParameter('cargovia'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-            $pdf->Ln(5);
-            $pdf->SetFont('', 'B');
-            $pdf->Cell($w = 15, $h = $hMedium, $txt = 'De: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            $pdf->SetFont('', 'N');
-            $pdf->Cell($w = 10, $h = $hMedium, $txt = $dataSource->getParameter('de'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-            $pdf->Ln(4);
-            $pdf->SetFont('', 'B');
-	        $pdf->Cell($w = 15, $h = $hMedium, $txt = '    ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	  
-            $pdf->Cell($w = 10, $h = $hMedium, $txt = $dataSource->getParameter('cargode'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-            $pdf->Ln(5);
-            $pdf->SetFont('', 'B');
-            $pdf->Cell($w = 15, $h = $hMedium, $txt = 'Fecha: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            $pdf->SetFont('', 'N');
-            $pdf->Cell($w = 10, $h = $hMedium, $txt = 'Colcapirhua, '.$dataSource->getParameter('dia').' de '.$dataSource->getParameter('mes').' de '.$dataSource->getParameter('anio'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-            $pdf->Ln(5);
-            $pdf->SetFont('', 'B');
-	        $pdf->Cell($w = 180, $h = $hMedium, $txt = 'REF:       '.strtoupper($dataSource->getParameter('referencia')), 'B', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-			$pdf->Ln(8);
-            $pdf->SetFont('', 'B');
-            $pdf->Cell($w = 63, $h = $hMedium, $txt = 'ANTECEDENTES ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-            $pdf->Ln(8);
-            $pdf->SetFont('', 'N');
-            $pdf->Cell($w = 63, $h = $hMedium, $txt = 'De mi consideración: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-            $pdf->Ln(8);
-            $pdf->MultiCell(180, $h = $hMedium, 'Conforme a la documentación presentada por:', 0, 'L', 0, 0, '', '', true);
-            $pdf->Ln(5);
-            foreach ($dataSource->getDataSet() as $row) {
-                $tipo_persona = $row['tipo_persona'];
-                //var_dump("tipo: ",$tipo_persona); 
-                if ( $tipo_persona == "propietario"){
-                    $pdf->SetFont('', 'B');
-                    $pdf->Cell($w = 70, $h = $hMedium, $txt = $row['nombre_completo1'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-                    $pdf->SetFont('', 'N');
-	                $pdf->Cell($w = 18, $h = $hMedium, $txt = 'con C.I. N°: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-                    $pdf->SetFont('', 'B');
-                    $pdf->Cell($w = 12, $h = $hMedium, $txt = $row['ci'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-                    $pdf->Cell($w = 7, $h = $hMedium, $txt = '  ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   	
-                    $pdf->Cell($w = 5, $h = $hMedium, $txt = $row['expedicion'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-                    $pdf->Ln();
-                };                 
-            };
-            
-            $pdf->SetFont('', 'N');
-            $pdf->MultiCell(180, $h = $hMedium, 'Es propietario de un lote de terreno ubicado, según FOLIO REAL (Registrado en Derechos Reales, SEGÚN LOS SIGUIENTES DATOS: ', 0, 'J', 0, 0, '', '', true);
-            $pdf->Ln(9);
-            
-            $pdf->Cell($w = 90, $h = $hMedium, $txt = 'Provincia: Quillacollo', $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-            $pdf->Cell($w = 90, $h = $hMedium, $txt = 'Sección: Quinta', $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            $pdf->Ln(7);
-            $pdf->Cell($w = 90, $h = $hMedium, $txt = 'Municipio: Colcapirhua ', $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-            $pdf->Cell($w = 90, $h = $hMedium, $txt = 'Zona: '.$dataSource->getParameter('zona'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            $pdf->Ln(7);
-            $pdf->Cell($w = 90, $h = $hMedium, $txt = 'Distrito: '.$dataSource->getParameter('distrito'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-            $pdf->Cell($w = 90, $h = $hMedium, $txt = 'Manzano: '.$dataSource->getParameter('manzana'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            $pdf->Ln(7);
-            $pdf->Cell($w = 90, $h = $hMedium, $txt = 'Lote: '.$dataSource->getParameter('lote'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            $pdf->Cell($w = 90, $h = $hMedium, $txt = 'Superficie: '.$dataSource->getParameter('superficie').' m2', $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            $pdf->Ln(7);
-            $pdf->Cell($w = 90, $h = $hMedium, $txt = 'Teniendo su derecho propietario debidamente', $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            $pdf->Cell($w = 90, $h = $hMedium, $txt = ' ', $border = '', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            $pdf->Ln(7);
-            $pdf->Cell($w = 90, $h = $hMedium, $txt = 'Registrado en Derechos Reales de: '.$dataSource->getParameter('ddrr_registro'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            $pdf->Cell($w = 90, $h = $hMedium, $txt = 'Bajo Matricula computarizada N°: '.$dataSource->getParameter('nro_matricula'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            $pdf->Ln(7);
-            $pdf->Cell($w = 90, $h = $hMedium, $txt = 'Con Asiento N°: '.$dataSource->getParameter('asiento'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            $pdf->Cell($w = 90, $h = $hMedium, $txt = 'de fecha: '.$dataSource->getParameter('fecha_asiento'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            $pdf->Ln(7);
-
-            $pdf->Cell($w = 160, $h = $hMedium, $txt = 'Aprobado mediante: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-            $pdf->Ln(7);
-
-            $pdf->Cell($w = 90, $h = $hMedium, $txt = 'R.M.T.A. N°: '.$dataSource->getParameter('nro_rmta'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-            $pdf->Cell($w = 90, $h = $hMedium, $txt = 'De Fecha: '.$dataSource->getParameter('fecha_rmta'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            $pdf->Ln(7);
-            $pdf->Cell($w = 90, $h = $hMedium, $txt = 'Código Catastral N°: '.$dataSource->getParameter('cod_catastral'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            $pdf->Cell($w = 90, $h = $hMedium, $txt = ' ', $border = '', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            $pdf->Ln(10);
-
-            $pdf->MultiCell(180, $h = $hMedium, 'Conforme el testimonio N° '.$dataSource->getParameter('nro_testimonio').' de fecha '.$dataSource->getParameter('fecha_testimonio').', otorgado por la Notaria de Fe Pública N° '.$dataSource->getParameter('nro_notario').', '.$dataSource->getParameter('nombre_notario').', (Escritura Pública de transferencia de un lote de terreno).', 0, 'J', 0, 0, '', '', true);
-            $pdf->Ln(9);
-            
-            $pdf->SetFont('', 'B');
-            $pdf->Cell($w = 19, $h = $hMedium, $txt = 'FUNDAMENTO LEGAL.- ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-            $pdf->Ln(8);
-            $pdf->SetFont('', 'N');
-/*aqui estamos poniendo algo para subir */
-
-            if($dataSource->getParameter('aprobacion') == 'no' ){
-                if ($dataSource->getParameter('tipo_rechazo') == "FRU"){
-                    /*
-                    * FRU
-                    * */
-                    $pdf->MultiCell(180, $h = $hMedium, 'Que, la Ley N° 2341 de Procedimiento Administrativo, en el inc. K) del Art. 4 establece que los procedimientos administrativos, deben responder a los principios de economía, simplicidad y celeridad, evitando la realización de trámites, formalismos o diligencias innecesarias.', 0, 'J', 0, 0, '', '', true);
-                    $pdf->Ln(28);
-                    $pdf->MultiCell(180, $h = $hMedium, 'Que, de acuerdo a la Resolución Municipal Bi-Secretarial N° 1/2020 de fecha 11 de diciembre de 2020 emitida por Secretaria Municipal Técnica del Gobierno Autónomo Municipal de Colcapirhua, los contribuyentes deben cumplir con los procedimientos y requisitos para los trámites administrativos y técnicos de la Dirección de Urbanismo y Catastro.', 0, 'J', 0, 0, '', '', true);
-                    $pdf->Ln(28);
-                    $pdf->MultiCell(180, $h = $hMedium, 'Que, según el límite de homologación 100/2018 de fecha 12 de abril de 2018, emitido por el ministerio de la presidencia, el predio se encuentra fuera del radio urbano (FRU) del municipio de Colcapirhua.', 0, 'J', 0, 0, '', '', true);
-                    $pdf->Ln(30);
-                    $pdf->SetFont('', 'B');
-                    $pdf->Cell($w = 19, $h = $hMedium, $txt = 'CONCLUSIONES y RECOMENDACION.- ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-                    $pdf->Ln(8);
-                    $pdf->SetFont('', 'N');
-                    $pdf->MultiCell(180, $h = $hMedium, 'Que, según el límite de homologación 100/2018 de fecha 12 de abril de 2018, emitido por el ministerio de la presidencia, el predio se encuentra fuera del radio urbano (FRU) del municipio de Colcapirhua.', 0, 'L', 0, 0, '', '', true);
-                    $pdf->Ln(28);
-                    $pdf->MultiCell(180, $h = $hMedium, 'Es cuanto informo para fines consiguientes.', 0, 'L', 0, 0, '', '', true);
-                } elseif ($dataSource->getParameter('tipo_rechazo') == "INOVAR"){
-                    /*
-                    * INNOVAR
-                    * */
-                    $pdf->MultiCell(180, $h = $hMedium, 'Que, Según el <b>Código de Procedimiento Civil en su Art. 9. (Obligatoriedad).-</b> Las decisiones de las autoridades judiciales deben ser acatadas por todas las autoridades y personas individuales o colectivas. Las autoridades en general están en la obligación de prestar asistencia para el cumplimiento de las resoluciones judiciales.', 0, 'J', 0, 0, '', '', true);
-                    $pdf->Ln(28);
-                    $pdf->MultiCell(180, $h = $hMedium, 'Que, De acuerdo el <b>Código de Procedimiento Civil en su Art. 5. (Normas Procesales).-</b> Las  normas procesales son de orden público y en consecuencia, de obligado acatamiento, tanto por la autoridad judicial como por las partes y eventuales terceros. Se exceptúan de estas reglas, las normas que, aunque procesales, sean de carácter facultativo, por referirse a intereses privados de las partes.', 0, 'J', 0, 0, '', '', true);
-                    $pdf->Ln(30);
-                    $pdf->SetFont('', 'B');
-                    $pdf->Cell($w = 19, $h = $hMedium, $txt = 'CONCLUSIONES y RECOMENDACION.- ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-                    $pdf->Ln(8);
-                    $pdf->SetFont('', 'N');
-                    $pdf->MultiCell(180, $h = $hMedium, 'Realizado el Informe legal, conforme los antecedentes líneas arriba, quien es propietario Osvaldo Mercado Arias, en la cual teniendo un pronunciamiento de la Ene. En Sistemas de Información Geográfica Catastral, Informe CITE GOP 118/2025 de fecha 11 de julio de 2025, emitido por la Lic. Greny Olgueza Ponce, y en virtud a 10 determinado por Auto de fecha 02/05/2025 <b>Prohibición de  Innovar</b>, emitido por autoridad competente; por lo que NO corresponde la prosecución del trámite, para lo cual se <b>RECOMIENDA</b> efectuar la Resolución de Rechazo del trámite previo análisis, bajo el principio de buena fe que solicito el propietario.', 0, 'L', 0, 0, '', '', true);
-                    $pdf->Ln(28);
-                    $pdf->MultiCell(180, $h = $hMedium, 'Es cuanto informo para fines consiguientes.', 0, 'L', 0, 0, '', '', true);
-                } elseif ($dataSource->getParameter('tipo_rechazo') == "APAU"){
-                    /*
-                    * APAU
-                    * */
-                    $pdf->MultiCell(180, $h = $hMedium, '<b>LA LEY 715 DE SERVICIO DE REFORMA AGRARIA</b> establece en su <b>Artículo 48. (Indivisibilidad)</b>.', 0, 'J', 0, 0, '', '', true);
-                    $pdf->Ln(28);
-                    $pdf->MultiCell(180, $h = $hMedium, '"La propiedad agraria, bajo ningún título podrá dividirse en superficies menores a las establecidas para la pequeña propiedad. Las sucesiones hereditarias se mantendrán bajo régimen de indivisión forzosa. Con excepción del solar campesino, la propiedad agraria tampoco podrá titularse en superficies menores a la pequeña propiedad".', 0, 'J', 0, 0, '', '', true);
-                    $pdf->Ln(28);
-                    $pdf->MultiCell(180, $h = $hMedium, '<b>La Ley 442 LEY ESPECIAL DE CONSOLIDACIÓN, PLANIFICACIÓN, REGULARIZACIÓN TECNICA Y ADMINISTRATIVA Y TRATAMIENTO ESPECIAL DE ZONAS LIMITROFES DE LA JURISDICCIÓN DEL GOBIERNO AUTÓNOMO MUNICIPAL DE COLCAPIRHUA"</b> refiere en el numeral 5, articulo 7 (definiciones).', 0, 'J', 0, 0, '', '', true);
-                    $pdf->Ln(28);
-                    $pdf->MultiCell(180, $h = $hMedium, '<b>Área productiva Agropecuaria Urbana;</b> Porción de territorio urbano con uso de suelo agropecuario, forestal, piscicola, que mantendrá este uso por al menos diez (10) anos.', 0, 'J', 0, 0, '', '', true);
-                    $pdf->Ln(28);
-                    $pdf->SetFont('', 'B');
-                    $pdf->MultiCell(180, $h = $hMedium, '<>EL DECRETO SUPREMO 5065 establece en su artículo único', 0, 'J', 0, 0, '', '', true);
-                    $pdf->Ln(28);
-                    $pdf->SetFont('', 'N');
-                    $pdf->MultiCell(180, $h = $hMedium, 'A fin de efectivizar los mecanismos de resguardo de las áreas productivas para garantizar la seguridad alimentaria con soberanía, se modifica el Parágrafo I del Artículo 3 del Decreto Supremo N° 1809, de 27 de noviembre de 2013, con el siguiente texto:', 0, 'J', 0, 0, '', '', true);
-                    $pdf->Ln(28);
-                    $pdf->SetFont('', 'B');
-                    $pdf->MultiCell(180, $h = $hMedium, '"l. Las áreas productivas agropecuarias urbanas no podrán ser objeto de cambio de uso de suelo ni urbanizadas en un plazo de quince (15) años, a partir de la publicación del presente Decreto  Supremo."', 0, 'J', 0, 0, '', '', true);
-                    $pdf->Ln(30);
-                    $pdf->Cell($w = 19, $h = $hMedium, $txt = 'CONCLUSIONES y RECOMENDACION.- ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-                    $pdf->Ln(8);
-                    $pdf->SetFont('', 'N');
-                    $pdf->MultiCell(180, $h = $hMedium, 'En virtud a los antecedentes  descritos y la normativa  vigente,  se establecen  los siguientes aspectos:', 0, 'L', 0, 0, '', '', true);
-                    $pdf->Ln(28);
-                    $pdf->MultiCell(180, $h = $hMedium, 'De acuerdo a documentación presentada se puede observar un fraccionamiento del predio y el registro en derechos reales de la parte fraccionada, el cual al ser un terreno ubicado en <b>área productiva agropecuaria NO es susceptible a ser fraccionado</b>, toda vez que la regularización del predio se debe realizar sobre la totalidad de la superficie y no así sobre una parte fraccionada, pudiendo efectuarse la urbanización y fraccionamiento una vez se efectúe el cambio de uso de suelo.', 0, 'L', 0, 0, '', '', true);
-                    $pdf->Ln(28);
-                    $pdf->MultiCell(180, $h = $hMedium, 'En cumplimiento a la normativa vigente al encontrarse el terreno en <b>área   productiva agropecuaria</b> y al no ser objeto de cambio de uso de suelo ni urbanizable en el plazo de 15 años a partir de la publicación del Decreto Supremo N° 1809, de 27 de noviembre de 2013, solamente se podrá efectuar la aprobación del predio en Area Productiva Agropecuaria sobre la totalidad de la superficie, es decir la <b>extensión superficial de 6.187,02  m2</b> y no así sobre los 3.093,65 m2, por lo que NO corresponde la prosecución del trámite, para lo cual se <b>RECOMIENDA</b> efectuar la Resolución de Rechazo del trámite previo análisis y emisión de un informe, de la parte técnica, asimismo se deberá remitir el trámite a la <b>Dirección de Asesoría Legal del Gobierno Autónomo Municipal de Colcapirhua</b>, para que en coordinación con las Oficinas de Derechos Reales se pueda corroborar la legalidad y veracidad de la documentación técnica - legal bajo el principio de buena fe que solicito el propietario derivando el mismo al fraccionamiento y posterior inscripción del predio que se encuentra ubicado actualmente en <b>Área Productiva (A.P.A.U.)</b>, sin contar con alguna Resolución de tipo Municipal, Agraria o Nacional para este efecto', 0, 'L', 0, 0, '', '', true);
-                    $pdf->Ln(28);
-                    $pdf->MultiCell(180, $h = $hMedium, 'En virtud a los antecedentes  descritos y la normativa  vigente,  se establecen  los siguientes aspectos:', 0, 'L', 0, 0, '', '', true);
-                    $pdf->Ln(28);
-                    $pdf->MultiCell(180, $h = $hMedium, 'Es cuanto se informa y se pone en conocimiento para fines consiguientes.', 0, 'L', 0, 0, '', '', true);
-                } elseif ($dataSource->getParameter('tipo_rechazo') == "DOBLE"){
-                    /*
-                    * Doble
-                    * */
-                    $pdf->MultiCell(180, $h = $hMedium, '<b>Que, De acuerdo al Art. 86 de la Ley 2341 (Conocimiento del T1ramite).-<b> "Los administrados que intervengan en un procedimiento, sus representantes o abogados, tendrá derecho a conocer en cualquier momento el estado del trámite ya tomar vista de las actuaciones".', 0, 'J', 0, 0, '', '', true);
-                    $pdf->Ln(28);
-                    $pdf->MultiCell(180, $h = $hMedium, '<b>Que, de acuerdo a la Resolución Municipal BI - Secretarial N° 1/2020 de fecha 11 de diciembre de 2020<b> emitida por Secretaria Municipal Técnica de Gobierno Autónomo Municipal de Colcapirhua, los contribuyentes deben cumplir con los procedimientos y requisitos para los trámites administrativos y técnicos de la Dirección de Urbanismo y Catastro.', 0, 'J', 0, 0, '', '', true);
-                    $pdf->Ln(30);
-                    $pdf->SetFont('', 'B');
-                    $pdf->Cell($w = 19, $h = $hMedium, $txt = 'CONCLUSIONES y RECOMENDACION.- ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-                    $pdf->Ln(8);
-                    $pdf->SetFont('', 'N');
-                    $pdf->MultiCell(180, $h = $hMedium, 'Realizado el Informe legal, conforme los antecedentes líneas arriba, en la cual teniendo un pronunciamiento Informe de Jefatura de Catastro CITE/CAT/T-IS,ClNo 0005/2025, de fecha 24/03/2025, emitido por el Ar. Richard Franco Condori Rocha, Arquitecto Técnico 1 servicios catastrales, Informe Técnico de los inmuebles para los tramite urba-No 000070 y 0000472, se puede observar que en posesión en derecho propietario a la valoración de los tramites 472 y 720 en la cual los interesados deberán regularizar el mejor derecho propietario ante la instancia llamada por Ley, para lo cual se <b>RECOMIENDA</b> efectuar la Resolución de Rechazo del trámite previo análisis, bajo el principio de buena fe.', 0, 'L', 0, 0, '', '', true);
-                    $pdf->Ln(28);
-                    $pdf->MultiCell(180, $h = $hMedium, 'Es cuanto informo para fines consiguientes.', 0, 'L', 0, 0, '', '', true);
+        $count = 0;
+        foreach ($dataSource->getDataSet() as $row) {
+            $tipo_persona = $row['tipo_persona'];
+            //var_dump("tipo: ",$tipo_persona); 
+            /*
+            if ($tipo_persona == "propietario") {
+                if ($count == 0) {
+                    $propietariosList = $row['nombre_completo1'];
                 } else {
-                    $pdf->MultiCell(180, $h = $hMedium, 'Que, Según la Ley 411 de fecha 26 de octubre de 2004, Capitulo II Reglamento Técnica de Edificaciones en su Artículo 25. (Alcances específico para Regularización Técnica de Edificaciones) podrán acoger de manera voluntaria al proceso de regularización Técnica de edificaciones, aquellos ciudadanos que no cuenten con planos aprobados y/o que teniendo planos aprobados de contrucción estos hayan sido contruidos res´petando las disposiciones Municipales vigentes.', 0, 'J', 0, 0, '', '', true);
-                    $pdf->Ln(28);
-                    $pdf->MultiCell(180, $h = $hMedium, 'Que, Según el PLANUR O.M. 0004/2004 de fecha 13 de febrero de 2004 en su artículo 109, Constrcciones Fuera de Norma.- Las contrucciones que no cumplen son los planos debidamente aprobados y que no cumplan con lo establesido en el presente reglamento serán paralizadas, en su caso demolidas. Por todo lo Expuesto se verifica que la construcción ya está consolidad sin haber tenido un plano de lote aprobada por lo que según reglamento y normas vigentes procede al rechazo de dicho trámite, Aprobación de Plano de Vivienda Multifamiliar, debidamente la misma proceder en primera instancia al Trámite de aprobación de plano de lote.', 0, 'J', 0, 0, '', '', true);
-                    $pdf->Ln(30);
-                    //$pdf->addPage();
-                    $pdf->AddPage();
-                    $pdf->Ln(2);
-                    $pdf->MultiCell(180, $h = $hMedium, 'Que, Según el reglamento par Urbanismo y Edificaciones PLANUR de fecha 13 de febrero de 2004 en su Art. 107 Inciso de la construcción.- para iniciar la constrcción de una edificación de cualquier naturaleza es necesario contar con el respectivo Plano arquitectonico aprobado por la alcaldia de Colcapirhua, no siento suficiente que el tramite se encuentra en curso de aprobación.', 0, 'J', 0, 0, '', '', true);
-                    $pdf->Ln(20);
-                    $pdf->MultiCell(180, $h = $hMedium, 'Que, Según el reglamento para Urbanizaciones y Edificaciones PLANUR de fecha 13 de febrero de 2004 en su Art. 112.- Tipos de Infracción.- se considerará infracción los siguientes actos cometidos por el propietario, diseñador y/o contrucción: * Contruir edificaciones sin contar previamente con los planos aprobados por la Alcaldia del lote o del proyecto arquitectónico.', 0, 'J', 0, 0, '', '', true);
-                    $pdf->Ln(15);
-
-                    $pdf->Ln(8);
-                    $pdf->SetFont('', 'B');
-                    $pdf->Cell($w = 19, $h = $hMedium, $txt = 'CONCLUSIONES y RECOMENDACION.- ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-                    $pdf->Ln(8);
-                    $pdf->SetFont('', 'N');
-                    $pdf->MultiCell(180, $h = $hMedium, 'Realizado el Informe Legal, conforme los antecedentes lineas arriba, quien es propietario: ', 0, 'L', 0, 0, '', '', true);
-                    $pdf->Ln(5);
-                    foreach ($dataSource->getDataSet() as $row) {
-                        $tipo_persona = $row['tipo_persona'];
-                        //var_dump("tipo: ",$tipo_persona); 
-                        if ( $tipo_persona == "propietario"){
-                            $pdf->SetFont('', 'B');
-                            $pdf->Cell($w = 70, $h = $hMedium, $txt = $row['nombre_completo1'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-                            $pdf->SetFont('', 'N');
-                            $pdf->Cell($w = 18, $h = $hMedium, $txt = 'con C.I. N°: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-                            $pdf->SetFont('', 'B');
-                            $pdf->Cell($w = 12, $h = $hMedium, $txt = $row['ci'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-                            $pdf->Cell($w = 7, $h = $hMedium, $txt = '  ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   	
-                            $pdf->Cell($w = 5, $h = $hMedium, $txt = $row['expedicion'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-                            $pdf->Ln();
-                        };                 
-                    };
-                    $pdf->SetFont('', 'N');
-                    $pdf->MultiCell(180, $h = $hMedium, 'En la cual teniendo un pronunciamiento de la Jefatura de Urbanismo - Arq.'.$dataSource->getParameter('via').', se puede observar que la construcción de vivienda se encuentra infringiendo a la norma vigente e incumpliendo al PLANUR, Resolución Municipal BI-Secretarial N° 01/2020 de 11/12/2020 de la resolución Municipal BI-Secretarial y con lo establecido en el Decreto Municipal 007/2016 de fecha 16/09/2016; por lo que NO corresponde la prosecución del trámite, para lo cual se'.' RECOMIENDA'.' efectuar la Resolución de Rechazo del trámite previo análisis, bajo el principio de buena fe que solicito el propietario.', 0, 'J', 0, 0, '', '', true);
-                    $pdf->Ln(30);
+                    $propietariosList .= "|" . $row['nombre_completo1'];
                 }
-            } 
 
-                /*APAU*/
-            if( $dataSource->getParameter('id_tipo_tramite') == 20 && $dataSource->getParameter('aprobacion') == 'si'){
-                $pdf->MultiCell(180, $h = $hMedium, 'De conformidad al Art. 24 Constitución Politica del Estado Plurinacional, art. 24, Toda persona tiene derecho a la petición, de forma individual o colectiva, oral o escrita. Además, garantiza el derecho a recibir una respuesta formal y pronta sin más requisito que la identificación del peticionario, asi tambien menciona en su art.56 inc. l.- Toda persona tiene derecho a la propiedad privada individual o colectiva, siempre que esta cumpla una función social. ll. Se garantiza la propiedad privada siempre que el uso que se haga de ella no sea perjudicial al interes colectivo.', 0, 'J', 0, 0, '', '', true);
-                $pdf->Ln(28);
-                $pdf->MultiCell(180, $h = $hMedium, 'Que, en virtud a la Ley N° 2341 de procedimiento Administrativo, en inc. k) del art. 4 establece que los procedimientos administrativos, deben responder a los principios de economia, simplicidad y celeridad, evitando la realizacion de tramites, formalismos o diligencias innecesarias.', 0, 'J', 0, 0, '', '', true);
-                $pdf->Ln(22);
-                $pdf->MultiCell(180, $h = $hMedium, 'Que de acuerdo a la Resolución Municipal Bi-Secretarial N° 1/2020 de fecha 11 de diciembre de 2020 emitida por Secretaria Municipal Técnica del Gobierno Autónomo Municipal de Colcapirhua, los contribuyentes deben cumplir con los procedimientos y requisitos para los tramites administrativos y técnicos de la Dirección de urbanismo y Catastro.', 0, 'J', 0, 0, '', '', true);
-                $pdf->Ln(30);
-                //$pdf->addPage();
-                $pdf->AddPage();
+                $count++;
+                $pdf->SetFont('', 'B');
+                $pdf->Cell($w = 70, $h = $hMedium, $txt = $row['nombre_completo1'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+                $pdf->SetFont('', 'N');
+                $pdf->Cell($w = 18, $h = $hMedium, $txt = ' con C.I. N°: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+                $pdf->SetFont('', 'B');
+                $pdf->Cell($w = 12, $h = $hMedium, $txt = $row['ci'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+                $pdf->Cell($w = 7, $h = $hMedium, $txt = '  ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+                $pdf->Cell($w = 5, $h = $hMedium, $txt = $row['expedicion'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+                $pdf->Ln();
+            }
+                */
+            if ($tipo_persona == "propietario") {
+                if ($count == 0) {
+                    $propietariosList = $row['nombre_completo1'];
+                } else {
+                    $propietariosList .= "|" . $row['nombre_completo1'];
+                }
+                $count++;
+
+                // 1. Construimos el bloque de texto con etiquetas HTML sólidas para controlar las negritas
+                $htmlPropietario = '• <b>' . $row['nombre_completo1'] . '</b> con C.I. N°: <b>' . $row['ci'] . ' ' . $row['expedicion'] . '</b>';
+
+                // 2. Renderizamos en una sola celda HTML flexible que ocupa todo el ancho disponible (180mm)
+                // El '0' en el alto permite que crezca automáticamente de forma segura si el nombre es extremadamente largo
+                $pdf->SetFont('', 'N'); // Fuente base normal
+                $pdf->writeHTMLCell(180, 0, '', '', $htmlPropietario, 0, 1, 0, true, 'L', true);
+                
+                // Un pequeño espacio de separación natural entre cada propietario (opcional)
+                $pdf->Ln(1); 
+            }
+        }
+
+        $pdf->SetFont('', 'N');
+
+        // 1. Párrafo de introducción (Cambiamos el penúltimo parámetro a 1 para salto de línea)
+        $pdf->MultiCell(180, 0, 'Es propietario de un lote de terreno ubicado, según FOLIO REAL (Registrado en Derechos Reales, SEGÚN LOS SIGUIENTES DATOS: ', 0, 'J', 0, 1);
+        $pdf->Ln(2);
+
+        // 2. Tabla de datos (Usamos ln=0 para la izquierda y ln=1 para la derecha)
+        $pdf->Cell(90, $hMedium, 'Provincia: Quillacollo', 1, 0, 'L');
+        $pdf->Cell(90, $hMedium, 'Sección: Quinta', 1, 1, 'L'); // ln=1 para bajar
+
+        $pdf->Cell(90, $hMedium, 'Municipio: Colcapirhua ', 1, 0, 'L');
+        $pdf->Cell(90, $hMedium, 'Zona: ' . $dataSource->getParameter('zona'), 1, 1, 'L');
+
+        $pdf->Cell(90, $hMedium, 'Distrito: ' . $dataSource->getParameter('distrito'), 1, 0, 'L');
+        $pdf->Cell(90, $hMedium, 'Manzano: ' . $dataSource->getParameter('manzana'), 1, 1, 'L');
+
+        $pdf->Cell(90, $hMedium, 'Lote: ' . $dataSource->getParameter('lote'), 1, 0, 'L');
+        $pdf->Cell(90, $hMedium, 'Superficie: ' . $dataSource->getParameter('superficie') . ' m2', 1, 1, 'L');
+
+        // 3. Registro Derechos Reales
+        $pdf->Cell(90, $hMedium, 'Registrado en Derechos Reales de: ' . $dataSource->getParameter('ddrr_registro'), 1, 0, 'L');
+        $pdf->Cell(90, $hMedium, 'Bajo Matricula N°: ' . $dataSource->getParameter('nro_matricula'), 1, 1, 'L');
+
+        $pdf->Cell(90, $hMedium, 'Con Asiento N°: ' . $dataSource->getParameter('asiento'), 1, 0, 'L');
+        $pdf->Cell(90, $hMedium, 'de fecha: ' . $dataSource->getParameter('fecha_asiento'), 1, 1, 'L');
+
+        // 4. Celdas de ancho completo (Ancho 180, ln=1)
+        //$pdf->Cell(180, $hMedium, 'Complemento: ' . $dataSource->getParameter('complemento_matri'), 1, 1, 'L');
+        // --- CELDA DE ANCHO COMPLETO CON ALTO DINÁMICO ---
+        // Parámetros: Ancho (180), Alto inicial (0 para que sea dinámico), Texto, Borde (1), Alineación ('L'), Fondo (false), Salto de línea (1)
+        $pdf->MultiCell(180, 0, 'Complemento: ' . $dataSource->getParameter('complemento_matri'), 1, 'L', false, 1);
+
+        $pdf->Ln(2);
+        $pdf->Cell(180, $hMedium, 'Aprobado mediante: ', 0, 1, 'L');
+
+        $pdf->Cell(90, $hMedium, $dataSource->getParameter('tipo') . ' N°: ' . $dataSource->getParameter('nro_rmta'), 1, 0, 'L');
+        $pdf->Cell(90, $hMedium, 'De Fecha: ' . $dataSource->getParameter('fecha_rmta'), 1, 1, 'L');
+
+        $pdf->Cell(180, $hMedium, 'Tipo aprobación: ' . $dataSource->getParameter('tipo_aprobacion'), 1, 1, 'L');
+        $pdf->Cell(180, $hMedium, 'Complementaria: ' . $dataSource->getParameter('complemento'), 1, 1, 'L');
+
+        $pdf->Cell(90, $hMedium, 'Código Catastral N°: ' . $dataSource->getParameter('cod_catastral'), 1, 1, 'L');
+
+        $pdf->Ln(4);
+
+        // 5. Segundo párrafo largo (ln=1 al final para que el Fundamento Legal no se encime)
+        $pdf->MultiCell(180, 0, 'Conforme el testimonio N° ' . $dataSource->getParameter('nro_testimonio') . ' de fecha ' . $dataSource->getParameter('fecha_testimonio') . ', otorgado por la Notaria de Fe Pública N° ' . $dataSource->getParameter('nro_notario') . ', ' . $dataSource->getParameter('nombre_notario') . ', (Escritura Pública de transferencia de un lote de terreno).', 0, 'J', 0, 1);
+
+        $pdf->Ln(5);
+
+        // 6. Título de Fundamento Legal
+        $pdf->SetFont('', 'B');
+        $pdf->Cell(180, $hMedium, 'FUNDAMENTO LEGAL.- ', 0, 1, 'L');
+        $pdf->SetFont('', 'N');
+
+        if ($dataSource->getParameter('aprobacion') == 'no') {
+            $propietarios = explode("|", $propietariosList);
+            $propName = '';
+            if (count($propietarios) ==  1) {
+                $propName = $propietariosList;
+            } elseif (count($propietarios) <  3) {
+                $propName = $propietarios[0] . " y " . $propietarios[1];
+            } else {
+                for ($i = 0; $i < count($propietarios); $i++) {
+                    if ($i == 0) {
+                        $propName = $propietarios[0];
+                    } elseif ($i > 0 && $i < count($propietarios) - 2) {
+                        $propName .= ", " . $propietarios[$i];
+                    } else {
+                        $propName .= " y " . $propietarios[$i];
+                    }
+                }
+            }
+
+            if ($dataSource->getParameter('tipo_rechazo') == "FRU") {
+                // --- PÁRRAFOS LEGALES ---
+                // Usamos verificarEspacio antes de cada bloque para asegurar fluidez
+                $pdf->verificarEspacio(20);
+                $pdf->writeHTMLCell(180, 0, '', '', 'Que, la Ley N° 2341 de Procedimiento Administrativo, en el inc. K) del Art. 4 establece que los procedimientos administrativos, deben responder a los principios de economía, simplicidad y celeridad, evitando la realización de trámites, formalismos o diligencias innecesarias.', 0, 1, 0, true, 'J', true);
+                $pdf->Ln(2.5);
+
+                $pdf->verificarEspacio(25);
+                $pdf->writeHTMLCell(180, 0, '', '', 'Que, de acuerdo a la Resolución Municipal Bi-Secretarial N° 1/2020 de fecha 11 de diciembre de 2020 emitida por Secretaria Municipal Técnica del Gobierno Autónomo Municipal de Colcapirhua, los contribuyentes deben cumplir con los procedimientos y requisitos para los trámites administrativos y técnicos de la Dirección de Urbanismo y Catastro.', 0, 1, 0, true, 'J', true);
+                $pdf->Ln(2.5);
+
+                $pdf->verificarEspacio(20);
+                $pdf->writeHTMLCell(180, 0, '', '', 'Que, según el límite de homologación 100/2018 de fecha 12 de abril de 2018, emitido por el ministerio de la presidencia, el predio se encuentra fuera del radio urbano (FRU) del municipio de Colcapirhua.', 0, 1, 0, true, 'J', true);
+                $pdf->Ln(2.5);
+
+                if ($dataSource->getParameter('observacion') != '') {
+                    $pdf->verificarEspacio(20);
+                    $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('observacion'), 0, 1, 0, true, 'J', true);
+                    $pdf->Ln(2.5);
+                }
+
+                // --- SECCIÓN DE CONCLUSIONES ---
+                // Aquí es crítico verificar espacio para que el título y al menos 2 líneas del párrafo quepan juntos
+                $pdf->verificarEspacio(25); 
+                $pdf->Ln(5); 
+                
+                // Quitamos los <br> manuales del HTML porque ya usamos Ln() y verificarEspacio
+                $pdf->writeHTMLCell(180, 0, '', '', '<b>CONCLUSIONES Y RECOMENDACION.-</b>', 0, 1, 0, true, 'J', true);
+                $pdf->Ln(2.5);
+
+                $conclusionHTML = 'Realizado el Informe legal, conforme los antecedentes líneas arriba, quien es propietario <b>' . $propName . '</b>, en la cual teniendo un ' . $dataSource->getParameter('conclusion') . ', se puede observar que se encuentra la Ubicado el predio Fuera del Área Urbano (FRU), la Resolución Municipal BI-Secretarial N° 01/2020 de 11/12/2020 de la resolución Municipal BI-Secretarial y con lo establecido en el Decreto Municipal 007/2016 de fecha 16/09/2016; por lo que NO corresponde la prosecución del trámite, para lo cual se <b>RECOMIENDA</b> efectuar la Resolución de Rechazo del trámite previo análisis, bajo el principio de buena fe que solicito el propietario.';
+                
+                $pdf->writeHTMLCell(180, 0, '', '', $conclusionHTML, 0, 1, 0, true, 'J', true);
+                $pdf->Ln(4);
+
+                $pdf->writeHTMLCell(180, 0, '', '', 'Es cuanto informo para fines consiguientes.', 0, 1, 0, true, 'J', true);
+            } elseif ($dataSource->getParameter('tipo_rechazo') == "Innova") {
+                /** * Caso: Innova 
+                 * */
+
+                // Primer párrafo legal
+                $pdf->verificarEspacio(25);
+                $pdf->writeHTMLCell(180, 0, '', '', 'Que, Según el <b>Código de Procedimiento Civil en su Art. 9. (Obligatoriedad).-</b> Las decisiones de las autoridades judiciales deben ser acatadas por todas las autoridades y personas individuales o colectivas. Las autoridades en general están en la obligación de prestar asistencia para el cumplimiento de las resoluciones judiciales.', 0, 1, 0, true, 'J', true);
+                $pdf->Ln(2.5);
+
+                // Segundo párrafo legal
+                $pdf->verificarEspacio(30);
+                $pdf->writeHTMLCell(180, 0, '', '', 'Que, De acuerdo el <b>Código de Procedimiento Civil en su Art. 5. (Normas Procesales).-</b> Las normas procesales son de orden público y en consecuencia, de obligado acatamiento, tanto por la autoridad judicial como por las partes y eventuales terceros. Se exceptúan de estas reglas, las normas que, aunque procesales, sean de carácter facultativo, por referirse a intereses privados de las partes.', 0, 1, 0, true, 'J', true);
+                $pdf->Ln(2.5);
+
+                // Observación dinámica
+                if ($dataSource->getParameter('observacion') != '') {
+                    $pdf->verificarEspacio(20);
+                    $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('observacion'), 0, 1, 0, true, 'J', true);
+                    $pdf->Ln(2.5);
+                }
+
+                // --- BLOQUE DE CIERRE (CONCLUSIONES) ---
+                // Verificamos un espacio considerable para que el bloque de conclusión no se parta feo
+                $pdf->verificarEspacio(55); 
+                $pdf->Ln(5); 
+
+                $pdf->writeHTMLCell(180, 0, '', '', '<b>CONCLUSIONES Y RECOMENDACION.-</b>', 0, 1, 0, true, 'J', true);
+                $pdf->Ln(2.5);
+
+                $htmlConclusion = 'Realizado el Informe legal, conforme los antecedentes líneas arriba, quien es propietario <b>' . $propName . '</b>, en la cual teniendo un pronunciamiento de la Ene. En Sistemas de Información Geográfica Catastral, ' . $dataSource->getParameter('conclusion') . ' <b>Prohibición de Innovar</b>, emitido por autoridad competente; por lo que NO corresponde la prosecución del trámite, para lo cual se <b>RECOMIENDA</b> efectuar la Resolución de Rechazo del trámite previo análisis, bajo el principio de buena fe que solicito el propietario.';
+
+                $pdf->writeHTMLCell(180, 0, '', '', $htmlConclusion, 0, 1, 0, true, 'J', true);
+                $pdf->Ln(4);
+
+                $pdf->writeHTMLCell(180, 0, '', '', 'Es cuanto informo para fines consiguientes.', 0, 1, 0, true, 'J', true);
+                $pdf->Ln(2.5);
+            } elseif ($dataSource->getParameter('tipo_rechazo') == "APAU") {
+                /** * Caso: APAU - Área Productiva Agropecuaria Urbana
+                 * */
+                
+                // 1. Primera Ley (Ley 715)
+                $htmlAPAU1 = '<b>LA LEY 715 DE SERVICIO DE REFORMA AGRARIA</b> establece en su <b>Artículo 48. (Indivisibilidad)</b>.';
+                $htmlViñetas0 = '<ul><li style="text-align: justify">' . $htmlAPAU1 . '</li></ul>';
+                
+                $pdf->verificarEspacio(20);
+                // IMPORTANTE: Cambiamos el '7' por '' para mantener el margen izquierdo del documento
+                $pdf->writeHTMLCell(180, 0, '', '', $htmlViñetas0, 0, 1, 0, true, 'J', true);
                 $pdf->Ln(2);
-                $pdf->MultiCell(180, $h = $hMedium, 'Que, en virtud al Decreto Supremo N° 5056 de fecha 22 de noviembre de 2023; decreta en su Articulo Unico que: A fin de efectivizar los mecanismos de resguardo de las áreas productivas para garantizar la seguridad alimentaria con soberania, se modifica el parrafo l del Articulo 3 del Decreto Supremo N° 1809 de fecha 27 de noviembre de 2013 con el siguiente texto; "l.- Las áreas productivas agropecuarias urbanas (A.P.A.U.) no podrán ser cambio de uso y de suelo, ni urbanizables en un plazo de (15) años a partir de la publicación del ´presente Decreto Supremo".', 0, 'J', 0, 0, '', '', true);
-                $pdf->Ln(20);
-              
+
+                $htmlAPAU2 = '"La propiedad agraria, bajo ningún título podrá dividirse en superficies menores a las establecidas para la pequeña propiedad. Las sucesiones hereditarias se mantendrán bajo régimen de indivisión forzosa. Con excepción del solar campesino, la propiedad agraria tampoco podrá titularse en superficies menores a la pequeña propiedad"';
+                
+                $pdf->verificarEspacio(30);
+                $pdf->writeHTMLCell(180, 0, '', '', $htmlAPAU2, 0, 1, 0, true, 'J', true);
+                $pdf->Ln(4);
+
+                // 2. Ley 442 y DS 5065
+                $htmlAPAU3 = '<b>La Ley 442 LEY ESPECIAL DE CONSOLIDACIÓN, PLANIFICACIÓN, REGULARIZACIÓN TECNICA Y ADMINISTRATIVA Y TRATAMIENTO ESPECIAL DE ZONAS LIMITROFES DE LA JURISDICCIÓN DEL GOBIERNO AUTÓNOMO MUNICIPAL DE COLCAPIRHUA"</b> refiere en el numeral 5, articulo 7 (definiciones). <br><b>Área productiva Agropecuaria Urbana;</b> Porción de territorio urbano con uso de suelo agropecuario, forestal, piscicola, que mantendrá este uso por al menos diez (10) años.';
+                $htmlAPAU4 = '<b>EL DECRETO SUPREMO 5065 establece en su artículo único.</b>';
+                
+                $htmlViñetas1 = '<ul>';
+                $htmlViñetas1 .= '<li style="text-align: justify">' . $htmlAPAU3 . '</li>';
+                $htmlViñetas1 .= '<li style="text-align: justify">' . $htmlAPAU4 . '</li>';
+                $htmlViñetas1 .= '</ul>';
+
+                $pdf->verificarEspacio(45);
+                $pdf->writeHTMLCell(180, 0, '', '', $htmlViñetas1, 0, 1, 0, true, 'J', true);
+                $pdf->Ln(2);
+
+                $htmlAPAU5 = 'A fin de efectivizar los mecanismos de resguardo de las áreas productivas para garantizar la seguridad alimentaria con soberanía, se modifica el Parágrafo I del Artículo 3 del Decreto Supremo N° 1809, de 27 de noviembre de 2013, con el siguiente texto:';
+                $htmlAPAU6 = '<b>"I. Las áreas productivas agropecuarias urbanas no podrán ser objeto de cambio de uso de suelo ni urbanizadas en un plazo de quince (15) años, a partir de la publicación del presente Decreto Supremo."</b>';
+
+                $pdf->verificarEspacio(40);
+                $pdf->writeHTMLCell(180, 0, '', '', $htmlAPAU5, 0, 1, 0, true, 'J', true);
+                $pdf->Ln(2);
+                $pdf->writeHTMLCell(180, 0, '', '', $htmlAPAU6, 0, 1, 0, true, 'J', true);
+
+                // 3. Observaciones
+                if ($dataSource->getParameter('observacion') != '') {
+                    $pdf->Ln(2.5);
+                    $pdf->verificarEspacio(20);
+                    $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('observacion'), 0, 1, 0, true, 'J', true);
+                }
+
+                // --- SECCIÓN CONCLUSIONES (BLOQUE UNIFICADO) ---
+                $pdf->verificarEspacio(70); // Espacio mayor para el título y el primer párrafo largo
+                $pdf->Ln(8);
+                $pdf->writeHTMLCell(180, 0, '', '', '<b>CONCLUSIONES Y RECOMENDACION.-</b>', 0, 1, 0, true, 'J', true);
+                $pdf->Ln(3);
+
+                $htmlAPAU8 = 'En virtud a los antecedentes descritos y la normativa vigente, se establecen los siguientes aspectos:';
+                $pdf->writeHTMLCell(180, 0, '', '', $htmlAPAU8, 0, 1, 0, true, 'J', true);
+                $pdf->Ln(2);
+
+                $htmlAPAU9 = 'De acuerdo a documentación presentada se puede observar un fraccionamiento del predio y el registro en derechos reales de la parte fraccionada, el cual al ser un terreno ubicado en <b>área productiva agropecuaria NO es susceptible a ser fraccionado</b>, toda vez que la regularización del predio se debe realizar sobre la totalidad de la superficie y no así sobre una parte fraccionada, pudiendo efectuarse la urbanización y fraccionamiento una vez se efectúe el cambio de uso de suelo.';
+                $htmlAPAU10 = 'En cumplimiento a la normativa vigente al encontrarse el terreno en <b>área productiva agropecuaria</b> y al no ser objeto de cambio de uso de suelo ni urbanizable en el plazo de 15 años a partir de la publicación del Decreto Supremo N° 1809, de 27 de noviembre de 2013, solamente se podrá efectuar la aprobación del predio en Area Productiva Agropecuaria sobre la totalidad de la superficie, ' . $dataSource->getParameter('conclusion') . ', por lo que NO corresponde la prosecución del trámite, para lo cual se <b>RECOMIENDA</b> efectuar la Resolución de Rechazo del trámite previo análisis y emisión de un informe, de la parte técnica, asimismo se deberá remitir el trámite a la <b>Dirección de Asesoría Legal del Gobierno Autónomo Municipal de Colcapirhua</b>, para que en coordinación con las Oficinas de Derechos Reales se pueda corroborar la legalidad y veracidad de la documentación técnica - legal bajo el principio de buena fe que solicito el propietario derivando el mismo al fraccionamiento y posterior inscripción del predio que se encuentra ubicado actualmente en <b>Área Productiva (A.P.A.U.)</b>, sin contar con alguna Resolución de tipo Municipal, Agraria o Nacional para este efecto';
+
+                $htmlViñetas2 = '<ul>';
+                $htmlViñetas2 .= '<li style="text-align: justify">' . $htmlAPAU9 . '</li>';
+                $htmlViñetas2 .= '<li style="text-align: justify">' . $htmlAPAU10 . '</li>';
+                $htmlViñetas2 .= '</ul>';
+
+                $pdf->writeHTMLCell(180, 0, '', '', $htmlViñetas2, 0, 1, 0, true, 'J', true);
+                $pdf->Ln(4);
+                $pdf->writeHTMLCell(180, 0, '', '', 'Es cuanto se informa y se pone en conocimiento para fines consiguientes.', 0, 1, 0, true, 'J', true);
+            } elseif ($dataSource->getParameter('tipo_rechazo') == "Doble") {
+                /** * Caso: Doble - Duplicidad o conflicto de trámites
+                 * */
+
+                // 1. Primer Párrafo Legal (Ley 2341)
+                // Corregido: Se cambió el cierre <b> por </b> y se arregló el typo "T1ramite"
+                $htmlDoble1 = '<b>Que, De acuerdo al Art. 86 de la Ley 2341 (Conocimiento del Trámite).-</b> "Los administrados que intervengan en un procedimiento, sus representantes o abogados, tendrán derecho a conocer en cualquier momento el estado del trámite y a tomar vista de las actuaciones".';
+                
+                $pdf->verificarEspacio(25);
+                $pdf->writeHTMLCell(180, 0, '', '', $htmlDoble1, 0, 1, 0, true, 'J', true);
+                $pdf->Ln(2.5);
+
+                // 2. Segundo Párrafo Legal (Res. Municipal)
+                // Corregido: Se cambió el cierre <b> por </b>
+                $htmlDoble2 = '<b>Que, de acuerdo a la Resolución Municipal BI - Secretarial N° 1/2020 de fecha 11 de diciembre de 2020</b> emitida por Secretaria Municipal Técnica de Gobierno Autónomo Municipal de Colcapirhua, los contribuyentes deben cumplir con los procedimientos y requisitos para los trámites administrativos y técnicos de la Dirección de Urbanismo y Catastro.';
+                
+                $pdf->verificarEspacio(25);
+                $pdf->writeHTMLCell(180, 0, '', '', $htmlDoble2, 0, 1, 0, true, 'J', true);
+                $pdf->Ln(2.5);
+
+                // 3. Observación dinámica
+                if ($dataSource->getParameter('observacion') != '') {
+                    $pdf->verificarEspacio(20);
+                    $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('observacion'), 0, 1, 0, true, 'J', true);
+                    $pdf->Ln(2.5);
+                }
+
+                // --- SECCIÓN CONCLUSIONES ---
+                // Usamos verificarEspacio(50) para evitar que el título se separe de su contenido
+                $pdf->verificarEspacio(50);
+                $pdf->Ln(5); 
+
+                $pdf->writeHTMLCell(180, 0, '', '', '<b>CONCLUSIONES Y RECOMENDACION.-</b>', 0, 1, 0, true, 'J', true);
+                $pdf->Ln(2.5);
+
+                $htmlConclDoble = 'Realizado el Informe legal, conforme los antecedentes líneas arriba, en la cual teniendo un pronunciamiento ' . $dataSource->getParameter('conclusion') . ', Informe Técnico de los inmuebles para los tramite urba-No 000070 y 0000472, se puede observar que en posesión en derecho propietario a la valoración de los tramites 472 y 720 en la cual los interesados deberán regularizar el mejor derecho propietario ante la instancia llamada por Ley, para lo cual se <b>RECOMIENDA</b> efectuar la Resolución de Rechazo del trámite previo análisis, bajo el principio de buena fe.';
+
+                $pdf->writeHTMLCell(180, 0, '', '', $htmlConclDoble, 0, 1, 0, true, 'J', true);
+                $pdf->Ln(4);
+
+                $pdf->writeHTMLCell(180, 0, '', '', 'Es cuanto informo para fines consiguientes.', 0, 1, 0, true, 'J', true);
+                $pdf->Ln(2.5);
+            } else {
+                // --- Párrafo 1: Ley 411 ---
+                $pdf->verificarEspacio(30);
+                $pdf->writeHTMLCell(180, 0, '', '', 'Que, Según la Ley 411 de fecha 26 de octubre de 2004, Capitulo II Reglamento Técnica de Edificaciones en su Artículo 25. (Alcances específico para Regularización Técnica de Edificaciones) podrán acoger de manera voluntaria al proceso de regularización Técnica de edificaciones, aquellos ciudadanos que no cuenten con planos aprobados y/o que teniendo planos aprobados de contrucción estos hayan sido contruidos res´petando las disposiciones Municipales vigentes.', 0, 1, 0, true, 'J', true);
+                $pdf->Ln(4);
+
+                // --- Párrafo 2: PLANUR Art. 109 ---
+                $pdf->verificarEspacio(40);
+                $pdf->writeHTMLCell(180, 0, '', '', 'Que, Según el PLANUR O.M. 0004/2004 de fecha 13 de febrero de 2004 en su artículo 109, Constrcciones Fuera de Norma.- Las contrucciones que no cumplen son los planos debidamente aprobados y que no cumplan con lo establesido en el presente reglamento serán paralizadas, en su caso demolidas. Por todo lo Expuesto se verifica que la construcción ya está consolidad sin haber tenido un plano de lote aprobada por lo que según reglamento y normas vigentes procede al rechazo de dicho trámite, Aprobación de Plano de Vivienda Multifamiliar, debidamente la misma proceder en primera instancia al Trámite de aprobación de plano de lote.', 0, 1, 0, true, 'J', true);
+                $pdf->Ln(4);
+
+                // --- Párrafo 3: PLANUR Art. 107 ---
+                $pdf->verificarEspacio(30);
+                $pdf->writeHTMLCell(180, 0, '', '', 'Que, Según el reglamento par Urbanismo y Edificaciones PLANUR de fecha 13 de febrero de 2004 en su Art. 107 Inciso de la construcción.- para iniciar la constrcción de una edificación de cualquier naturaleza es necesario contar con el respectivo Plano arquitectonico aprobado por la alcaldia de Colcapirhua, no siento suficiente que el tramite se encuentra en curso de aprobación.', 0, 1, 0, true, 'J', true);
+                $pdf->Ln(4);
+
+                // --- Párrafo 4: PLANUR Art. 112 ---
+                $pdf->verificarEspacio(30);
+                $pdf->writeHTMLCell(180, 0, '', '', 'Que, Según el reglamento <b>PLANUR</b> en su <b>Art. 112.- Tipos de Infracción</b>.- se considerará infracción: Construir edificaciones sin contar previamente con los planos aprobados por la Alcaldía del lote o del proyecto arquitectónico.', 0, 1, 0, true, 'J', true);
+                
+                // --- SECCIÓN DE CONCLUSIONES ---
+                $pdf->verificarEspacio(60); 
                 $pdf->Ln(8);
                 $pdf->SetFont('', 'B');
-                $pdf->Cell($w = 19, $h = $hMedium, $txt = 'CONCLUSIONES y RECOMENDACION.- ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-                $pdf->Ln(8);
+                $pdf->Cell(180, 7, 'CONCLUSIONES y RECOMENDACION.- ', 0, 1, 'L');
                 $pdf->SetFont('', 'N');
-                $pdf->MultiCell(180, $h = $hMedium, 'Se concluye que el o los Sr.: ', 0, 'L', 0, 0, '', '', true);
-                $pdf->Ln(5);
-                foreach ($dataSource->getDataSet() as $row) {
-                    $tipo_persona = $row['tipo_persona'];
-                    //var_dump("tipo: ",$tipo_persona); 
-                    if ( $tipo_persona == "propietario"){
-                        $pdf->SetFont('', 'B');
-                        $pdf->Cell($w = 70, $h = $hMedium, $txt = $row['nombre_completo1'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-                        $pdf->SetFont('', 'N');
-                        $pdf->Cell($w = 18, $h = $hMedium, $txt = 'con C.I. N°: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-                        $pdf->SetFont('', 'B');
-                        $pdf->Cell($w = 12, $h = $hMedium, $txt = $row['ci'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-                        $pdf->Cell($w = 7, $h = $hMedium, $txt = '  ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   	
-                        $pdf->Cell($w = 5, $h = $hMedium, $txt = $row['expedicion'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-                        $pdf->Ln();
-                    };                 
-                };
-                $pdf->SetFont('', 'N');
-                $pdf->MultiCell(180, $h = $hMedium, ' es legitimo propietario de un predio con una extensión superficial de '.$dataSource->getParameter('superficie').' m2; debidamente registrado en oficinas de Derechos Reales; Conforme Testimonio N° '.$dataSource->getParameter('nro_testimonio').' de fecha '.$dataSource->getParameter('fecha_testimonio').', otorgsdo por la Notaria de Fe Publica N°'.$dataSource->getParameter('nro_notario').', '.$dataSource->getParameter('nombre_notario').'. (Escritura Pública de transferencia de un lote de terreno), dando cumplimiento a lo que se establece el Decreto SupremoN° 5056 de fecha 22 de noviembre de 2023; decreta en su Articulo Unico que ; A fin de efectivizar los mecanismos de resguardo de las áreas productivas para garantizar la sesguridad alimentaria con soberanía, se modifica el parrafo l del Artículo 3 del Decreto Supremo N° 1809 de fecha 27 de noviembre de 2013 con el siguiente texto: "l.- Las áreas productivas agropecuarias urbanas (A.P.A.U.) no podrán ser cambio de uso y de suelo, ni urbanizables en un plazo de (15) años a partir de la publicación del ´presente Decreto Supremo"; por lo que se recomienda la prosecución del expediente administrativo, faltando la aprobación de la parte técnica del plano solicitado a ser aprobado.', 0, 'J', 0, 0, '', '', true);
-                $pdf->Ln(45);        
-                $pdf->MultiCell(180, $h = $hMedium, '   El presente Informe Legal no define el Derecho Propietario, Si existiera doble titularidad de derecho propietario será quien alegue ser probada por la vía llamada por ley, el mismo será de entera y total responsabilidad del interesado y se aplicara según Normativa Vigente. Los planos a ser aprobados, no contravienen a las normas legales en vigencia y cumple con todos los requisitos, faltando que la parte técnica remita los informes técnicos de topografía y Normas Urbanas y/o presentenobservaciones al trámite a ser aprobado.', 0, 'J', 0, 0, '', '', true);
-                $pdf->Ln(40);        
+                $pdf->Ln(2);
 
-            } else{
-                /*if (  $dataSource->getParameter('id_tipo_tramite') == 20 && $dataSource->getParameter('aprobacion') == 'si'){
+                $pdf->writeHTMLCell(180, 0, '', '', 'Realizado el Informe Legal, conforme los antecedentes líneas arriba, quien es propietario: ', 0, 1, 0, true, 'L', true);
+                $pdf->Ln(2);
+
+                // --- LISTA DE PROPIETARIOS ---
+                foreach ($dataSource->getDataSet() as $row) {
+                    /*
+                    if ($row['tipo_persona'] == "propietario") {
+                        $pdf->verificarEspacio(7);
+                        $pdf->SetFont('', 'B');
+                        $pdf->Cell(70, 7, $row['nombre_completo1'], 0, 0, 'L');
+                        $pdf->SetFont('', 'N');
+                        $pdf->Cell(20, 7, ' con C.I. N°: ', 0, 0, 'L');
+                        $pdf->SetFont('', 'B');
+                        $pdf->Cell(30, 7, $row['ci'] . ' ' . $row['expedicion'], 0, 1, 'L');
+                    }*/
+                    if ($row['tipo_persona'] == "propietario") {
+                        // 1. Construimos la cadena HTML unificada manejando las negritas internamente
+                        $htmlPropietario = '• <b>' . $row['nombre_completo1'] . '</b> con C.I. N°: <b>' . $row['ci'] . ' ' . $row['expedicion'] . '</b>';
+
+                        // 2. Quitamos la tipografía Bold global para que respete las etiquetas <b> del HTML
+                        $pdf->SetFont('', 'N'); 
+
+                        // 3. Renderizamos en una sola fila continua y elástica de 180mm de ancho
+                        // El '0' en el alto (segundo parámetro) calcula el alto dinámicamente según el contenido
+                        // El '1' en el parámetro ln (sexto parámetro) indica que el siguiente elemento se dibuje abajo
+                        $pdf->writeHTMLCell(180, 0, '', '', $htmlPropietario, 0, 1, 0, true, 'L', true);
                         
-                    $pdf->MultiCell(180, $h = $hMedium, 'De conformidad al Art. 24 Constitución Politica del Estado Plurinacional, art 24, Toda persona tiene derecho a la Petición de manera individual o colectiva, sea oral o escrita, y a la obtención de respuesta formal y pronta. Para el ejercicio de este derecho no exigirá mas requisito que la identificación del peticionante, así tembién menciona en su art. 56 inc I.- Toda persona tiene derecho a la pro´piedad privada individual o colectiva, siempre que esta cumpla una función social. II. Se garantiza la propiedad privada siempre que el uso que se haga de ella no sea perjudicial al interes colectivo. ', 0, 'J', 0, 0, '', '', true);
-                    $pdf->Ln(28);
-                    $pdf->MultiCell(180, $h = $hMedium, 'Que, en virtud a la Ley 2341 de procedimiento Administrativo, en inc. k) del art. 4 establece que los procedimientos administrativos, deben responder a los principios de economia, simplicidad y celeridad, evitando la realizacion de tramites, formalismos o diligencias innecesarias.', 0, 'J', 0, 0, '', '', true);
-                    $pdf->Ln(15);
-                    $pdf->MultiCell(180, $h = $hMedium, 'Que de acuerdo a la resolución Municipal Bi-Secretarial N° 1/2020 de fecha 11 de diciembre de 2020 emitida por Secretaria Municipal Técnica del Gobierno Autónomo Municipal de Colcapirhua, los contribuyentes deben cumplir con los procedimientos y requisitos para los trámites administrativos y técnicos de la Dirección de Urbanismo y Catastro', 0, 'J', 0, 0, '', '', true);
-                    $pdf->Ln(30);
-                    $pdf->AddPage();
-                    $pdf->Ln(8);
-                    $pdf->SetFont('', 'B');
-                    $pdf->Cell($w = 19, $h = $hMedium, $txt = 'CONCLUSIONES y RECOMENDACION.- ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-                    $pdf->Ln(8);
-                    $pdf->SetFont('', 'N');
-                    $pdf->MultiCell(180, $h = $hMedium, 'Se concluye que el (los):', 0, 'L', 0, 0, '', '', true);
-                    $pdf->Ln(5);
-                    foreach ($dataSource->getDataSet() as $row) {
-                        $tipo_persona = $row['tipo_persona'];
-                        //var_dump("tipo: ",$tipo_persona); 
-                        if ( $tipo_persona == "propietario"){
-                            $pdf->SetFont('', 'B');
-                            $pdf->Cell($w = 70, $h = $hMedium, $txt = $row['nombre_completo1'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-                            $pdf->SetFont('', 'N');
-                            $pdf->Cell($w = 18, $h = $hMedium, $txt = 'con C.I. N°: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-                            $pdf->SetFont('', 'B');
-                            $pdf->Cell($w = 12, $h = $hMedium, $txt = $row['ci'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-                            $pdf->Cell($w = 7, $h = $hMedium, $txt = '  ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   	
-                            $pdf->Cell($w = 5, $h = $hMedium, $txt = $row['expedicion'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-                            $pdf->Ln();
-                        };                 
-                    };
-                    $pdf->SetFont('', 'N');
-                    $pdf->MultiCell(180, $h = $hMedium, 'legitimo(s) propietario de un predio con una extensión superficial de '.$dataSource->getParameter('superficie').' m2.; debidamente registrado en oficinas de Derechos Reales; Conforme Testimonio N° '.$dataSource->getParameter('nro_testimonio').' de fecha '.$dataSource->getParameter('fecha_testimonio').', otorgado por la Notaria de Fe Pública N° '.$dataSource->getParameter('nro_notario').', '.$dataSource->getParameter('nombre_notario').', (Escritura Pública de transferencia de un lote de terreno), dando cumplimientoa los que se establece el Decreto Supremo N° 5056 de fecha 22 de noviembre de 2023; decreta en su Artículo Único que: A fin de efectivizar los mecanismos de resguardo de las areas productivas para garantizar la seguridad alimentaria con soberania, se modifica el párrafo I del Artículo 3 del Decreto Supremo N° 1809 de fecha 27 de noviembre de 2013 con el siguiente texto: ', 0, 'J', 0, 0, '', '', true);
-                    $pdf->Ln(30);        
-                    $pdf->SetFont('', 'B');
-                    $pdf->MultiCell(180, $h = $hMedium, '"I.- Las áreas productivas agropecuarias urbanas (A.P.A.U.) no podrán ser cambio de uso y de suelo. ni urbanizables en un plazo de (15) años a partir de la publicación del presente Decreto Supremo";', 0, 'J', 0, 0, '', '', true);
-                    $pdf->Ln(10);        
-                    $pdf->SetFont('', 'N');
-                    $pdf->MultiCell(180, $h = $hMedium, 'por lo que se recomienda la prosecución del expediente administrativo, faltando la aprobación de la parte técnica del plano solicitado a ser aprobado.', 0, 'J', 0, 0, '', '', true);
-                    $pdf->Ln(10);        
-                    $pdf->SetFont('', 'B');
-                    $pdf->MultiCell(180, $h = $hMedium, '         El presente informe Legal no define el Derecho Propietario, Si existiera doble titularidad de derecho propietario será quien alegue ser probada por la via llamada por ley, el mismo será de entera y total responsabilidad del interesado y se aplicara según Normativa Vigente. Los Planos a ser aprobados, no contravienen a las normas legales en vigencia y cumple con todos los requisitos, faltando que la parte técnica remita los informes técnicos de topografía y Normas urbanas y/o presenten observaciones al trámite a ser aprobado.', 0, 'J', 0, 0, '', '', true);
-                    $pdf->Ln(20);        
-                    $pdf->Ln(8);
-                    
-                };  */
-                $tramites_id = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19];
-                if (in_array($dataSource->getParameter('id_tipo_tramite'),$tramites_id ) && $dataSource->getParameter('aprobacion') == 'si'){
-                        
-                    $pdf->MultiCell(180, $h = $hMedium, 'De conformidad al Art. 24 Constitución Politica del Estado Plurinacional. Toda persona tiene derecho a la Petición de manera individual o colectiva, sea oral o escrita, y a la obtención de respuesta formal y pronta. Para el ejercicio de este derecho no exigirá mas requisito que la identificación del peticionante, así tembién menciona en su art. 56 inc I.- Toda persona tiene derecho a la pro´piedad privada individual o colectiva, siempre que esta cumpla una función social. II. Se garantiza la propiedad privada siempre que el uso que se haga de ella no sea perjudicial al interes colectivo. ', 0, 'J', 0, 0, '', '', true);
-                    $pdf->Ln(28);
-                    $pdf->MultiCell(180, $h = $hMedium, 'Que, la Ley N° 2341 de procedimiento Administrativo, en inc. k) del art. 4 establece que los procedimientos administrativos, deben responder a los principios de economia, simplicidad y celeridad, evitando la realizacion de tramites, formalismos o diligencias innecesarias.', 0, 'J', 0, 0, '', '', true);
-                    $pdf->Ln(15);
-                    $pdf->MultiCell(180, $h = $hMedium, 'Que de acuerdo a la resolución Municipal Bi-Secretarial N° 1/2020 de fecha 11 de diciembre de 2020 emitida por Secretaria Municipal Técnica del Gobierno Autónomo Municipal de Colcapirhua, los contribuyentes deben cumplir con los procedimientos y requisitos para los trámites administrativos y técnicos de la Dirección de Urbanismo y Catastro', 0, 'J', 0, 0, '', '', true);
-                    $pdf->Ln(30);
-                    $pdf->AddPage();
-                    $pdf->Ln(8);
-                    $pdf->SetFont('', 'B');
-                    $pdf->Cell($w = 19, $h = $hMedium, $txt = 'CONCLUSIONES y RECOMENDACION.- ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-                    $pdf->Ln(8);
-                    $pdf->SetFont('', 'N');
-                    $pdf->MultiCell(180, $h = $hMedium, 'Realizado el informe legal, conforme los antecedentes lineas arriba, quien es (son) propietario(s):', 0, 'L', 0, 0, '', '', true);
-                    $pdf->Ln(5);
-                    foreach ($dataSource->getDataSet() as $row) {
-                        $tipo_persona = $row['tipo_persona'];
-                        //var_dump("tipo: ",$tipo_persona); 
-                        if ( $tipo_persona == "propietario"){
-                            $pdf->SetFont('', 'B');
-                            $pdf->Cell($w = 70, $h = $hMedium, $txt = $row['nombre_completo1'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-                            $pdf->SetFont('', 'N');
-                            $pdf->Cell($w = 18, $h = $hMedium, $txt = 'con C.I. N°: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-                            $pdf->SetFont('', 'B');
-                            $pdf->Cell($w = 12, $h = $hMedium, $txt = $row['ci'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-                            $pdf->Cell($w = 7, $h = $hMedium, $txt = '  ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   	
-                            $pdf->Cell($w = 5, $h = $hMedium, $txt = $row['expedicion'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-                            $pdf->Ln();
-                        };                 
-                    };
-                    $pdf->SetFont('', 'N');
-                    $pdf->MultiCell(180, $h = $hMedium, 'conforme la escritura Privada de fecha '. $dataSource->getParameter('fecha_testimonio').', otorgado por la Notaria de Fe Pública '.$dataSource->getParameter('nombre_notario').'cumple con los requisitos de la R.M. Bi-Secretarial N° 01/2020 de 11/12/2020 de la resolución Municipal Bi-Secretarial y con lo establecido en el Decreto Municipal 007/2016 de fecha 16/09/2016; por lo que se recomienda la prosecución del tramite administrativo, faltando la aprobacion de la parte técnica topográfica y normas urbanas del plano a ser aprobado. El presente informe Legal no define derecho propietario, Si existiera doble titularidad de derecho propietario será quien alegue deberá demostrarla mediante la Via judicial, siendo de responsabilidaddel interesado y se aplicará según normativa vigente.', 0, 'J', 0, 0, '', '', true);
-                    $pdf->Ln(30);        
-                           
-                    $pdf->Ln(8);
-                    
-                };  
-            };
-            
-            
-           
-            
-            
-            $pdf->SetFont('', 'N');
-            $pdf->Cell($w = 180, $h = $hMedium, $txt = 'Es cuanto informo de la inspección realizada.', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-            $pdf->Ln(20);
-            $pdf->Cell($w = 180, $h = $hMedium, $txt = $dataSource->getParameter('de'), $border = 0, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-            $pdf->SetFont('', 'B');
-            $pdf->Ln(5);
-            $pdf->Cell($w = 180, $h = $hMedium, $txt = $dataSource->getParameter('cargode'), $border = 0, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-            
-            
-            
-            /* foreach ($dataSource->getDataSet() as $row) {
-                $tipo_persona = $row['tipo_persona'];
-                //var_dump("tipo: ",$tipo_persona); 
-                if ( $tipo_persona == "propietario"){
-                    $pdf->SetFont('', 'B');
-                    $pdf->Cell($w = 70, $h = $hMedium, $txt = $row['nombre_completo1'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-                    $pdf->SetFont('', 'N');
-	                $pdf->Cell($w = 18, $h = $hMedium, $txt = 'con C.I. N°: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-                    $pdf->SetFont('', 'B');
-                    $pdf->Cell($w = 12, $h = $hMedium, $txt = $row['ci'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-                    $pdf->Cell($w = 7, $h = $hMedium, $txt = '  ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   	
-                    $pdf->Cell($w = 5, $h = $hMedium, $txt = $row['expedicion'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-                    $pdf->Ln();
-                };                 
-            };
-            foreach ($dataSource->getDataSet() as $row) {
-                $tipo_persona = $row['tipo_persona'];
-                //var_dump("tipo: ",$tipo_persona); 
+                        // Añadimos un pequeño espacio de separación controlado de 1mm para que no se pegue al siguiente registro
+                        $pdf->Ln(1); 
+                    }
+                }
+
+                // --- PÁRRAFO FINAL DE CONCLUSIÓN ---
+                $pdf->SetFont('', 'N');
+                $pdf->Ln(4);
+                $conclusionFinal = 'En la cual teniendo un pronunciamiento de la Jefatura de Urbanismo - Arq.' . $dataSource->getParameter('via') . ', se puede observar que la construcción de vivienda se encuentra infringiendo a la norma vigente e incumpliendo al PLANUR, Resolución Municipal BI-Secretarial N° 01/2020 de 11/12/2020 de la resolución Municipal BI-Secretarial y con lo establecido en el Decreto Municipal 007/2016 de fecha 16/09/2016; por lo que NO corresponde la prosecución del trámite, para lo cual se' . ' RECOMIENDA' . ' efectuar la Resolución de Rechazo del trámite previo análisis, bajo el principio de buena fe que solicito el propietario.';
                 
-            /*
-                if ( $tipo_persona == "propietario"){
-                    $pdf->SetFont('', 'B');
-                    $pdf->Cell($w = 70, $h = $hMedium, $txt = $row['tipo_persona'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-                    $pdf->Ln();
-                };    */
-              /*  if ( $tipo_persona == "apoderado"){
-                    $pdf->SetFont('', 'N');
-                    $pdf->Cell($w = 60, $h = $hMedium, $txt = 'Solicitud que se realizó en calidad de : ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-                    $pdf->SetFont('', 'B');
-                    $pdf->Cell($w = 70, $h = $hMedium, $txt = $row['tipo_persona'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-                    $pdf->Ln();
-                    $pdf->SetFont('', 'N');
-	                $pdf->Cell($w = 33, $h = $hMedium, $txt = 'Mediante Poder n°: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-                    $pdf->SetFont('', 'B');
-                    $pdf->Cell($w = 15, $h = $hMedium, $txt = $row['nro_poder'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-                    $pdf->SetFont('', 'N');
-	                $pdf->Cell($w = 30, $h = $hMedium, $txt = 'otorgado en fecha: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-                    $pdf->SetFont('', 'B');
-                    $pdf->Cell($w = 20, $h = $hMedium, $txt = $row['fecha_poder'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-                    $pdf->SetFont('', 'N');
-	                $pdf->Cell($w = 18, $h = $hMedium, $txt = 'Notaria N°: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-                    $pdf->SetFont('', 'B');
-                    $pdf->Cell($w = 12, $h = $hMedium, $txt = $row['nro_notaria'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-                    $pdf->Ln();
-                    $pdf->SetFont('', 'N');
-	                $pdf->Cell($w = 18, $h = $hMedium, $txt = 'Notario: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-                    $pdf->SetFont('', 'B');
-                    $pdf->Cell($w = 12, $h = $hMedium, $txt = $row['notario'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-                };             
-            };
-            $pdf->Ln();
-            $pdf->SetFont('', 'N');
-            $pdf->Cell($w = 100, $h = $hMedium, $txt = 'A tal efecto acompaño los documentos exigidos, en fs.: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            $pdf->SetFont('', 'B');
-            $pdf->Cell($w = 10, $h = $hMedium, $txt = $dataSource->getParameter('fojas'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-            $pdf->Ln();
-            $pdf->SetFont('', 'N');
-	        $pdf->Cell($w = 45, $h = $hMedium, $txt = 'señalo Teléfono y/o correo: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            foreach ($dataSource->getDataSet() as $row) {
-                
-                $tipo_persona = $row['tipo_persona'];
-                //var_dump("tipo: ",$tipo_persona); 
-                if ( $tipo_persona == "tramitador"){
-                    $pdf->Cell($w = 20, $h = $hMedium, $txt = $row['celular1'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-                    $pdf->SetFont('', 'N');
-	                $pdf->Cell($w = 5, $h = $hMedium, $txt = ' , ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-                    $pdf->SetFont('', 'B');
-                    $pdf->Cell($w = 12, $h = $hMedium, $txt = $row['correo'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-                    $pdf->Ln();
-                   
-                };                 
-            };
-            
-            $pdf->SetFont('', 'N');
-	        $pdf->Cell($w = 30, $h = $hMedium, $txt = ' Colcapirhua  ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            $pdf->SetFont('', 'B');
-            $pdf->Cell($w = 5, $h = $hMedium, $txt = $dataSource->getParameter('dia'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-            $pdf->SetFont('', 'N');
-	        $pdf->Cell($w = 8, $h = $hMedium, $txt = '  de  ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            $pdf->SetFont('', 'B');
-            $pdf->Cell($w = 10, $h = $hMedium, $txt = $dataSource->getParameter('mes'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-            $pdf->SetFont('', 'N');
-	        $pdf->Cell($w = 8, $h = $hMedium, $txt = '  de  ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            $pdf->SetFont('', 'B');
-            $pdf->Cell($w = 10, $h = $hMedium, $txt = $dataSource->getParameter('anio'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-            $pdf->SetFont('', 'N');
-	        $pdf->Cell($w = 12, $h = $hMedium, $txt = '  Hras:  ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            $pdf->SetFont('', 'B');
-            $pdf->Cell($w = 3, $h = $hMedium, $txt = $dataSource->getParameter('hora'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-            $pdf->Cell($w = 2, $h = $hMedium, $txt = ':', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            $pdf->Cell($w = 5, $h = $hMedium, $txt = $dataSource->getParameter('minuto'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-	       /* $pdf->Cell($w = 65, $h = $hMedium, $txt = $dataSource->getParameter('desc_funcionario'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-			$pdf->SetFont('', 'N');
-	        $pdf->Cell($w = 20, $h = $hMedium, $txt = 'Fecha Ingreso: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-			$pdf->SetFont('', 'B');
-	        $pdf->Cell($w = 30, $h = $hMedium, $txt = date_format($fecha_ingre, 'd/m/Y'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-	        $pdf->Ln();
-			
-			$pdf->SetFont('', 'N');
-	        $pdf->Cell($w = 10, $h = $hMedium, $txt = 'Cargo: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-			$pdf->SetFont('', 'B');
-	        $pdf->Cell($w = 25, $h = $hMedium, $txt = $dataSource->getParameter('nombre'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-			$pdf->SetFont('', 'N');
-	        $pdf->Cell($w = 20, $h = $hMedium, $txt = 'Centro de Responsabilidad: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-			$pdf->SetFont('', 'B');
-	        $pdf->Cell($w = 60, $h = $hMedium, $txt = $dataSource->getParameter('nombre_unidad'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-			$pdf->SetFont('', 'N');
-	        $pdf->Cell($w = 20, $h = $hMedium, $txt = 'Tipo Contrato: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-			$pdf->SetFont('', 'B');
-	        $pdf->Cell($w = 20, $h = $hMedium, $txt = $dataSource->getParameter('tipo_contrato'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-			$pdf->SetFont('', 'N');
-	        $pdf->Cell($w = 20, $h = $hMedium, $txt = 'Tipo Empleado: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-			$pdf->SetFont('', 'B');
-	        $pdf->Cell($w = 20, $h = $hMedium, $txt = $dataSource->getParameter('tipo_funcionario'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-			$pdf->Ln();
-			
-			$pdf->SetFont('', 'N');
-	        $pdf->Cell($w = 145, $h = $hMedium, $txt = '  ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-			$pdf->SetFont('', 'B');	       
-	        $pdf->Cell($w = 30, $h = $hMedium, $txt = 'Saldo Vacación: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-			$pdf->Cell($w = 20, $h = $hMedium, $txt = $dataSource->getParameter('total_vacacion'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-			$pdf->Ln();*/
-			
-			$pdf->SetFontSize(7.5);
-			$pdf->SetFont('', '');
-	        $wMargin = 15;
-	        $wNro = 10;
-	        $wCodigo = 15;
-	        $wDetalle = 25;
-	        $wTotal = 20;
-			$totalVaca = 0;
-	
-	/*
-	
-	        //TODO: Se tiene que adicionar un bucle para mostrar las tablas totales por cada almacen.
-	        $pdf->SetFontSize(7);
-	        $pdf->SetFont('', 'B');
-	        $pdf->Cell($w = $wMargin, $h = $hGlobal, $txt = '', $border = 0, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-	        $pdf->Cell($w = $wNro+$wCodigo+$wDetalle+$wTotal, $h = $hGlobal, $txt = '', $border = 0, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-	        $pdf->Ln();
-	        
-	        $pdf->SetFontSize(7);
-	        $pdf->SetFont('', 'B');
-	        $pdf->Cell($w = $wMargin, $h = $hGlobal, $txt = '', $border = 0, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-	        $pdf->Cell($w = $wNro, $h = $hGlobal, $txt = 'Nro.', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-	        //$pdf->Cell($w = $wCodigo, $h = $hGlobal, $txt = 'Codigo', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-	        $pdf->Cell($w = $wDetalle, $h = $hGlobal, $txt = 'Desde el', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-			$pdf->Cell($w = $wDetalle, $h = $hGlobal, $txt = 'Hasta el', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-	        $pdf->Cell($w = $wTotal, $h = $hGlobal, $txt = 'Periodo', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-			$pdf->Cell($w = $wTotal, $h = $hGlobal, $txt = 'Total días', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-	        $pdf->Ln();
-	        $count = 1;
-	        $pdf->SetFont('', '');
-			//var_dump($dataSource); exit;
-	        foreach ($dataSource->getDataSet() as $row) {
-	        	//var_dump($row); exit;
-	        	$fecha_ini = date_create($row['fecha_inicio']);
-				$fecha_fin = date_create($row['fecha_fin']);
-	            $pdf->Cell($w = $wMargin, $h = $hGlobal, $txt = '', $border = 0, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-	            $pdf->Cell($w = $wNro, $h = $hGlobal, $txt = $count, $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-	            //$pdf->Cell($w = $wCodigo, $h = $hGlobal, $txt = "1.2.1.5", $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-	            $pdf->Cell($w = $wDetalle, $h = $hGlobal, $txt = date_format($fecha_ini, 'd/m/Y'), $border = 1, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-	            $pdf->Cell($w = $wDetalle, $h = $hGlobal, $txt = date_format($fecha_fin, 'd/m/Y'), $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-				$pdf->Cell($w = $wTotal, $h = $hGlobal, $txt = $row['periodo'], $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-				$pdf->Cell($w = $wTotal, $h = $hGlobal, $txt = $row['cantidad_dias'], $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-	            $pdf->Ln();
-	            $count++;
-				$totalVaca = $totalVaca + $row['cantidad_dias'];  
-	        }
-	        $pdf->SetFont('', 'B');
-	        $pdf->Cell($w = $wMargin, $h = $hGlobal, $txt = '', $border = 0, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-	        $pdf->Cell($w = $wNro, $h = $hGlobal, $txt = '', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-	        //$pdf->Cell($w = $wCodigo, $h = $hGlobal, $txt = '', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-	        $pdf->Cell($w = $wDetalle+$wDetalle+$wTotal, $h = $hGlobal, $txt = 'VACACION TOTAL', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-	        $pdf->Cell($w = $wTotal, $h = $hGlobal, $txt = number_format($totalVaca, 2), $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-	*/
-	        $pdf->Ln();
-	        $pdf->Ln();
-	        $pdf->Ln();
-               
-	        //$pdf->AddPage();
-	    //}
-/*
-        $pdf->SetFontSize(8);
-        $pdf->SetFont('', 'B');
-		
-		$pdf->Cell($w = 46, $h = $hGlobal, $txt = 'FIRMA INTERESADO Y/O APODERADO', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-		$pdf->Cell($w = 20, $h = $hGlobal, $txt = '   ', $border = 0, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-	    $pdf->Cell($w = 46, $h = $hGlobal, $txt = 'SELLO FIRMA FUNCIONARIO RESPONSABLE', $border = 0, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-		$pdf->Ln();
-        $pdf->Cell($w = 46, $h = $hGlobal, $txt = ' ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-		$pdf->Cell($w = 20, $h = $hGlobal, $txt = '   ', $border = 0, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-	    $pdf->Cell($w = 46, $h = $hGlobal, $txt = 'DE VENTANILLA UNICA', $border = 0, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-		$pdf->Ln();
-        $pdf->Ln();
-        $pdf->Cell($w = 46, $h = $hGlobal, $txt = 'El presente formulario sirve para el encaminamiento y seguimiento de tramite, asi mismo ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-        $pdf->Ln();
-        $pdf->Cell($w = 46, $h = $hGlobal, $txt = ' concluido el tramite sera entregado al propietario.', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-        *//*$pdf->Cell($w = 0, $h = $hMedium, $txt = 'DETALLE DE MATERIALES', $border = 0, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-        $pdf->Ln();
-       /* foreach ($dataSource->getParameter('clasificacionDataSources') as $clasificacionDataSource) {
-            $this->writeClasificacionDetalle($pdf, $clasificacionDataSource,$dataSource->getParameter('mostrar_costos'));
+                $pdf->writeHTMLCell(180, 0, '', '', $conclusionFinal, 0, 1, 0, true, 'J', true);
+                $pdf->Ln(5);
+                $pdf->writeHTMLCell(180, 0, '', '', 'Es cuanto informo para fines consiguientes.', 0, 1, 0, true, 'J', true);
+            } 
         }
-		*/
-		/*if ($dataSource->getParameter('mostrar_costos') != 'no') {
-			$pdf->Cell($w = $wDetalle+$wCodigo+40, $h = $hGlobal, $txt = 'COSTO TOTAL', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-        	$pdf->Cell($w = 20, $h = $hGlobal, $txt = number_format($dataSource->getParameter('costoTotal'), 2), $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-		}*/
-		
-		//$pdf->copyPage(1);
+
+
+        /* --- CASO: APAU PROSECUCIÓN (SI/SI) --- */
+        if ($dataSource->getParameter('area_agro') == "si" && $dataSource->getParameter('aprobacion') == 'si') {
+            
+            // 1. Lógica de nombres de propietarios (Saneada)
+            $propietarios = explode("|", $propietariosList);
+            $propName = '';
+            $numProp = count($propietarios);
+
+            if ($numProp == 1) {
+                $propName = trim($propietariosList);
+            } elseif ($numProp == 2) {
+                $propName = trim($propietarios[0]) . " y " . trim($propietarios[1]);
+            } else {
+                $ultimo = array_pop($propietarios);
+                $propName = implode(", ", $propietarios) . " y " . $ultimo;
+            }
+
+            // 2. Fundamentos Legales (Correlativos)
+            $pdf->verificarEspacio(35);
+            //$pdf->writeHTMLCell(180, 0, '', '', 'De conformidad al <b>Art. 24 de la C.P.E.</b>, toda persona tiene derecho a la petición... así también menciona en su <b>art. 56</b> que se garantiza la propiedad privada siempre que cumpla una función social.', 0, 1, 0, true, 'J', true);
+            $pdf->writeHTMLCell(180, 0, '', '', 'De conformidad al Art. 24 Constitución Politica del Estado Plurinacional. Toda persona tiene derecho a la Petición de manera individual o colectiva, sea oral o escrita, y a la obtención de respuesta formal y pronta. Para el ejercicio de este derecho no exigirá mas requisito que la identificación del peticionante, así tembién menciona en su art. 56 inc I.- Toda persona tiene derecho a la pro´piedad privada individual o colectiva, siempre que esta cumpla una función social. II. Se garantiza la propiedad privada siempre que el uso que se haga de ella no sea perjudicial al interes colectivo.', 0, 1, 0, true, 'J', true);
+            $pdf->Ln(3);
+
+            $pdf->verificarEspacio(25);
+            $pdf->writeHTMLCell(180, 0, '', '', 'Que, la Ley N° 2341 de Procedimiento Administrativo, en el inc. K) del Art. 4 establece que los procedimientos administrativos, deben responder a los principios de economía, simplicidad y celeridad, evitando la realización de trámites, formalismos o diligencias innecesarias.', 0, 1, 0, true, 'J', true);
+            $pdf->Ln(3);
+
+            $pdf->verificarEspacio(25);
+            $pdf->writeHTMLCell(180, 0, '', '', 'Que de acuerdo a la <b>Resolución Municipal Bi-Secretarial N° 1/2020</b>, los contribuyentes deben cumplir con los requisitos para los trámites administrativos ante la Dirección de Urbanismo.', 0, 1, 0, true, 'J', true);
+            
+            
+            //////////////////////////////////////////////////////////    
+            // AUMENTAR CONTENIDO 
+            if ($dataSource->getParameter('observacion') != '') {
+                $pdf->Ln(3);
+                $pdf->verificarEspacio(25);
+                $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('observacion'), 0, 1, 0, true, 'J', true);
+                //var_dump($dataSource); exit();
+            }
+            
+            
+            // 3. SECCIÓN CONCLUSIONES (Salto de página inteligente)
+            $pdf->verificarEspacio(25); 
+            $pdf->Ln(8);
+            $pdf->writeHTMLCell(180, 0, '', '', '<b>CONCLUSIONES Y RECOMENDACIÓN.-</b>', 0, 1, 0, true, 'J', true);
+            $pdf->Ln(2);
+            $pdf->writeHTMLCell(180, 0, '', '', 'Se concluye que el (los):', 0, 1, 0, true, 'J', true);
+            $pdf->Ln(2);
+
+            // 4. Cuerpo de la Conclusión (Uso intensivo de negritas)
+            $cuerpoConcl = '<b>' . $propName . '</b>, legítimo(s) propietario(s) de un predio con una extensión de <b>' . $dataSource->getParameter('superficie_leg') . ' m2</b>; registrado en Derechos Reales conforme Testimonio de fecha <b>' . $dataSource->getParameter('fecha_testimonio') . '</b>, ante la Notaría N° ' . $dataSource->getParameter('nro_notario') . ' (' . $dataSource->getParameter('nombre_notario') . ').';
+            
+            $pdf->writeHTMLCell(180, 0, '', '', $cuerpoConcl, 0, 1, 0, true, 'J', true);
+            $pdf->Ln(3);
+
+            // 5. Advertencia sobre el Decreto Supremo 5056
+            $pdf->verificarEspacio(20);
+            $pdf->writeHTMLCell(180, 0, '', '', 'Dando cumplimiento al <b>Decreto Supremo N° 5056</b> de fecha 22 de noviembre de 2023, que modifica el párrafo I del Art. 3 del DS 1809, se establece que:', 0, 1, 0, true, 'J', true);
+            $pdf->Ln(2);
+            
+            $pdf->SetFillColor(245, 245, 245); // Un ligero gris para resaltar el texto del decreto
+            $pdf->writeHTMLCell(180, 0, '', '', '<b>"1.- Las áreas productivas agropecuarias urbanas (A.P.A.U.)no podrán ser cambio de uso y de suelo. ni urbanizables en un plazo de (15) años a partir de la publicación del presente Decreto Supremo"</b>; por lo que se recomienda la prosecución del expediente administrativo, faltando la aprobación de la parte técnica del plano solicitado a ser aprobado.', 0, 1, 1, true, 'C', true);
+            $pdf->Ln(3);
+
+            // 6. Recomendación Final
+            $pdf->verificarEspacio(30);
+            $pdf->writeHTMLCell(180, 0, '', '', 'Por lo que se <b>RECOMIENDA</b> la prosecución del expediente administrativo, quedando pendiente la aprobación técnica del plano solicitado.', 0, 1, 0, true, 'J', true);
+            $pdf->Ln(3);
+            ///////////////////////////////////
+            // AUMENTAR CONCLUSION QUE ELLOS INDIQUEN
+            if ($dataSource->getParameter('conclusion') != '') {
+                $pdf->verificarEspacio(25);
+                $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('conclusion'), 0, 1, 0, true, 'J', true);
+                $pdf->Ln(3);
+            }
+
+            $finalMsg = '<b>El presente informe Legal no define el Derecho Propietario. Si existiera doble titularidad, será la vía llamada por ley quien lo defina. Los planos no contravienen normas legales, siempre que la parte técnica remita los informes correspondientes.</b>';
+            $pdf->writeHTMLCell(180, 0, '', '', $finalMsg, 0, 1, 0, true, 'J', true);
+            $pdf->Ln(5);
+            
+            $pdf->writeHTMLCell(180, 0, '', '', 'Es cuanto informo para fines consiguientes.', 0, 1, 0, true, 'J', true);
+        } else {
+            // 1. GENERACIÓN DE NOMBRE DINÁMICO (Para evitar repetir el foreach)
+            $propietarios = [];
+            foreach ($dataSource->getDataSet() as $row) {
+                if ($row['tipo_persona'] == "propietario") {
+                    $propietarios[] = '<b>' . $row['nombre_completo1'] . '</b> con C.I. N°: <b>' . $row['ci'] . ' ' . $row['expedicion'] . '</b>';
+                }
+            }
+            $propNameList = implode(", ", $propietarios);
+
+            // --- CASO A: Trámite ID 20 (APAU / Especial) ---
+            if ($dataSource->getParameter('id_tipo_tramite') == 20 && $dataSource->getParameter('aprobacion') == 'si') {
+                
+                $pdf->verificarEspacio(35);
+                $pdf->writeHTMLCell(180, 0, '', '', 'De conformidad al Art. 24 Constitución Politica del Estado Plurinacional, art. 24, Toda persona tiene derecho a la petición, de forma individual o colectiva, oral o escrita. Además, garantiza el derecho a recibir una respuesta formal y pronta sin más requisito que la identificación del peticionario, asi tambien menciona en su art.56 inc. l.- Toda persona tiene derecho a la propiedad privada individual o colectiva, siempre que esta cumpla una función social. ll. Se garantiza la propiedad privada siempre que el uso que se haga de ella no sea perjudicial al interes colectivo.', 0, 1, 0, true, 'J', true);
+                $pdf->Ln(3);
+
+                $pdf->verificarEspacio(25);
+                $pdf->writeHTMLCell(180, 0, '', '', 'Que, en virtud a la Ley N° 2341 de procedimiento Administrativo, en inc. k) del art. 4 establece que los procedimientos administrativos, deben responder a los principios de economia, simplicidad y celeridad, evitando la realizacion de tramites, formalismos o diligencias innecesarias.', 0, 1, 0, true, 'J', true);
+                $pdf->Ln(3);
+
+                $pdf->verificarEspacio(45);
+                $htmlDS = 'Que, en virtud al Decreto Supremo N° 5056 de fecha 22 de noviembre de 2023; decreta en su Articulo Unico que: A fin de efectivizar los mecanismos de resguardo de las áreas productivas para garantizar la seguridad alimentaria con soberania, se modifica el parrafo l del Articulo 3 del Decreto Supremo N° 1809 de fecha 27 de noviembre de 2013 con el siguiente texto; "l.- Las áreas productivas agropecuarias urbanas (A.P.A.U.) no podrán ser cambio de uso y de suelo, ni urbanizables en un plazo de (15) años a partir de la publicación del presente Decreto Supremo".';
+                $pdf->writeHTMLCell(180, 0, '', '', $htmlDS, 0, 1, 0, true, 'J', true);
+
+                // AUMENTAR CONTENIDO 
+                if ($dataSource->getParameter('observacion') != '') {
+                    $pdf->Ln(3);
+                    $pdf->verificarEspacio(25);
+                    $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('observacion'), 0, 1, 0, true, 'J', true);
+                }
+                
+                // --- CONCLUSIONES CASO 20 ---
+                $pdf->verificarEspacio(25);
+                $pdf->Ln(8);
+                $pdf->writeHTMLCell(180, 0, '', '', '<b>CONCLUSIONES Y RECOMENDACIÓN.-</b>', 0, 1, 0, true, 'L', true);
+                $pdf->Ln(2);
+                
+                $htmlConcl20 = 'Se concluye que el (los) Sr(es): ' . $propNameList . ' es legítimo propietario de un predio de ' . $dataSource->getParameter('superficie') . ' m2; registrado en Derechos Reales conforme Testimonio N° ' . $dataSource->getParameter('nro_testimonio') . ' de fecha ' . $dataSource->getParameter('fecha_testimonio') . ' ante la Notaría N° ' . $dataSource->getParameter('nro_notario') . ' (' . $dataSource->getParameter('nombre_notario') . ').';
+                
+                $pdf->writeHTMLCell(180, 0, '', '', $htmlConcl20, 0, 1, 0, true, 'J', true);
+                $pdf->Ln(4);
+                
+                $pdf->writeHTMLCell(180, 0, '', '', '<b>RECOMENDACIÓN:</b> Se recomienda la prosecución del expediente administrativo, faltando la aprobación de la parte técnica del plano solicitado. El presente informe no define derecho propietario...', 0, 1, 0, true, 'J', true);
+
+                ///////////////////////////////////
+                // AUMENTAR CONCLUSION QUE ELLOS INDIQUEN
+                if ($dataSource->getParameter('conclusion') != '') {
+                    $pdf->Ln(3);
+                    $pdf->verificarEspacio(25);
+                    $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('conclusion'), 0, 1, 0, true, 'J', true);
+                    $pdf->Ln(3);
+                }
+
+
+            // --- CASO B: Trámites Generales (1-19) ---
+            } elseif (in_array($dataSource->getParameter('id_tipo_tramite'), range(1, 19)) && $dataSource->getParameter('aprobacion') == 'si') {
+                
+                $pdf->verificarEspacio(35);
+
+                /// Se corrigio texto
+                //$pdf->writeHTMLCell(180, 0, '', '', 'De conformidad al <b>Art. 24 de la C.P.E.</b> y el <b>Art. 56</b> sobre el derecho a la propiedad privada individual o colectiva...', 0, 1, 0, true, 'J', true);
+                $pdf->writeHTMLCell(180, 0, '', '', 'De conformidad al Art. 24 Constitución Politica del Estado Plurinacional. Toda persona tiene derecho a la Petición de manera individual o colectiva, sea oral o escrita, y a la obtención de respuesta formal y pronta. Para el ejercicio de este derecho no exigirá mas requisito que la identificación del peticionante, así tembién menciona en su art. 56 inc I.- Toda persona tiene derecho a la pro´piedad privada individual o colectiva, siempre que esta cumpla una función social. II. Se garantiza la propiedad privada siempre que el uso que se haga de ella no sea perjudicial al interes colectivo.', 0, 1, 0, true, 'J', true);
+                $pdf->Ln(3);
+
+                $pdf->verificarEspacio(30);
+                $pdf->writeHTMLCell(180, 0, '', '', 'Que, la <b>Ley N° 2341</b> y la <b>Resolución Municipal Bi-Secretarial N° 1/2020</b> establecen que los contribuyentes deben cumplir con los requisitos técnicos de la Dirección de Urbanismo.', 0, 1, 0, true, 'J', true);
+
+                // AUMENTAR CONTENIDO 
+                if ($dataSource->getParameter('observacion') != '') {
+                    $pdf->Ln(3);
+                    $pdf->verificarEspacio(25);
+                    $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('observacion'), 0, 1, 0, true, 'J', true);
+                    //var_dump($dataSource); exit();
+                }
+                
+
+                // --- CONCLUSIONES TRÁMITES GENERALES ---
+                $pdf->verificarEspacio(25);
+                $pdf->Ln(8);
+                $pdf->writeHTMLCell(180, 0, '', '', '<b>CONCLUSIONES Y RECOMENDACIÓN.-</b>', 0, 1, 0, true, 'L', true);
+                $pdf->Ln(2);
+                
+                $htmlConclGen = 'Realizado el informe legal, quien(es) es(son) propietario(s): ' . $propNameList . ' conforme la Escritura Pública de fecha ' . $dataSource->getParameter('fecha_testimonio') . ', cumple con los requisitos de la normativa vigente.';
+                
+                $pdf->writeHTMLCell(180, 0, '', '', $htmlConclGen, 0, 1, 0, true, 'J', true);
+                $pdf->Ln(4);
+                
+                $pdf->writeHTMLCell(180, 0, '', '', 'Por lo que se <b>RECOMIENDA</b> la prosecución del trámite administrativo, faltando la aprobación técnica topográfica. El presente informe legal no define derecho propietario...', 0, 1, 0, true, 'J', true);
+
+                ///////////////////////////////////
+                // AUMENTAR CONCLUSION QUE ELLOS INDIQUEN
+                if ($dataSource->getParameter('conclusion') != '') {
+                    $pdf->Ln(3);
+                    $pdf->verificarEspacio(25);
+                    $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('conclusion'), 0, 1, 0, true, 'J', true);
+                    $pdf->Ln(3);
+                }
+            }
+            
+            // Cierre común para ambos casos de aprobación
+            $pdf->Ln(5);
+            $pdf->writeHTMLCell(180, 0, '', '', 'Es cuanto informo para fines consiguientes.', 0, 1, 0, true, 'J', true);
+        }
+
+        // 1. Mensaje de cierre condicional
+        // Solo si no es un rechazo específico y la aprobación está en curso
+        if ($dataSource->getParameter('aprobacion') != 'no' && 
+            !in_array($dataSource->getParameter('tipo_rechazo'), ["FRU", "APAU", "Doble", "Innova"])) {
+            
+            $pdf->verificarEspacio(10);
+            $pdf->SetFont('', 'N');
+            $pdf->writeHTMLCell(180, 0, '', '', 'Es cuanto informo de la inspección realizada.', 0, 1, 0, true, 'L', true);
+        }
+
+        // 2. BLOQUE DE FIRMA (Indivisible)
+        // Verificamos 40mm para asegurar espacio para el nombre, cargo y el sello/firma física
+        $pdf->verificarEspacio(40);
+        
+        $pdf->Ln(25); // Espacio para que la persona firme físicamente
+        
+        // Nombre del responsable
+        $pdf->SetFont('', '');
+        $pdf->Cell(180, 5, $dataSource->getParameter('de'), 0, 1, 'C');
+        
+        // Cargo del responsable
+        $pdf->SetFont('', 'B');
+        $pdf->Cell(180, 5, $dataSource->getParameter('cargode'), 0, 1, 'C');
+
+        // 3. Finalización del archivo
+        // Eliminamos los Ln() innecesarios al final para evitar hojas en blanco accidentales
         $pdf->Output($fileName, 'F');
     }
 
-    function writeClasificacionDetalle($pdf, $dataSource,$mostrar_costos) {
+    function writeClasificacionDetalle($pdf, $dataSource, $mostrar_costos)
+    {
         $hGlobal = 5;
-        
+        // Anchos de columna
         $wNro = 10;
         $wCodigo = 15;
         $wDescripcionItem = 80;
         $wUnidad = 15;
         $wCantidad = 15;
-		$wCantidadAlerta = 15;
+        $wCantidadAlerta = 15;
         $wCostoUnitario = 15;
         $wCostoTotal = 20;
-        $pdf->Ln();
 
+        // --- SEGURIDAD: Verificar si cabe al menos el título y el encabezado ---
+        // Si quedan menos de 20mm, saltar de página automáticamente
+        if ($pdf->GetY() > ($pdf->getPageHeight() - 25)) {
+            $pdf->AddPage();
+        }
+
+        $pdf->Ln(2);
         $pdf->SetFontSize(7);
         $pdf->SetFont('', 'B');
 
-        $pdf->Cell($w = $wDescripcionItem, $h = $hGlobal, $txt = '* ' . $dataSource->getParameter('nombreClasificacion'), $border = 0, $ln = 1, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+        // Título de Clasificación
+        $pdf->Cell(0, $hGlobal, '* ' . $dataSource->getParameter('nombreClasificacion'), 0, 1, 'L');
 
+        // --- ENCABEZADOS ---
         $pdf->SetFontSize(6.5);
-        $pdf->SetFont('', 'B');
-        $pdf->Cell($w = $wNro, $h = $hGlobal, $txt = 'Nro.', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-        $pdf->Cell($w = $wCodigo, $h = $hGlobal, $txt = 'Código', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-        $pdf->Cell($w = $wDescripcionItem, $h = $hGlobal, $txt = 'Descripcion del Material', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-        $pdf->Cell($w = $wUnidad, $h = $hGlobal, $txt = 'Unidad', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-        $pdf->Cell($w = $wCantidad, $h = $hGlobal, $txt = 'Cantidad', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-		$pdf->Cell($w = $wCantidad, $h = $hGlobal, $txt = 'Cant. Min.', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+        $pdf->SetFillColor(240, 240, 240); // Un gris muy claro para el encabezado
+        
+        $pdf->Cell($wNro, $hGlobal, 'Nro.', 1, 0, 'C', true);
+        $pdf->Cell($wCodigo, $hGlobal, 'Código', 1, 0, 'C', true);
+        $pdf->Cell($wDescripcionItem, $hGlobal, 'Descripción del Material', 1, 0, 'C', true);
+        $pdf->Cell($wUnidad, $hGlobal, 'Unidad', 1, 0, 'C', true);
+        $pdf->Cell($wCantidad, $hGlobal, 'Cantidad', 1, 0, 'C', true);
+        $pdf->Cell($wCantidadAlerta, $hGlobal, 'Cant. Min.', 1, 0, 'C', true);
+        
         if ($mostrar_costos != 'no') {
-	        $pdf->Cell($w = $wCostoUnitario, $h = $hGlobal, $txt = 'C/Unit.', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-	        $pdf->Cell($w = $wCostoTotal, $h = $hGlobal, $txt = 'C/Total', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-		}
+            $pdf->Cell($wCostoUnitario, $hGlobal, 'C/Unit.', 1, 0, 'C', true);
+            $pdf->Cell($wCostoTotal, $hGlobal, 'C/Total', 1, 0, 'C', true);
+        }
         $pdf->Ln();
 
+        // --- DETALLE ---
         $count = 1;
         $pdf->SetFont('', '');
         foreach ($dataSource->getDataset() as $datarow) {
-
-            $pdf->Cell($w = $wNro, $h = $hGlobal, $txt = $count, $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-            $pdf->Cell($w = $wCodigo, $h = $hGlobal, $txt = $datarow['codigo'], $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-            $pdf->Cell($w = $wDescripcionItem, $h = $hGlobal, $txt = $datarow['nombre'], $border = 1, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-            $pdf->Cell($w = $wUnidad, $h = $hGlobal, $txt = $datarow['unidad_medida'], $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-            $pdf->Cell($w = $wCantidad, $h = $hGlobal, $txt = number_format($datarow['cantidad'], 2), $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-			$pdf->Cell($w = $wCantidadAlerta, $h = $hGlobal, $txt = number_format($datarow['cantidad_min'], 2), $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-            $costoUnitario = 0;
-            if ($datarow['cantidad'] != 0) {
-                $costoUnitario = $datarow['costo']/$datarow['cantidad'];
+            
+            // Verificar espacio para la fila (evita filas cortadas a la mitad)
+            if ($pdf->GetY() > ($pdf->getPageHeight() - 15)) {
+                $pdf->AddPage();
+                // (Opcional: podrías repetir el encabezado aquí si lo deseas)
             }
-			 if ($mostrar_costos != 'no') {
-	            $pdf->Cell($w = $wCostoUnitario, $h = $hGlobal, $txt = number_format($costoUnitario, 2), $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-	            $pdf->Cell($w = $wCostoTotal, $h = $hGlobal, $txt = number_format($datarow['costo'], 2), $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-			}
+
+            $costoUnitario = ($datarow['cantidad'] > 0) ? ($datarow['costo'] / $datarow['cantidad']) : 0;
+
+            $pdf->Cell($wNro, $hGlobal, $count, 1, 0, 'R');
+            $pdf->Cell($wCodigo, $hGlobal, $datarow['codigo'], 1, 0, 'C');
+            
+            // DESCRIPCIÓN con control de texto largo (max-stretch)
+            // Usamos stretch=1 para que el texto se comprima si no cabe
+            $pdf->Cell($wDescripcionItem, $hGlobal, $datarow['nombre'], 1, 0, 'L', false, '', 1);
+            
+            $pdf->Cell($wUnidad, $hGlobal, $datarow['unidad_medida'], 1, 0, 'C');
+            $pdf->Cell($wCantidad, $hGlobal, number_format($datarow['cantidad'], 2), 1, 0, 'R');
+            $pdf->Cell($wCantidadAlerta, $hGlobal, number_format($datarow['cantidad_min'], 2), 1, 0, 'R');
+
+            if ($mostrar_costos != 'no') {
+                $pdf->Cell($wCostoUnitario, $hGlobal, number_format($costoUnitario, 2), 1, 0, 'R');
+                $pdf->Cell($wCostoTotal, $hGlobal, number_format($datarow['costo'], 2), 1, 0, 'R');
+            }
             $pdf->Ln();
             $count++;
         }
-		if ($mostrar_costos != 'no') {
-	        $pdf->SetFont('', 'B');
-	        $pdf->Cell($w = $wNro, $h = $hGlobal, $txt = '', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-	        $pdf->Cell($w = $wCodigo, $h = $hGlobal, $txt = '', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-	        $pdf->Cell($w = $wDescripcionItem, $h = $hGlobal, $txt = 'Total', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-	        $pdf->Cell($w = $wUnidad, $h = $hGlobal, $txt = '', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-	        $pdf->Cell($w = $wCantidad, $h = $hGlobal, $txt = '', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-	        $pdf->Cell($w = $wCantidadAlerta, $h = $hGlobal, $txt = '' , $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+
+        // --- TOTALES ---
+        if ($mostrar_costos != 'no') {
+            $pdf->SetFont('', 'B');
+            // Sumamos todos los anchos previos para la celda de "Total"
+            $wSalto = $wNro + $wCodigo; 
+            $pdf->Cell($wSalto, $hGlobal, '', 1, 0, 'C');
+            $pdf->Cell($wDescripcionItem, $hGlobal, 'TOTAL ' . $dataSource->getParameter('nombreClasificacion'), 1, 0, 'R');
+            $pdf->Cell($wUnidad + $wCantidad + $wCantidadAlerta + $wCostoUnitario, $hGlobal, '', 1, 0, 'R');
+            $pdf->Cell($wCostoTotal, $hGlobal, number_format($dataSource->getParameter('totalCosto'), 2), 1, 1, 'R');
+        }
+    }
+
+    private function renderHeaderInfo($pdf, $dataSource, $h) {
+        $pdf->SetFont('', 'B');
+        $pdf->Cell(15, $h, 'A: ', 0, 0, 'L');
+        $pdf->SetFont('', 'N');
+        $pdf->Cell(165, $h, $dataSource->getParameter('nombrea'), 0, 1, 'L');
         
-	        $pdf->Cell($w = $wCostoUnitario, $h = $hGlobal, $txt = '', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-	        $pdf->Cell($w = $wCostoTotal, $h = $hGlobal, $txt = number_format($dataSource->getParameter('totalCosto'), 2), $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-		}
-        $pdf->Ln();
+        $pdf->SetFont('', 'B');
+        $pdf->Cell(15, $h, '', 0, 0, 'L');
+        $pdf->Cell(165, $h, $dataSource->getParameter('cargoa'), 0, 1, 'L');
+        $pdf->Ln(2);
+
+        $pdf->SetFont('', 'B');
+        $pdf->Cell(15, $h, 'Via: ', 0, 0, 'L');
+        $pdf->SetFont('', 'N');
+        $pdf->Cell(165, $h, $dataSource->getParameter('via'), 0, 1, 'L');
+        
+        $pdf->SetFont('', 'B');
+        $pdf->Cell(15, $h, '', 0, 0, 'L');
+        $pdf->Cell(165, $h, $dataSource->getParameter('cargovia'), 0, 1, 'L');
+        $pdf->Ln(2);
+
+        $pdf->SetFont('', 'B');
+        $pdf->Cell(15, $h, 'De: ', 0, 0, 'L');
+        $pdf->SetFont('', 'N');
+        $pdf->Cell(165, $h, $dataSource->getParameter('de'), 0, 1, 'L');
+        $pdf->Ln(2);
+
+        $pdf->SetFont('', 'B');
+        $pdf->Cell(15, $h, 'Fecha: ', 0, 0, 'L');
+        $pdf->SetFont('', 'N');
+        $pdf->Cell(165, $h, 'Colcapirhua, ' . $dataSource->getParameter('dia') . ' de ' . $dataSource->getParameter('mes') . ' de ' . $dataSource->getParameter('anio'), 0, 1, 'L');
+        $pdf->Ln(3);
+    }
+
+    private function renderPropietarios($pdf, $dataSource, $h) {
+        $list = [];
+        foreach ($dataSource->getDataSet() as $row) {
+            /*
+            if ($row['tipo_persona'] == "propietario") {
+                $list[] = $row['nombre_completo1'];
+                $pdf->SetFont('', 'B');
+                $pdf->Cell(70, $h, $row['nombre_completo1'], 0, 0, 'L');
+                $pdf->SetFont('', 'N');
+                $pdf->Cell(20, $h, 'con C.I. N°: ', 0, 0, 'L');
+                $pdf->SetFont('', 'B');
+                $pdf->Cell(20, $h, $row['ci'] . ' ' . $row['expedicion'], 0, 1, 'L');
+            }
+                */
+            if ($row['tipo_persona'] == "propietario") {
+                // 1. Conservamos tu lógica de datos (llenar el array histórico)
+                $list[] = $row['nombre_completo1'];
+
+                // 2. Construimos la cadena HTML unificada con el formato de negritas correcto
+                $htmlPropietario = '• <b>' . $row['nombre_completo1'] . '</b> con C.I. N°: <b>' . $row['ci'] . ' ' . $row['expedicion'] . '</b>';
+
+                // 3. Reseteamos la fuente a Normal para que las etiquetas <b> funcionen nativamente
+                $pdf->SetFont('', 'N');
+
+                // 4. Renderizamos en una sola fila elástica de 180mm de ancho
+                // El segundo parámetro en '0' calcula el alto dinámicamente según el contenido
+                // El sexto parámetro en '1' fuerza el salto de línea al finalizar este bloque HTML
+                $pdf->writeHTMLCell(180, 0, '', '', $htmlPropietario, 0, 1, 0, true, 'L', true);
+                
+                // Pequeña separación controlada de 1mm para que los registros no queden totalmente pegados
+                $pdf->Ln(1);
+            }
+        }
+        return implode("|", $list);
+    }
+
+    private function renderTablaPredio($pdf, $dataSource, $h) {
+        $pdf->Cell(90, $h, 'Provincia: Quillacollo', 1, 0, 'L');
+        $pdf->Cell(90, $h, 'Sección: Quinta', 1, 1, 'L');
+        $pdf->Cell(90, $h, 'Municipio: Colcapirhua', 1, 0, 'L');
+        $pdf->Cell(90, $h, 'Zona: ' . $dataSource->getParameter('zona'), 1, 1, 'L');
+        $pdf->Cell(90, $h, 'Distrito: ' . $dataSource->getParameter('distrito'), 1, 0, 'L');
+        $pdf->Cell(90, $h, 'Manzano: ' . $dataSource->getParameter('manzana'), 1, 1, 'L');
+        $pdf->Cell(90, $h, 'Lote: ' . $dataSource->getParameter('lote'), 1, 0, 'L');
+        $pdf->Cell(90, $h, 'Superficie: ' . $dataSource->getParameter('superficie') . ' m2', 1, 1, 'L');
+    }
+
+    // Nota: He simplificado la lógica de renderRechazos para asegurar el flujo de MultiCell.
+    private function renderRechazos($pdf, $dataSource, $propietariosList) {
+        $tipo = $dataSource->getParameter('tipo_rechazo');
+        $pdf->verificarEspacio(30);
+        
+        if ($tipo == "FRU") {
+            $pdf->writeHTMLCell(180, 0, '', '', 'Que, según el límite de homologación 100/2018, el predio se encuentra fuera del radio urbano (FRU)...', 0, 1, 0, true, 'J');
+        }
+        // ... (resto de tipos de rechazo siguiendo el mismo patrón de writeHTMLCell con ln=1)
+    }
+
+    private function renderAprobaciones($pdf, $dataSource, $propietariosList) {
+        $pdf->verificarEspacio(40);
+        $pdf->MultiCell(180, 0, 'De conformidad al Art. 24 de la C.P.E., se procede a la revisión...', 0, 'J', 0, 1);
     }
 
 }
+
 ?>

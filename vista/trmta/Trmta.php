@@ -60,9 +60,10 @@ Phx.vista.Trmta=Ext.extend(Phx.gridInterfaz,{
                 lazyRender: true,
                 mode: 'local',
                 store: ['R.M.T.A.','R.A.M.','R.T.A.']
-			},
+				},
 				type:'ComboBox',
 				filters:{pfiltro:'rmta.tipo',type:'list', options:['R.M.T.A.','R.A.M.','R.T.A.']},
+
 				id_grupo:0,
 				grid:true,
 				form:true

@@ -1,0 +1,2216 @@
+--------------- SQL ---------------
+
+CREATE OR REPLACE FUNCTION sistra.ft_reporte_sel (
+  p_administrador integer,
+  p_id_usuario integer,
+  p_tabla varchar,
+  p_transaccion varchar
+)
+RETURNS varchar AS
+$body$
+/***************************************************************************
+ SISTEMA:        Tramites
+ FUNCION:        sistra.ft_reporte_sel
+ DESCRIPCION:    Funcion que devuelve conjuntos de registros para los reportes del sistema de tramites
+ AUTOR:          Jose Mita Huanca
+ FECHA:          19-03-2025
+ COMENTARIOS:   
+***************************************************************************/
+
+DECLARE
+  v_nombre_funcion	varchar;
+  v_consulta 		varchar;
+  v_parametros 		record;
+  v_respuesta		varchar;
+  v_id_items		varchar[];
+  v_where			varchar;
+  v_ids				varchar;
+  v_id_tramite		integer;
+  v_aux				varchar;
+  v_id_tipo_tramite	integer;
+  v_filtro			varchar;
+BEGIN
+ 
+	v_nombre_funcion='sistra.ft_reporte_sel';
+  	v_parametros=pxp.f_get_record(p_tabla);
+  
+  	/*********************************   
+     #TRANSACCION:  'TRA_DATFOR_SEL'
+     #DESCRIPCION:  Retorna los datos de la solicitud de tramites
+     #AUTOR:        Jose Mita Huanca
+     #FECHA:        19-03-2025
+    ***********************************/
+  
+	if(p_transaccion='TRA_DATFOR_SEL') then
+		begin
+	    	v_consulta:='SELECT
+                          trami.cite_tramite,
+                          tiptra.nombre_tramite,
+                          trami.ubicacion,
+                          trami.fojas, 
+                          usu1.cuenta,
+                          case 
+                              when extract(month from trami.fecha_reg) = 1 then ''Enero''
+                              when extract(month from trami.fecha_reg) = 2 then ''Febrero''
+                              when extract(month from trami.fecha_reg) = 3 then ''Marzo''
+                              when extract(month from trami.fecha_reg) = 4 then ''Abril''
+                              when extract(month from trami.fecha_reg) = 5 then ''Mayo''
+                              when extract(month from trami.fecha_reg) = 6 then ''Junio''
+                              when extract(month from trami.fecha_reg) = 7 then ''Julio''
+                              when extract(month from trami.fecha_reg) = 8 then ''Agosto''
+                              when extract(month from trami.fecha_reg) = 9 then ''Septiembre''
+                              when extract(month from trami.fecha_reg) = 10 then ''Octubre''
+                              when extract(month from trami.fecha_reg) = 11 then ''Noviembre''
+                              when extract(month from trami.fecha_reg) = 12 then ''Diciembre''
+                              else ''No hay Mes''
+                              END as mes,
+                          extract(day from trami.fecha_reg) as dia,
+                          extract(year from trami.fecha_reg) as anio,
+                          extract(hour from trami.fecha_reg) as hora,
+                          extract(MINUTE from trami.fecha_reg) as minuto,
+                          trami.num_resolucion,
+                           case 
+                              when extract(month from trami.fecha_resolucion) = 1 then ''Enero''
+                              when extract(month from trami.fecha_resolucion) = 2 then ''Febrero''
+                              when extract(month from trami.fecha_resolucion) = 3 then ''Marzo''
+                              when extract(month from trami.fecha_resolucion) = 4 then ''Abril''
+                              when extract(month from trami.fecha_resolucion) = 5 then ''Mayo''
+                              when extract(month from trami.fecha_resolucion) = 6 then ''Junio''
+                              when extract(month from trami.fecha_resolucion) = 7 then ''Julio''
+                              when extract(month from trami.fecha_resolucion) = 8 then ''Agosto''
+                              when extract(month from trami.fecha_resolucion) = 9 then ''Septiembre''
+                              when extract(month from trami.fecha_resolucion) = 10 then ''Octubre''
+                              when extract(month from trami.fecha_resolucion) = 11 then ''Noviembre''
+                              when extract(month from trami.fecha_resolucion) = 12 then ''Diciembre''
+                              else ''No hay Mes''
+                              END as mes_resolucion,
+                          extract(day from trami.fecha_resolucion) as dia_resolucion,
+                          extract(year from trami.fecha_resolucion) as anio_resolucion,
+							per.celular1,
+                            per.correo,
+                            trami.observacion
+                            from sistra.ttramite trami
+                                 inner join sistra.ttipo_tramite tiptra on tiptra.id_tipo_tramite = trami.id_tipo_tramite
+                                 inner join segu.tusuario usu1 on usu1.id_usuario = trami.id_usuario_reg
+                                 inner join sistra.ttramite_persona traper on traper.id_tramite=trami.id_tramite
+                                 inner join segu.vpersona per on per.id_persona=traper.id_persona 
+                          where ';        	
+                        
+				v_consulta:=v_consulta||v_parametros.filtro;
+                v_consulta:=v_consulta||' order by '||v_parametros.ordenacion||' '||v_parametros.dir_ordenacion ||' limit '||v_parametros.cantidad||' offset '||v_parametros.puntero;
+--                raise notice '%',v_consulta;
+	        return v_consulta;	
+	    end;
+  	/*********************************   
+     #TRANSACCION:  'TRA_DATFOR_CONT'
+     #DESCRIPCION:  Retorna los datos de la solicitud de tramite
+     #AUTOR:        Jose Mita Huanca
+     #FECHA:        19-03-2025
+    ***********************************/
+	elsif(p_transaccion='TRA_DATFOR_CONT')then
+    
+        begin
+        
+        v_consulta:='select count(trami.id_tramite)
+                    		from sistra.ttramite trami
+                                 inner join sistra.ttipo_tramite tiptra on tiptra.id_tipo_tramite = trami.id_tipo_tramite
+                                 inner join segu.tusuario usu1 on usu1.id_usuario = trami.id_usuario_reg
+                                 inner join sistra.ttramite_persona traper on traper.id_tramite=trami.id_tramite
+                                 inner join segu.vpersona per on per.id_persona=traper.id_persona
+                    where  ';        	
+                        
+                        raise notice '%',v_consulta;
+				v_consulta:=v_consulta||v_parametros.filtro;
+               
+	        return v_consulta;
+         end;
+    
+    /*********************************   
+     #TRANSACCION:  'TRA_LISPER_SEL'
+     #DESCRIPCION:  Retorna los datos de la solicitud de tramites
+     #AUTOR:        Jose Mita Huanca
+     #FECHA:        19-03-2020
+    ***********************************/
+  
+	elsif(p_transaccion='TRA_LISPER_SEL') then
+		begin
+	    	v_consulta:='select 
+                          traper.domicilio,
+                          traper.tipo_persona,
+                          traper.fecha_poder,
+                          traper.notario,
+                          traper.nro_notaria,
+                          pers.nombre_completo1,
+                          pers.celular1,
+                          pers.correo,
+                          pers.ci,
+                          person.expedicion,
+                          traper.nro_poder
+                          from sistra.ttramite trami
+                          inner join sistra.ttramite_persona traper on traper.id_tramite = trami.id_tramite
+                          inner join segu.vpersona pers on pers.id_persona=traper.id_persona
+                          inner join segu.tpersona person on person.id_persona = pers.id_persona 
+                          where ';        	
+                        
+				v_consulta:=v_consulta||v_parametros.filtro;
+                v_consulta:=v_consulta||' order by '||v_parametros.ordenacion||' '||v_parametros.dir_ordenacion ||' limit '||v_parametros.cantidad||' offset '||v_parametros.puntero;
+                raise notice '%',v_consulta;
+	        return v_consulta;	
+	    end;
+  	/*********************************   
+     #TRANSACCION:  'TRA_LISPER_CONT'
+     #DESCRIPCION:  Retorna los datos de la solicitud de tramites
+     #AUTOR:        Jose Mita Huanca
+     #FECHA:        19-03-2025
+    ***********************************/
+	elsif(p_transaccion='TRA_LISPER_CONT')then
+    
+        begin
+        
+        v_consulta:='select count(trami.id_tramite)
+                    	from sistra.ttramite trami
+                          inner join sistra.ttramite_persona traper on traper.id_tramite = trami.id_tramite
+                          inner join segu.vpersona pers on pers.id_persona=traper.id_persona
+                          inner join segu.tpersona person on person.id_persona = pers.id_persona
+                          where  ';        	
+                        
+                        raise notice '%',v_consulta;
+				v_consulta:=v_consulta||v_parametros.filtro;
+               
+	        return v_consulta;
+         end;
+       
+    
+     /*********************************   
+     #TRANSACCION:  'TRA_LIPEBO_SEL'
+     #DESCRIPCION:  Retorna los datos de la solicitud de tramites
+     #AUTOR:        Jose Mita Huanca
+     #FECHA:        19-03-2020
+    ***********************************/
+  
+	elsif(p_transaccion='TRA_LIPEBO_SEL') then
+		begin
+	    	v_consulta:='select traper.domicilio,
+                                 traper.tipo_persona,
+                                 traper.fecha_poder,
+                                 traper.notario,
+                                 traper.nro_notaria,
+                                 pers.nombre_completo1,
+                                 pers.celular1,
+                                 pers.correo,
+                                 pers.ci,
+                                 person.expedicion,
+                                 traper.nro_poder
+                          from sistra.tboleta_liquida bolliq
+                               inner join sistra.ttramite trami on trami.id_tramite = bolliq.id_tramite
+                               inner join sistra.ttramite_persona traper on traper.id_tramite = trami.id_tramite
+                               inner join segu.vpersona pers on pers.id_persona = traper.id_persona
+                               inner join segu.tpersona person on person.id_persona = pers.id_persona
+                          where ';        	
+                        
+				v_consulta:=v_consulta||v_parametros.filtro;
+                v_consulta:=v_consulta||' order by '||v_parametros.ordenacion||' '||v_parametros.dir_ordenacion ||' limit '||v_parametros.cantidad||' offset '||v_parametros.puntero;
+                raise notice '%',v_consulta;
+	        return v_consulta;	
+	    end;
+  	/*********************************   
+     #TRANSACCION:  'TRA_LIPEBO_CONT'
+     #DESCRIPCION:  Retorna los datos de la solicitud de tramites
+     #AUTOR:        Jose Mita Huanca
+     #FECHA:        19-03-2025
+    ***********************************/
+	elsif(p_transaccion='TRA_LIPEBO_CONT')then
+    
+        begin
+        
+        v_consulta:='select count(bolliq.id_boleta_liquida)
+                    	from sistra.tboleta_liquida bolliq
+                               inner join sistra.ttramite trami on trami.id_tramite = bolliq.id_tramite
+                               inner join sistra.ttramite_persona traper on traper.id_tramite = trami.id_tramite
+                               inner join segu.vpersona pers on pers.id_persona = traper.id_persona
+                               inner join segu.tpersona person on person.id_persona = pers.id_persona
+                          where  ';        	
+                        
+                        raise notice '%',v_consulta;
+				v_consulta:=v_consulta||v_parametros.filtro;
+               
+	        return v_consulta;
+         end;
+       
+    
+    /*********************************   
+     #TRANSACCION:  'TRA_LIPETR_SEL'
+     #DESCRIPCION:  Retorna los datos de la solicitud de tramites
+     #AUTOR:        Jose Mita Huanca
+     #FECHA:        19-03-2020
+    ***********************************/
+  
+	elsif(p_transaccion='TRA_LIPETR_SEL') then
+		begin
+	    	v_consulta:='select 
+                          traper.domicilio,
+                          traper.tipo_persona,
+                          traper.fecha_poder,
+                          traper.notario,
+                          traper.nro_notaria,
+                          pers.nombre_completo1,
+                          pers.celular1,
+                          pers.correo,
+                          pers.ci,
+                          person.expedicion,
+                          traper.nro_poder
+                          from sistra.ttramite trami
+                         inner join sistra.ttramite_persona traper on traper.id_tramite = trami.id_tramite
+                         inner join sistra.ttramite_detalle tradet on tradet.id_tramite = trami.id_tramite
+                         inner join segu.vpersona pers on pers.id_persona = traper.id_persona
+                         inner join segu.tpersona person on person.id_persona = pers.id_persona
+                          where ';        	
+                        
+				v_consulta:=v_consulta||v_parametros.filtro;
+                v_consulta:=v_consulta||' order by '||v_parametros.ordenacion||' '||v_parametros.dir_ordenacion ||' limit '||v_parametros.cantidad||' offset '||v_parametros.puntero;
+                raise notice '%',v_consulta;
+	        return v_consulta;	
+	    end;
+  	/*********************************   
+     #TRANSACCION:  'TRA_LIPETR_CONT'
+     #DESCRIPCION:  Retorna los datos de la solicitud de tramites
+     #AUTOR:        Jose Mita Huanca
+     #FECHA:        19-03-2025
+    ***********************************/
+	elsif(p_transaccion='TRA_LIPETR_CONT')then
+    
+        begin
+        
+        v_consulta:='select count(trami.id_tramite)
+                    	from sistra.ttramite trami
+                           inner join sistra.ttramite_persona traper on traper.id_tramite = trami.id_tramite
+                           inner join sistra.ttramite_detalle tradet on tradet.id_tramite = trami.id_tramite
+                           inner join segu.vpersona pers on pers.id_persona = traper.id_persona
+                           inner join segu.tpersona person on person.id_persona = pers.id_persona
+                          where  ';        	
+                        
+                        raise notice '%',v_consulta;
+				v_consulta:=v_consulta||v_parametros.filtro;
+               
+	        return v_consulta;
+         end;
+    
+      
+    /*********************************   
+     #TRANSACCION:  'TRA_LISTOT_SEL'
+     #DESCRIPCION:  Retorna los datos OT
+     #AUTOR:        Jose Mita Huanca
+     #FECHA:        19-03-2020
+    ***********************************/
+  
+	elsif(p_transaccion='TRA_LISTOT_SEL') then
+		begin
+	    	v_consulta:='
+						select tradet.num_informe, 
+                        tradet.fecha_reg, 
+                        funper.desc_funcionario1, 
+                        tradet.estado_tramite, 
+                        dattec.calle, 
+                        dattec.avenida, 
+                        dattec.zona
+                        from sistra.ttramite trami
+                        inner join sistra.ttramite_detalle tradet on tradet.id_tramite = trami.id_tramite
+                        inner join sistra.tdato_tecnico dattec on dattec.id_tramite = tradet.id_tramite
+                        inner join orga.vfuncionario_persona funper on funper.id_funcionario = tradet.id_funcionario
+                        WHERE tradet.estado_tramite = ''OT'' and  ';        	
+                        
+				v_consulta:=v_consulta||v_parametros.filtro;
+                v_consulta:=v_consulta||' order by '||v_parametros.ordenacion||' '||v_parametros.dir_ordenacion ||' limit '||v_parametros.cantidad||' offset '||v_parametros.puntero;
+                raise notice '%',v_consulta;
+	        return v_consulta;	
+	    end;
+  	/*********************************   
+     #TRANSACCION:  'TRA_LISTOT_CONT'
+     #DESCRIPCION:  Retorna los datos OT
+     #AUTOR:        Jose Mita Huanca
+     #FECHA:        19-03-2025
+    ***********************************/
+	elsif(p_transaccion='TRA_LISTOT_CONT')then
+    
+        begin
+        
+        v_consulta:='select count(trami.id_tramite)
+                    	from sistra.ttramite trami
+                          inner join sistra.ttramite_detalle tradet on tradet.id_tramite = trami.id_tramite
+                        inner join sistra.tdato_tecnico dattec on dattec.id_tramite = tradet.id_tramite
+                        inner join orga.vfuncionario_persona funper on funper.id_funcionario = tradet.id_funcionario
+                        WHERE tradet.estado_tramite = ''OT'' and    ';        	
+                        
+                        raise notice '%',v_consulta;
+				v_consulta:=v_consulta||v_parametros.filtro;
+               
+	        return v_consulta;
+         end;
+         
+         
+          
+    /*********************************   
+     #TRANSACCION:  'TRA_LISTOP_SEL'
+     #DESCRIPCION:  Retorna los datos Topografo
+     #AUTOR:        Jose Mita Huanca
+     #FECHA:        19-03-2020
+    ***********************************/
+  
+	elsif(p_transaccion='TRA_LISTOP_SEL') then
+		begin
+	    	v_consulta:='
+						select tradet.num_informe, 
+                        tradet.fecha_reg, 
+                        funper.desc_funcionario1, 
+                        tradet.estado_tramite, 
+                        dattec.calle, 
+                        dattec.avenida, 
+                        dattec.zona, 
+                        dattec.distrito, 
+                        dattec.manzana
+                        from sistra.ttramite trami
+                        inner join sistra.ttramite_detalle tradet on tradet.id_tramite = trami.id_tramite
+                        inner join sistra.tdato_tecnico dattec on dattec.id_tramite_detalle = tradet.id_tramite_detalle
+                        inner join orga.vfuncionario_persona funper on funper.id_funcionario = tradet.id_funcionario
+                        WHERE tradet.estado_tramite = ''TOPOGRAFO'' and  ';        	
+                        
+				v_consulta:=v_consulta||v_parametros.filtro;
+                v_consulta:=v_consulta||' order by '||v_parametros.ordenacion||' '||v_parametros.dir_ordenacion ||' limit '||v_parametros.cantidad||' offset '||v_parametros.puntero;
+                raise notice '%',v_consulta;
+	        return v_consulta;	
+	    end;
+  	/*********************************   
+     #TRANSACCION:  'TRA_LISTOP_CONT'
+     #DESCRIPCION:  Retorna los datos Topografo
+     #AUTOR:        Jose Mita Huanca
+     #FECHA:        19-03-2025
+    ***********************************/
+	elsif(p_transaccion='TRA_LISTOP_CONT')then
+    
+        begin
+        
+        v_consulta:='select count(trami.id_tramite)
+                    	from sistra.ttramite trami
+                          inner join sistra.ttramite_detalle tradet on tradet.id_tramite = trami.id_tramite
+                        inner join sistra.tdato_tecnico dattec on dattec.id_tramite_detalle = tradet.id_tramite_detalle
+                        inner join orga.vfuncionario_persona funper on funper.id_funcionario = tradet.id_funcionario
+                        WHERE tradet.estado_tramite = ''TOPOGRAFO'' and   ';        	
+                        
+                        raise notice '%',v_consulta;
+				v_consulta:=v_consulta||v_parametros.filtro;
+               
+	        return v_consulta;
+         end;
+    
+    
+        
+          
+    /*********************************   
+     #TRANSACCION:  'TRA_LISLEG_SEL'
+     #DESCRIPCION:  Retorna los datos de la solicitud de tramites
+     #AUTOR:        Jose Mita Huanca
+     #FECHA:        19-03-2020
+    ***********************************/
+  
+	elsif(p_transaccion='TRA_LISLEG_SEL') then
+		begin
+	    	v_consulta:='
+						select 
+                         matri.asiento,
+                         matri.decreto_registrador,
+                         matri.fecha_asiento,
+                         matri.fecha_testimonio,
+                         matri.nombre_notario,
+                         matri.nro_matricula,
+                         matri.nro_notario,
+                         matri.nro_testimonio,
+                         matri.superficie,
+                         tradet.descripcion,
+                         tradet.num_informe,
+                         tradet.fecha_reg,
+                         tradet.estado_tramite, 
+                         funper.desc_funcionario1 
+                  		from sistra.ttramite trami
+                       inner join sistra.ttramite_detalle tradet on tradet.id_tramite = trami.id_tramite
+                       inner join sistra.tmatricula matri on matri.id_tramite_detalle = tradet.id_tramite_detalle
+                       inner join orga.vfuncionario_persona funper on funper.id_funcionario=tradet.id_funcionario
+                 		 where tradet.estado_tramite = ''ABOGADO'' and  ';        	
+                        
+				v_consulta:=v_consulta||v_parametros.filtro;
+                v_consulta:=v_consulta||' order by '||v_parametros.ordenacion||' '||v_parametros.dir_ordenacion ||' limit '||v_parametros.cantidad||' offset '||v_parametros.puntero;
+                raise notice '%',v_consulta;
+	        return v_consulta;	
+	    end;
+  	/*********************************   
+     #TRANSACCION:  'TRA_LISLEG_CONT'
+     #DESCRIPCION:  Retorna los datos de la solicitud de tramites
+     #AUTOR:        Jose Mita Huanca
+     #FECHA:        19-03-2025
+    ***********************************/
+	elsif(p_transaccion='TRA_LISLEG_CONT')then
+    
+        begin
+        
+        v_consulta:='select count(trami.id_tramite)
+                    	from sistra.ttramite trami
+                        inner join sistra.ttramite_detalle tradet on tradet.id_tramite = trami.id_tramite
+                       inner join sistra.tmatricula matri on matri.id_tramite_detalle = tradet.id_tramite_detalle
+                       inner join orga.vfuncionario_persona funper on funper.id_funcionario=tradet.id_funcionario
+                 		 where tradet.estado_tramite = ''ABOGADO'' and   ';        	
+                        
+                        raise notice '%',v_consulta;
+				v_consulta:=v_consulta||v_parametros.filtro;
+               
+	        return v_consulta;
+         end;
+    
+          
+    /*********************************   
+     #TRANSACCION:  'TRA_LISARQ_SEL'
+     #DESCRIPCION:  Retorna los datos de la solicitud de tramites
+     #AUTOR:        Jose Mita Huanca
+     #FECHA:        19-03-2020
+    ***********************************/
+  
+	elsif(p_transaccion='TRA_LISARQ_SEL') then
+		begin
+	    	v_consulta:='
+						select tradet.estado_tramite,
+                         tradet.fecha_reg,
+                         tradet.num_informe,
+                         rmta.fecha_rmta,
+                         rmta.nro_rmta,
+                         rmta.tipo_aprobacion,
+                         funper.desc_funcionario1
+                  		from sistra.ttramite trami
+                       inner join sistra.ttramite_detalle tradet on tradet.id_tramite = trami.id_tramite
+                       inner join sistra.ttrmta rmta on rmta.id_tramite_detalle = tradet.id_tramite_detalle
+                       inner join orga.vfuncionario_persona funper on funper.id_funcionario = tradet.id_funcionario
+                  	WHERE tradet.estado_tramite = ''ARQUITECTO'' and  ';        	
+                        
+				v_consulta:=v_consulta||v_parametros.filtro;
+                v_consulta:=v_consulta||' order by '||v_parametros.ordenacion||' '||v_parametros.dir_ordenacion ||' limit '||v_parametros.cantidad||' offset '||v_parametros.puntero;
+                raise notice '%',v_consulta;
+	        return v_consulta;	
+	    end;
+  	/*********************************   
+     #TRANSACCION:  'TRA_LISARQ_CONT'
+     #DESCRIPCION:  Retorna los datos de la solicitud de tramites
+     #AUTOR:        Jose Mita Huanca
+     #FECHA:        19-03-2025
+    ***********************************/
+	elsif(p_transaccion='TRA_LISARQ_CONT')then
+    
+        begin
+        
+        v_consulta:='select count(trami.id_tramite)
+                    	from sistra.ttramite trami
+                        inner join sistra.ttramite_detalle tradet on tradet.id_tramite = trami.id_tramite
+                       inner join sistra.ttrmta rmta on rmta.id_tramite_detalle = tradet.id_tramite_detalle
+                       inner join orga.vfuncionario_persona funper on funper.id_funcionario = tradet.id_funcionario
+                  	WHERE tradet.estado_tramite = ''ARQUITECTO'' and  ';        	
+                        
+                        raise notice '%',v_consulta;
+				v_consulta:=v_consulta||v_parametros.filtro;
+               
+	        return v_consulta;
+         end;
+          
+    /*********************************   
+     #TRANSACCION:  'TRA_LISBOL_SEL'
+     #DESCRIPCION:  Retorna los datos de la solicitud de tramites
+     #AUTOR:        Jose Mita Huanca
+     #FECHA:        19-03-2020
+    ***********************************/
+  
+	elsif(p_transaccion='TRA_LISBOL_SEL') then
+		begin
+	    	v_consulta:='
+						select boleta.comp_pago,
+                         boleta.expediente,
+                         boleta.fecha_pago,
+                         boleta.monto,
+                         boleta.nro_liquidacion,
+                         per.nombre_completo1
+                  from sistra.ttramite trami
+                  		inner join sistra.ttramite_detalle tradet on tradet.id_tramite = trami.id_tramite
+                       inner join sistra.tboleta boleta on boleta.id_tramite_detalle = tradet.id_tramite_detalle
+                       inner join segu.tusuario usu1 on usu1.id_usuario = boleta.id_usuario_reg
+                       inner join segu.vpersona per on per.id_persona = usu1.id_persona
+                  where ';        	
+                        
+				v_consulta:=v_consulta||v_parametros.filtro;
+                v_consulta:=v_consulta||' order by '||v_parametros.ordenacion||' '||v_parametros.dir_ordenacion ||' limit '||v_parametros.cantidad||' offset '||v_parametros.puntero;
+                raise notice '%',v_consulta;
+	        return v_consulta;	
+	    end;
+  	/*********************************   
+     #TRANSACCION:  'TRA_LISBOL_CONT'
+     #DESCRIPCION:  Retorna los datos de la solicitud de tramites
+     #AUTOR:        Jose Mita Huanca
+     #FECHA:        19-03-2025
+    ***********************************/
+	elsif(p_transaccion='TRA_LISBOL_CONT')then
+    
+        begin
+        
+        v_consulta:='select count(trami.id_tramite)
+                    	from sistra.ttramite trami
+                        inner join sistra.ttramite_detalle tradet on tradet.id_tramite = trami.id_tramite
+                       inner join sistra.tboleta boleta on boleta.id_tramite_detalle = tradet.id_tramite_detalle
+                       inner join segu.tusuario usu1 on usu1.id_usuario = boleta.id_usuario_reg
+                       inner join segu.vpersona per on per.id_persona = usu1.id_persona
+                  			where ';        	
+                        
+                        raise notice '%',v_consulta;
+				v_consulta:=v_consulta||v_parametros.filtro;
+               
+	        return v_consulta;
+         end;
+    
+          
+    /*********************************   
+     #TRANSACCION:  'TRA_LISLOT_SEL'
+     #DESCRIPCION:  Retorna los datos de la solicitud de tramites
+     #AUTOR:        Jose Mita Huanca
+     #FECHA:        19-03-2020
+    ***********************************/
+  
+	elsif(p_transaccion='TRA_LISLOT_SEL') then
+		begin
+	    	v_consulta:='
+						select 
+                        lote.lote, 
+                        lote.tipo_cesion, 
+                        lote.nombre, 
+                        lote.superficie
+                        from sistra.ttramite trami 
+                        inner join sistra.ttramite_detalle tradet on tradet.id_tramite = trami.id_tramite
+                        inner join sistra.tlote lote on lote.id_tramite_detalle = tradet.id_tramite_detalle
+                        where ';        	
+                        
+				v_consulta:=v_consulta||v_parametros.filtro;
+                v_consulta:=v_consulta||' order by '||v_parametros.ordenacion||' '||v_parametros.dir_ordenacion ||' limit '||v_parametros.cantidad||' offset '||v_parametros.puntero;
+                raise notice '%',v_consulta;
+	        return v_consulta;	
+	    end;
+  	/*********************************   
+     #TRANSACCION:  'TRA_LISLOT_CONT'
+     #DESCRIPCION:  Retorna los datos de la solicitud de tramites
+     #AUTOR:        Jose Mita Huanca
+     #FECHA:        19-03-2025
+    ***********************************/
+	elsif(p_transaccion='TRA_LISLOT_CONT')then
+    
+        begin
+        
+        v_consulta:='select count(trami.id_tramite)
+                    	from sistra.ttramite trami
+                        inner join sistra.ttramite_detalle tradet on tradet.id_tramite = trami.id_tramite
+                        inner join sistra.tlote lote on lote.id_tramite_detalle = tradet.id_tramite_detalle
+                        where  ';        	
+                        
+                        raise notice '%',v_consulta;
+				v_consulta:=v_consulta||v_parametros.filtro;
+               
+	        return v_consulta;
+         end;
+        
+        
+     /*********************************   
+     #TRANSACCION:  'TRA_LISINF_SEL'
+     #DESCRIPCION:  Retorna los datos de la cabecera del informe
+     #AUTOR:        Jose Mita Huanca
+     #FECHA:        19-06-2025
+    ***********************************/
+  
+	elsif(p_transaccion='TRA_LISINF_SEL') then
+		begin
+	    	v_consulta:='
+						select infor.num_informe, 
+                        	funa.desc_funcionario1 as nombrea,
+                            funa.email_empresa as cargoa,
+ 							funvia.desc_funcionario1 as via, 
+                            funvia.email_empresa as cargovia, 
+                            funcio.desc_funcionario1 as de, 
+                            funcio.email_empresa as cargode,
+							case 
+                              when extract(month from infor.fecha_informe) = 1 then ''Enero''
+                              when extract(month from infor.fecha_informe) = 2 then ''Febrero''
+                              when extract(month from infor.fecha_informe) = 3 then ''Marzo''
+                              when extract(month from infor.fecha_informe) = 4 then ''Abril''
+                              when extract(month from infor.fecha_informe) = 5 then ''Mayo''
+                              when extract(month from infor.fecha_informe) = 6 then ''Junio''
+                              when extract(month from infor.fecha_informe) = 7 then ''Julio''
+                              when extract(month from infor.fecha_informe) = 8 then ''Agosto''
+                              when extract(month from infor.fecha_informe) = 9 then ''Septiembre''
+                              when extract(month from infor.fecha_informe) = 10 then ''Octubre''
+                              when extract(month from infor.fecha_informe) = 11 then ''Noviembre''
+                              when extract(month from infor.fecha_informe) = 12 then ''Diciembre''
+                              else ''No hay Mes''
+                              END as mes,
+                          extract(day from infor.fecha_informe) as dia,
+                          extract(year from infor.fecha_informe) as anio,
+                          infor.referencia
+                        from sistra.ttramite_detalle tradet
+                        inner join sistra.ttramite trami on trami.id_tramite=tradet.id_tramite
+                        inner join sistra.tinforme infor on infor.id_tramite_detalle=tradet.id_tramite_detalle
+                        inner join orga.vfuncionario_persona funcio on funcio.id_funcionario=infor.id_funcionario
+                        inner join orga.vfuncionario_persona funa on funa.id_funcionario=infor.id_funcionario_a
+                        LEFT join orga.vfuncionario_persona funvia on funvia.id_funcionario = infor.id_funcionario_via
+						where  ';        	
+                        
+				v_consulta:=v_consulta||v_parametros.filtro;
+                v_consulta:=v_consulta||' order by '||v_parametros.ordenacion||' '||v_parametros.dir_ordenacion ||' limit '||v_parametros.cantidad||' offset '||v_parametros.puntero;
+                raise notice '%',v_consulta;
+	        return v_consulta;	
+	    end;
+  	/*********************************   
+     #TRANSACCION:  'TRA_LISINF_CONT'
+     #DESCRIPCION:  Retorna los datos de la  cabecera del informe
+     #AUTOR:        Jose Mita Huanca
+     #FECHA:        19-06-2025
+    ***********************************/
+	elsif(p_transaccion='TRA_LISINF_CONT')then
+    
+        begin
+        
+        v_consulta:='select count(tradet.id_tramite_detalle)
+                    	from sistra.ttramite_detalle tradet
+                        inner join sistra.ttramite trami on trami.id_tramite=tradet.id_tramite
+                        inner join sistra.tinforme infor on infor.id_tramite_detalle=tradet.id_tramite_detalle
+                        inner join orga.vfuncionario_persona funcio on funcio.id_funcionario=infor.id_funcionario
+                        inner join orga.vfuncionario_persona funa on funa.id_funcionario=infor.id_funcionario_a
+                        LEFT join orga.vfuncionario_persona funvia on funvia.id_funcionario = infor.id_funcionario_via
+						where  ';        	
+                        
+                        raise notice '%',v_consulta;
+				v_consulta:=v_consulta||v_parametros.filtro;
+               
+	        return v_consulta;
+         end;
+     /*********************************   
+     #TRANSACCION:  'TRA_LICUIN_SEL'
+     #DESCRIPCION:  Retorna los datos de la cuerpo del informe
+     #AUTOR:        Jose Mita Huanca
+     #FECHA:        19-06-2025
+    ***********************************/      
+    elsif(p_transaccion='TRA_LICUIN_SEL') then
+		begin
+	    	v_consulta:='
+						select trami.cite_tramite,
+                       tiptra.nombre_tramite,
+                       dattec.distrito,
+                       dattec.zona,
+                       dattec.manzana,
+                       dattec.lote,
+                       dattec.calle,
+                       dattec.avenida,
+                       dattec.tipo_calle,
+                       dattec.rasante_municipal,
+                       dattec.colindante_norte,
+                       dattec.colindante_sur,
+                       dattec.colindante_oeste,
+                       dattec.colindante_este,
+                       dattec.super_escritura,
+                       dattec.super_mensura,
+                       dattec.super_excedente,
+                       dattec.super_inexistente,
+                       dattec.super_total,
+                       dattec.long_rasante,
+                       dattec.vias,
+                       dattec.agua_potable,
+                       dattec.alcantarillado,
+                       dattec.alumbrado_publico,
+                       dattec.telefonia,
+                       dattec.equipamiento,
+                       dattec.transporte,
+                       infor.observacion,
+                       infor.conclusion,
+                       dattec.nombre_lote
+                from sistra.ttramite_detalle tradet
+                     inner join sistra.ttramite trami on trami.id_tramite = tradet.id_tramite
+                     inner join sistra.ttipo_tramite tiptra on tiptra.id_tipo_tramite = trami.id_tipo_tramite
+                     inner join sistra.tdato_tecnico dattec on dattec.id_tramite_detalle = tradet.id_tramite_detalle
+                     inner join sistra.tinforme infor on infor.id_tramite_detalle = tradet.id_tramite_detalle
+                where ';        	
+                        
+				v_consulta:=v_consulta||v_parametros.filtro;
+                v_consulta:=v_consulta||' order by '||v_parametros.ordenacion||' '||v_parametros.dir_ordenacion ||' limit '||v_parametros.cantidad||' offset '||v_parametros.puntero;
+                raise notice '%',v_consulta;
+	        return v_consulta;	
+	    end;
+  	/*********************************   
+     #TRANSACCION:  'TRA_LICUIN_CONT'
+     #DESCRIPCION:  Retorna los datos de la  cabecera del informe
+     #AUTOR:        Jose Mita Huanca
+     #FECHA:        19-06-2025
+    ***********************************/
+	elsif(p_transaccion='TRA_LICUIN_CONT')then
+    
+        begin
+        
+        v_consulta:='select count(tradet.id_tramite_detalle)
+                    from sistra.ttramite_detalle tradet
+                     inner join sistra.ttramite trami on trami.id_tramite = tradet.id_tramite
+                     inner join sistra.ttipo_tramite tiptra on tiptra.id_tipo_tramite = trami.id_tipo_tramite
+                     inner join sistra.tdato_tecnico dattec on dattec.id_tramite_detalle = tradet.id_tramite_detalle
+                     inner join sistra.tinforme infor on infor.id_tramite_detalle = tradet.id_tramite_detalle
+                     where  ';        	
+                        
+                        raise notice '%',v_consulta;
+				v_consulta:=v_consulta||v_parametros.filtro;
+               
+	        return v_consulta;
+         end;
+         
+         
+     /*********************************   
+     #TRANSACCION:  'TRA_LICALE_SEL'
+     #DESCRIPCION:  Retorna los datos de la cabecera del informe
+     #AUTOR:        Jose Mita Huanca
+     #FECHA:        19-06-2025
+    ***********************************/
+  
+	elsif(p_transaccion='TRA_LICALE_SEL') then
+		begin
+	    	v_consulta:='
+					select	infor.num_informe, 
+                        	funa.desc_funcionario1 as nombrea,
+                            funa.email_empresa as cargoa,
+ 							funvia.desc_funcionario1 as via, 
+                            funvia.email_empresa as cargovia, 
+                            funcio.desc_funcionario1 as de, 
+                            funcio.email_empresa as cargode,
+							case 
+                              when extract(month from infor.fecha_informe) = 1 then ''Enero''
+                              when extract(month from infor.fecha_informe) = 2 then ''Febrero''
+                              when extract(month from infor.fecha_informe) = 3 then ''Marzo''
+                              when extract(month from infor.fecha_informe) = 4 then ''Abril''
+                              when extract(month from infor.fecha_informe) = 5 then ''Mayo''
+                              when extract(month from infor.fecha_informe) = 6 then ''Junio''
+                              when extract(month from infor.fecha_informe) = 7 then ''Julio''
+                              when extract(month from infor.fecha_informe) = 8 then ''Agosto''
+                              when extract(month from infor.fecha_informe) = 9 then ''Septiembre''
+                              when extract(month from infor.fecha_informe) = 10 then ''Octubre''
+                              when extract(month from infor.fecha_informe) = 11 then ''Noviembre''
+                              when extract(month from infor.fecha_informe) = 12 then ''Diciembre''
+                              else ''No hay Mes''
+                              END as mes,
+                          extract(day from infor.fecha_informe) as dia,
+                          extract(year from infor.fecha_informe) as anio,
+                          infor.referencia,
+                            trami.cite_tramite,
+                                   tiptra.nombre_tramite,
+                                   tiptra.id_tipo_tramite,
+                                   trami.id_tramite,
+                                   infor.observacion,
+                                   infor.conclusion, 
+                                   matri.nro_matricula,
+                                   matri.superficie ,
+                                   matri.asiento,
+                                   matri.fecha_asiento,
+                                   matri.nro_testimonio,
+                                   matri.fecha_testimonio,
+                                    matri.nro_notario,
+                                   matri.nombre_notario, 
+                                   rmta.nro_rmta,
+                                   rmta.fecha_rmta,
+                                   datleg.aprobacion,
+                                   datleg.area_agro,
+                                   datleg.cod_catastral,
+                                   datleg.ddrr_registro,
+                                   datleg.distrito,
+                                   datleg.kami,
+                                   datleg.lote,
+                                   datleg.manzana,
+                                   datleg.superficie as superficie_leg,
+                                   datleg.zona,
+                                   rmta.tipo,
+                                   rmta.complemento,
+                                   rmta.tipo_aprobacion,
+                                   matri.complemento as complemento_matri,
+                                   datleg.aux as tipo_rechazo
+                              from sistra.ttramite_detalle tradet
+                                   inner join sistra.ttramite trami on trami.id_tramite = tradet.id_tramite
+                                   inner join sistra.ttipo_tramite tiptra on tiptra.id_tipo_tramite = trami.id_tipo_tramite
+                                   inner join sistra.tmatricula matri on matri.id_tramite_detalle = tradet.id_tramite_detalle
+                                   left join sistra.ttrmta rmta on rmta.id_tramite_detalle = tradet.id_tramite_detalle
+                                   inner join sistra.tinforme infor on infor.id_tramite_detalle = tradet.id_tramite_detalle
+                                   inner join sistra.tdatos_legal datleg on datleg.id_tramite_detalle = tradet.id_tramite_detalle
+                                   inner join orga.vfuncionario_persona funcio on funcio.id_funcionario = tradet.id_funcionario
+                                   inner join orga.vfuncionario_persona funa on funa.id_funcionario = infor.id_funcionario_a
+                                   LEFT join orga.vfuncionario_persona funvia on funvia.id_funcionario = infor.id_funcionario_via
+                            where  ';        	
+                        
+				v_consulta:=v_consulta||v_parametros.filtro;
+                v_consulta:=v_consulta||' order by '||v_parametros.ordenacion||' '||v_parametros.dir_ordenacion ||' limit '||v_parametros.cantidad||' offset '||v_parametros.puntero;
+                raise notice '%',v_consulta;
+	        return v_consulta;	
+	    end;
+  	/*********************************   
+     #TRANSACCION:  'TRA_LICALE_CONT'
+     #DESCRIPCION:  Retorna los datos de la  cabecera del informe
+     #AUTOR:        Jose Mita Huanca
+     #FECHA:        19-06-2025
+    ***********************************/
+	elsif(p_transaccion='TRA_LICALE_CONT')then
+    
+        begin
+        
+        v_consulta:='select count(tradet.id_tramite_detalle)
+                    	from sistra.ttramite_detalle tradet
+                                   inner join sistra.ttramite trami on trami.id_tramite = tradet.id_tramite
+                                   inner join sistra.ttipo_tramite tiptra on tiptra.id_tipo_tramite = trami.id_tipo_tramite
+                                   inner join sistra.tmatricula matri on matri.id_tramite_detalle = tradet.id_tramite_detalle
+                                   left join sistra.ttrmta rmta on rmta.id_tramite_detalle = tradet.id_tramite_detalle
+                                   inner join sistra.tinforme infor on infor.id_tramite_detalle = tradet.id_tramite_detalle
+                                   inner join sistra.tdatos_legal datleg on datleg.id_tramite_detalle = tradet.id_tramite_detalle
+                                   inner join orga.vfuncionario_persona funcio on funcio.id_funcionario = tradet.id_funcionario
+                                   inner join orga.vfuncionario_persona funa on funa.id_funcionario = infor.id_funcionario_a
+                                   LEFT join orga.vfuncionario_persona funvia on funvia.id_funcionario = infor.id_funcionario_via
+						where  ';        	
+                        
+                        raise notice '%',v_consulta;
+				v_consulta:=v_consulta||v_parametros.filtro;
+               
+	        return v_consulta;
+         end;     
+         
+           
+     /*********************************   
+     #TRANSACCION:  'TRA_LICULE_SEL'
+     #DESCRIPCION:  Retorna los datos de la cabecera del informe
+     #AUTOR:        Jose Mita Huanca
+     #FECHA:        19-06-2025
+    ***********************************/
+  
+	elsif(p_transaccion='TRA_LICULE_SEL') then
+		begin
+        	
+        	   	v_consulta:='
+						SELECT datleg.distrito,
+                           datleg.zona,
+                           datleg.manzana,
+                           datleg.lote,
+                             datleg.aprobacion,
+                             datleg.area_agro,
+                             datleg.cod_catastral,
+                             datleg.ddrr_registro,
+                             datleg.kami,
+                             datleg.aux as tipo_rechazo
+                      from sistra.ttramite trami
+                           inner join sistra.ttramite_detalle tradet on tradet.id_tramite = trami.id_tramite
+                          inner join sistra.tdatos_legal datleg on datleg.id_tramite_detalle = tradet.id_tramite_detalle
+                          
+                    where trami.id_tramite in (select trami.id_tramite
+													from sistra.ttramite_detalle tradet
+													inner join sistra.ttramite trami on trami.id_tramite = tradet.id_tramite
+													where ';        	
+                        
+				v_consulta:=v_consulta||v_parametros.filtro||')';
+                
+                raise notice '%',v_consulta;
+	        return v_consulta;	
+	    end;
+  	/*********************************   
+     #TRANSACCION:  'TRA_LICULE_CONT'
+     #DESCRIPCION:  Retorna los datos de la  cabecera del informe
+     #AUTOR:        Jose Mita Huanca
+     #FECHA:        19-06-2025
+    ***********************************/
+	elsif(p_transaccion='TRA_LICULE_CONT')then
+    
+        begin
+                    
+        v_consulta:='select count(dattec.id_dato_tecnico)
+                    	from sistra.ttramite trami
+                           inner join sistra.ttramite_detalle tradet on tradet.id_tramite = trami.id_tramite
+                          inner join sistra.tdatos_legal datleg on datleg.id_tramite_detalle = tradet.id_tramite_detalle
+                           
+                    where trami.id_tramite in (select trami.id_tramite
+													from sistra.ttramite_detalle tradet
+													inner join sistra.ttramite trami on trami.id_tramite = tradet.id_tramite
+													where ';        	
+                        
+				v_consulta:=v_consulta||v_parametros.filtro||')';
+               raise notice '%',v_consulta;
+	        return v_consulta;
+         end;     
+      
+      /*********************************   
+     #TRANSACCION:  'TRA_LICAAR_SEL'
+     #DESCRIPCION:  Retorna los datos de la cabecera del informe
+     #AUTOR:        Jose Mita Huanca
+     #FECHA:        19-06-2025
+    ***********************************/
+  
+	elsif(p_transaccion='TRA_LICAAR_SEL') then
+		begin
+	    	v_consulta:='
+					select	infor.num_informe, 
+                        	funa.desc_funcionario1 as nombrea,
+                            funa.email_empresa as cargoa,
+ 							funvia.desc_funcionario1 as via, 
+                            funvia.email_empresa as cargovia, 
+                            funcio.desc_funcionario1 as de, 
+                            funcio.email_empresa as cargode,
+							case 
+                              when extract(month from infor.fecha_informe) = 1 then ''Enero''
+                              when extract(month from infor.fecha_informe) = 2 then ''Febrero''
+                              when extract(month from infor.fecha_informe) = 3 then ''Marzo''
+                              when extract(month from infor.fecha_informe) = 4 then ''Abril''
+                              when extract(month from infor.fecha_informe) = 5 then ''Mayo''
+                              when extract(month from infor.fecha_informe) = 6 then ''Junio''
+                              when extract(month from infor.fecha_informe) = 7 then ''Julio''
+                              when extract(month from infor.fecha_informe) = 8 then ''Agosto''
+                              when extract(month from infor.fecha_informe) = 9 then ''Septiembre''
+                              when extract(month from infor.fecha_informe) = 10 then ''Octubre''
+                              when extract(month from infor.fecha_informe) = 11 then ''Noviembre''
+                              when extract(month from infor.fecha_informe) = 12 then ''Diciembre''
+                              else ''No hay Mes''
+                              END as mes,
+                          extract(day from infor.fecha_informe) as dia,
+                          extract(year from infor.fecha_informe) as anio,
+                          infor.referencia,
+                            trami.cite_tramite,
+                                   tiptra.nombre_tramite,
+                                   tiptra.id_tipo_tramite,
+                                   trami.id_tramite,
+                                   infor.observacion,
+                                   infor.conclusion
+                            from sistra.ttramite_detalle tradet
+                                 inner join sistra.ttramite trami on trami.id_tramite = tradet.id_tramite
+                                 inner join sistra.ttipo_tramite tiptra on tiptra.id_tipo_tramite = trami.id_tipo_tramite
+                                inner join sistra.tinforme infor on infor.id_tramite_detalle = tradet.id_tramite_detalle
+                                inner join orga.vfuncionario_persona funcio on funcio.id_funcionario=tradet.id_funcionario
+                                inner join orga.vfuncionario_persona funa on funa.id_funcionario=infor.id_funcionario_a
+                                LEFT join orga.vfuncionario_persona funvia on funvia.id_funcionario = infor.id_funcionario_via
+                            where  ';        	
+                        
+				v_consulta:=v_consulta||v_parametros.filtro;
+                v_consulta:=v_consulta||' order by '||v_parametros.ordenacion||' '||v_parametros.dir_ordenacion ||' limit '||v_parametros.cantidad||' offset '||v_parametros.puntero;
+                raise notice '%',v_consulta;
+	        return v_consulta;	
+	    end;
+  	/*********************************   
+     #TRANSACCION:  'TRA_LICAAR_CONT'
+     #DESCRIPCION:  Retorna los datos de la  cabecera del informe
+     #AUTOR:        Jose Mita Huanca
+     #FECHA:        19-06-2025
+    ***********************************/
+	elsif(p_transaccion='TRA_LICAAR_CONT')then
+    
+        begin
+        
+        v_consulta:='select count(tradet.id_tramite_detalle)
+                    	from sistra.ttramite_detalle tradet
+                                 inner join sistra.ttramite trami on trami.id_tramite = tradet.id_tramite
+                                 inner join sistra.ttipo_tramite tiptra on tiptra.id_tipo_tramite = trami.id_tipo_tramite
+                                inner join sistra.tinforme infor on infor.id_tramite_detalle = tradet.id_tramite_detalle
+                                inner join orga.vfuncionario_persona funcio on funcio.id_funcionario=tradet.id_funcionario
+                                inner join orga.vfuncionario_persona funa on funa.id_funcionario=infor.id_funcionario_a
+                                LEFT join orga.vfuncionario_persona funvia on funvia.id_funcionario = infor.id_funcionario_via
+						where  ';        	
+                        
+                        raise notice '%',v_consulta;
+				v_consulta:=v_consulta||v_parametros.filtro;
+               
+	        return v_consulta;
+         end;     
+            
+    /*********************************   
+     #TRANSACCION:  'TRA_LICUAR_SEL'
+     #DESCRIPCION:  Retorna los datos de la cabecera del informe
+     #AUTOR:        Jose Mita Huanca
+     #FECHA:        19-06-2025
+    ***********************************/
+  
+	elsif(p_transaccion='TRA_LICUAR_SEL') then
+			
+    		v_filtro :=v_parametros.id_tramite_detalle;
+    		raise notice '%',v_filtro;
+            
+        	select tradet.id_tipo_tramite into v_id_tipo_tramite
+            from sistra.ttramite_detalle tradet
+            where   tradet.id_tramite_detalle = v_parametros.id_tramite_detalle ;
+	            
+    		    		raise notice '%',v_id_tipo_tramite;        
+            
+            IF(v_id_tipo_tramite in (10,11,16))THEN
+            BEGIN
+        	   	v_consulta:='
+						select trami.id_tramite,
+                         trami.cite_tramite,
+                         trami.id_tipo_tramite,
+                         infleg.fecha_informe as fecha_leg,
+                         infleg.num_informe as inf_leg,
+                         funleg.desc_funcionario1 as legal,
+                         inftop.fecha_informe as fecha_top,
+                         inftop.num_informe as inf_top,
+                         funtop.desc_funcionario1 as topo,
+                         dattec.distrito,
+                         dattec.zona,
+                         dattec.manzana,
+                         dattec.lote,
+                         dattec.calle,
+                         dattec.avenida,
+                         dattec.super_escritura,
+                         dattec.super_mensura,
+                         dattec.super_total,
+                         dattec.long_rasante,
+                         dattec.colindante_este,
+                         dattec.colindante_norte,
+                         dattec.colindante_oeste,
+                         dattec.colindante_sur,
+                         bole.nro_boleta,
+                         rmta.nro_rmta,
+                         rmta.fecha_rmta,
+                         rmta.tipo_aprobacion
+                        from sistra.ttramite trami
+                        inner join sistra.ttramite_detalle detle on detle.id_tramite=trami.id_tramite and detle.estado_tramite=''ABOGADO''
+                        inner join sistra.tinforme infleg on infleg.id_tramite_detalle=detle.id_tramite_detalle
+                        inner join sistra.ttrmta rmta on rmta.id_tramite_detalle = detle.id_tramite_detalle
+                        inner join orga.vfuncionario_persona funleg on funleg.id_funcionario = infleg.id_funcionario
+                        left join sistra.ttramite_detalle detop on detop.id_tramite=trami.id_tramite and detop.estado_tramite=''TOPOGRAFO''
+                        left join sistra.tinforme inftop on inftop.id_tramite_detalle=detop.id_tramite_detalle
+                        left join orga.vfuncionario_persona funtop on funtop.id_funcionario = inftop.id_funcionario
+
+                        inner join sistra.ttramite_detalle detar on detar.id_tramite=trami.id_tramite and detar.estado_tramite=''ARQUITECTO''
+                                               
+                        inner join sistra.tdato_tecnico dattec on dattec.id_tramite_detalle = detar.id_tramite_detalle
+
+                        inner join sistra.tboleta_liquida bole on bole.id_tramite_detalle = detar.id_tramite_detalle
+                                            where trami.id_tramite in (select trami.id_tramite
+													from sistra.ttramite_detalle tradet
+													inner join sistra.ttramite trami on trami.id_tramite = tradet.id_tramite
+													where ';        	
+                        
+				v_consulta:=v_consulta||v_parametros.filtro||')';
+                                raise notice '%',v_consulta;
+                end;
+                ELSE
+                	BEGIN
+                	v_consulta:='
+						select trami.id_tramite,
+                         trami.cite_tramite,
+                         trami.id_tipo_tramite,
+                         infleg.fecha_informe as fecha_leg,
+                         infleg.num_informe as inf_leg,
+                         funleg.desc_funcionario1 as legal,
+                         inftop.fecha_informe as fecha_top,
+                         inftop.num_informe as inf_top,
+                         funtop.desc_funcionario1 as topo,
+                         dattec.distrito,
+                         dattec.zona,
+                         dattec.manzana,
+                         dattec.lote,
+                         dattec.calle,
+                         dattec.avenida,
+                         dattec.super_escritura,
+                         dattec.super_mensura,
+                         dattec.super_total,
+                         dattec.long_rasante,
+                         dattec.colindante_este,
+                         dattec.colindante_norte,
+                         dattec.colindante_oeste,
+                         dattec.colindante_sur,
+                         bole.nro_boleta,
+                         rmta.nro_rmta,
+                         rmta.fecha_rmta,
+                         rmta.tipo_aprobacion
+                        from sistra.ttramite trami
+                        inner join sistra.ttramite_detalle detle on detle.id_tramite=trami.id_tramite and detle.estado_tramite=''ABOGADO''
+                        inner join sistra.tinforme infleg on infleg.id_tramite_detalle=detle.id_tramite_detalle
+                        left join sistra.ttrmta rmta on rmta.id_tramite_detalle = detle.id_tramite_detalle
+                        inner join orga.vfuncionario_persona funleg on funleg.id_funcionario = infleg.id_funcionario
+                        inner join sistra.ttramite_detalle detop on detop.id_tramite=trami.id_tramite and detop.estado_tramite=''TOPOGRAFO''
+                        inner join sistra.tinforme inftop on inftop.id_tramite_detalle=detop.id_tramite_detalle
+                        inner join orga.vfuncionario_persona funtop on funtop.id_funcionario = inftop.id_funcionario
+                        inner join sistra.tdato_tecnico dattec on dattec.id_tramite_detalle = detop.id_tramite_detalle
+                        inner join sistra.ttramite_detalle detar on detar.id_tramite=trami.id_tramite and detar.estado_tramite=''ARQUITECTO''
+                        inner join sistra.tboleta_liquida bole on bole.id_tramite_detalle = detar.id_tramite_detalle
+                                            where trami.id_tramite in (select trami.id_tramite
+													from sistra.ttramite_detalle tradet
+													inner join sistra.ttramite trami on trami.id_tramite = tradet.id_tramite
+													where ';        	
+                        
+				v_consulta:=v_consulta||v_parametros.filtro||')';
+					                raise notice '%',v_consulta;                
+                end;
+                end if;
+                raise notice '%',v_consulta;
+	        return v_consulta;	
+	    
+  	/*********************************   
+     #TRANSACCION:  'TRA_LICUAR_CONT'
+     #DESCRIPCION:  Retorna los datos de la  cabecera del informe
+     #AUTOR:        Jose Mita Huanca
+     #FECHA:        19-06-2025
+    ***********************************/
+	elsif(p_transaccion='TRA_LICUAR_CONT')then
+    
+        begin
+                    
+        v_consulta:='select count(dattec.id_dato_tecnico)
+                    	from sistra.ttramite trami
+                        inner join sistra.ttramite_detalle detle on detle.id_tramite=trami.id_tramite and detle.estado_tramite=''ABOGADO''
+                        inner join sistra.tinforme infleg on infleg.id_tramite_detalle=detle.id_tramite_detalle
+                        inner join orga.vfuncionario_persona funleg on funleg.id_funcionario = infleg.id_funcionario
+                        inner join sistra.ttramite_detalle detop on detop.id_tramite=trami.id_tramite and detop.estado_tramite=''TOPOGRAFO''
+                        inner join sistra.tinforme inftop on inftop.id_tramite_detalle=detop.id_tramite_detalle
+                        inner join orga.vfuncionario_persona funtop on funtop.id_funcionario = inftop.id_funcionario
+                        inner join sistra.tdato_tecnico dattec on dattec.id_tramite_detalle = detop.id_tramite_detalle
+                        inner join sistra.ttramite_detalle detar on detar.id_tramite=trami.id_tramite and detar.estado_tramite=''ARQUITECTO''
+                        inner join sistra.tboleta bole on bole.id_tramite_detalle = detar.id_tramite_detalle
+                    where trami.id_tramite in (select trami.id_tramite
+													from sistra.ttramite_detalle tradet
+													inner join sistra.ttramite trami on trami.id_tramite = tradet.id_tramite
+													where ';        	
+                        
+				v_consulta:=v_consulta||v_parametros.filtro||')';
+               raise notice '%',v_consulta;
+	        return v_consulta;
+         end; 
+         
+	      
+    /*********************************   
+     #TRANSACCION:  'TRA_LILORE_SEL'
+     #DESCRIPCION:  Retorna los datos de la solicitud de tramites
+     #AUTOR:        Jose Mita Huanca
+     #FECHA:        19-03-2020
+    ***********************************/
+  
+	elsif(p_transaccion='TRA_LILORE_SEL') then
+		begin
+	    	v_consulta:='
+						select lot.tipo_cesion,
+                        lot.nombre,
+                        lot.superficie, lot.porcentaje
+                        from sistra.tlote lot
+                        inner join sistra.ttramite_detalle tradet on tradet.id_tramite_detalle = lot.id_tramite_detalle
+                        where  ';        	
+                        
+				v_consulta:=v_consulta||v_parametros.filtro;
+                v_consulta:=v_consulta||' order by '||v_parametros.ordenacion||' '||v_parametros.dir_ordenacion ||' limit '||v_parametros.cantidad||' offset '||v_parametros.puntero;
+                raise notice '%',v_consulta;
+	        return v_consulta;	
+	    end;
+  	/*********************************   
+     #TRANSACCION:  'TRA_LILORE_CONT'
+     #DESCRIPCION:  Retorna los datos de la solicitud de tramites
+     #AUTOR:        Jose Mita Huanca
+     #FECHA:        19-03-2025
+    ***********************************/
+	elsif(p_transaccion='TRA_LILORE_CONT')then
+    
+        begin
+        
+        v_consulta:='select count(lot.id_lote)
+                    	from sistra.tlote lot
+                        inner join sistra.ttramite_detalle tradet on tradet.id_tramite_detalle = lot.id_tramite_detalle
+                        where  ';        	
+                        
+                        raise notice '%',v_consulta;
+				v_consulta:=v_consulta||v_parametros.filtro;
+               
+	        return v_consulta;
+         end;
+        
+                 
+	/*********************************   
+     #TRANSACCION:  'SAL_REITEN_SEL'
+     #DESCRIPCION:  Retorna listado de los materiales entregados/recibidos
+     #AUTOR:        RCM
+     #FECHA:        13/08/2013
+    ***********************************/
+  
+	elsif(p_transaccion='SAL_REITEN_SEL') then
+		begin
+           
+            --Fecha
+            if v_parametros.fecha_ini is not null and v_parametros.fecha_fin is not null then
+				v_where = ' and date_trunc(''day'',mov.fecha_mov) between ''' ||v_parametros.fecha_ini||''' and ''' || v_parametros.fecha_fin || '''';
+            else
+            	raise exception 'Fechas no definidas';
+            end if;
+            
+        	--Tipo de Movimiento
+			if v_parametros.tipo_mov = 'ingreso' then
+				v_where = ' and mtipo.tipo = ''ingreso''';
+			elsif v_parametros.tipo_mov = 'salida' then
+				v_where = ' and mtipo.tipo = ''salida''';
+			end if;
+            
+            --Solicitante
+            if v_parametros.tipo_sol = 'func' then
+                if v_parametros.all_funcionario = 'Seleccionar Funcionarios' then
+	            	v_where = v_where || ' and fun.id_funcionario = ANY(ARRAY['||v_parametros.id_funcionario||'])';
+	            elsif v_parametros.all_funcionario = 'Por Organigrama' then
+	            	--Obtener los IDs de todos los organigramas
+					v_ids=orga.f_get_id_uo(v_parametros.id_estructura_uo);
+					v_where = v_where || ' and uofun.id_uo in (' ||v_ids||')';
+				end if;
+                
+            elsif v_parametros.tipo_sol = 'prov' then
+            	if coalesce(v_parametros.id_proveedor,'') != '' then
+            		v_where = v_where || ' and prov.id_proveedor in (' || v_parametros.id_proveedor || ')';
+                end if;
+            end if;
+            
+            --Items
+            if v_parametros.all_items = 'Seleccionar Items' then
+            	v_where = v_where || ' and item.id_item = ANY(ARRAY['||v_parametros.id_items||'])';
+            elsif v_parametros.all_items = 'Por Clasificacion' then
+            	--Obtener los IDs de todas las clasificaciones
+				v_ids=alm.f_get_id_clasificaciones_varios(v_parametros.id_clasificacion);
+				v_where = v_where || ' and item.id_clasificacion in (' ||v_ids||')';
+			end if;
+            
+            --Almacenes
+            if v_parametros.all_alm = 'no' then
+            	v_where = v_where || ' and mov.id_almacen in('||v_parametros.id_almacen||')';
+            end if;
+            
+	    	v_consulta:='
+	        	select
+                mval.id_movimiento_det_valorado ,mov.fecha_mov::date, item.codigo, item.nombre, mval.cantidad,
+                mval.costo_unitario, mval.cantidad*mval.costo_unitario as costo_total,fun.desc_funcionario1,
+                prov.desc_proveedor,mov.codigo as mov_codigo, mtipo.nombre as tipo_nombre, mtipo.tipo,
+                alm.nombre as desc_almacen
+                from alm.tmovimiento_det mdet
+                inner join alm.tmovimiento_det_valorado mval
+                on mval.id_movimiento_det = mdet.id_movimiento_det
+                inner join alm.tmovimiento mov
+                on mov.id_movimiento = mdet.id_movimiento
+                inner join alm.tmovimiento_tipo mtipo
+                on mtipo.id_movimiento_tipo = mov.id_movimiento_tipo
+                inner join alm.titem item
+                on item.id_item = mdet.id_item
+                left join orga.vfuncionario fun
+                on fun.id_funcionario = mov.id_funcionario
+                left join param.vproveedor prov
+                on prov.id_proveedor = mov.id_proveedor
+                inner join alm.talmacen alm
+                on alm.id_almacen = mov.id_almacen
+                left join orga.tuo_funcionario uofun
+                on uofun.id_funcionario = fun.id_funcionario
+                and uofun.fecha_asignacion <= '''||v_parametros.fecha_fin || '''
+                left join orga.tuo_funcionario uofun1
+                on uofun1.id_funcionario = fun.id_funcionario
+                and '''||v_parametros.fecha_fin || ''' BETWEEN uofun1.fecha_asignacion and uofun1.fecha_finalizacion
+                where mval.cantidad > 0
+                and mov.estado_mov = ''finalizado'' and ';
+                
+				v_consulta:=v_consulta||v_parametros.filtro;
+                v_consulta = v_consulta || v_where;
+				v_consulta:=v_consulta||' order by '||v_parametros.ordenacion||' '||v_parametros.dir_ordenacion ||' limit '||v_parametros.cantidad||' offset '||v_parametros.puntero;
+                raise notice '%',v_consulta;
+	        return v_consulta;	
+	    end;
+        
+    /*********************************   
+     #TRANSACCION:  'SAL_REITEN_CONT'
+     #DESCRIPCION:  Conteo de registros
+     #AUTOR:        RCM
+     #FECHA:        13/08/2013
+    ***********************************/
+	elsif(p_transaccion='SAL_REITEN_CONT')then
+    
+        begin
+        	--Fecha
+            if v_parametros.fecha_ini is not null and v_parametros.fecha_fin is not null then
+				v_where = ' and date_trunc(''day'',mov.fecha_mov) between ''' ||v_parametros.fecha_ini||''' and ''' || v_parametros.fecha_fin || '''';
+            else
+            	raise exception 'Fechas no definidas';
+            end if;
+            
+        	--Tipo de Movimiento
+			if v_parametros.tipo_mov = 'ingreso' then
+				v_where = ' and mtipo.tipo = ''ingreso''';
+			elsif v_parametros.tipo_mov = 'salida' then
+				v_where = ' and mtipo.tipo = ''salida''';
+			end if;
+            
+            --Solicitante
+            if v_parametros.tipo_sol = 'func' then
+                if v_parametros.all_funcionario = 'Seleccionar Funcionarios' then
+	            	v_where = v_where || ' and fun.id_funcionario = ANY(ARRAY['||v_parametros.id_funcionario||'])';
+	            elsif v_parametros.all_funcionario = 'Por Organigrama' then
+	            	--Obtener los IDs de todos los organigramas
+					v_ids=orga.f_get_id_uo(v_parametros.id_estructura_uo);
+					v_where = v_where || ' and uofun.id_uo in (' ||v_ids||')';
+				end if;
+                
+            elsif v_parametros.tipo_sol = 'prov' then
+            	if coalesce(v_parametros.id_proveedor,'') != '' then
+            		v_where = v_where || ' and prov.id_proveedor in (' || v_parametros.id_proveedor || ')';
+                end if;
+            end if;
+            
+            --Items
+            if v_parametros.all_items = 'Seleccionar Items' then
+            	v_where = v_where || ' and item.id_item = ANY(ARRAY['||v_parametros.id_items||'])';
+            elsif v_parametros.all_items = 'Por Clasificacion' then
+            	--Obtener los IDs de todas las clasificaciones
+				v_ids=alm.f_get_id_clasificaciones_varios(v_parametros.id_clasificacion);
+				v_where = v_where || ' and item.id_clasificacion in (' ||v_ids||')';
+			end if;
+            
+            --Almacenes
+            if v_parametros.all_alm = 'no' then
+            	v_where = v_where || ' and mov.id_almacen in('||v_parametros.id_almacen||')';
+            end if;
+	
+	    	v_consulta:='
+	        	select
+               	count(mval.id_movimiento_det_valorado)
+                from alm.tmovimiento_det mdet
+                inner join alm.tmovimiento_det_valorado mval
+                on mval.id_movimiento_det = mdet.id_movimiento_det
+                inner join alm.tmovimiento mov
+                on mov.id_movimiento = mdet.id_movimiento
+                inner join alm.tmovimiento_tipo mtipo
+                on mtipo.id_movimiento_tipo = mov.id_movimiento_tipo
+                inner join alm.titem item
+                on item.id_item = mdet.id_item
+                left join orga.vfuncionario fun
+                on fun.id_funcionario = mov.id_funcionario
+                left join param.vproveedor prov
+                on prov.id_proveedor = mov.id_proveedor
+                inner join alm.talmacen alm
+                on alm.id_almacen = mov.id_almacen
+                left join orga.tuo_funcionario uofun
+                on uofun.id_funcionario = fun.id_funcionario
+                and uofun.fecha_asignacion <= '''||v_parametros.fecha_fin || '''
+                left join orga.tuo_funcionario uofun1
+                on uofun1.id_funcionario = fun.id_funcionario
+                and '''||v_parametros.fecha_fin || ''' BETWEEN uofun1.fecha_asignacion and uofun1.fecha_finalizacion
+                where mval.cantidad > 0
+                and mov.estado_mov = ''finalizado'' and ';
+                
+			v_consulta:=v_consulta||v_parametros.filtro;
+            v_consulta = v_consulta || v_where;
+
+			return v_consulta;
+         end;
+     
+	else
+  		raise exception 'Transacción inexistente';	
+	end if;
+EXCEPTION
+  WHEN OTHERS THEN
+    v_respuesta='';
+    v_respuesta=pxp.f_agrega_clave(v_respuesta,'mensaje',SQLERRM);
+    v_respuesta=pxp.f_agrega_clave(v_respuesta,'codigo_error',SQLSTATE);
+    v_respuesta=pxp.f_agrega_clave(v_respuesta,'procedimiento',v_nombre_funcion);
+    raise exception '%',v_respuesta;
+END;
+$body$
+LANGUAGE 'plpgsql'
+VOLATILE
+CALLED ON NULL INPUT
+SECURITY INVOKER
+COST 100;
+
+----------------------------------
+--COPY LINES TO data.sql FILE  
+---------------------------------
+
+select pxp.f_insert_tgui ('SISTEMA DE TRAMITES', '', 'SISTRA', 'si', 1, '', 1, '', '', 'SISTRA');
+select pxp.f_insert_tgui ('Parametros', 'Parametros para el sistema de tramites', 'paratr', 'si', 1, '', 2, '', '', 'SISTRA');
+select pxp.f_insert_tgui ('Procesos', 'Procesos de tramites', 'protra', 'si', 2, '', 2, '', '', 'SISTRA');
+select pxp.f_insert_tgui ('Reportes', 'Reportes para Tramites', 'reptra', 'si', 3, '', 2, '', '', 'SISTRA');
+select pxp.f_insert_tgui ('Tipos de tramites', 'Listado de tipos de tramites', 'tiptra', 'si', 1, 'sis_tramites/vista/tipo_tramite/TipoTramite.php', 3, '', 'TipoTramite', 'SISTRA');
+select pxp.f_insert_tgui ('Tramite', 'Tramites de urbanismo', 'trami', 'si', 1, 'sis_tramites/vista/tramite/Tramite.php', 3, '', 'Tramite', 'SISTRA');
+select pxp.f_insert_tgui ('Cargos', 'cargos de los funcionarios', 'CARGO', 'si', 2, 'sis_organigrama/vista/temporal_cargo/TemporalCargo.php', 3, '', 'TemporalCargo', 'SISTRA');
+select pxp.f_insert_tgui ('Detalle Tramite', 'Detalle Tramite', 'trami.1', 'no', 0, 'sis_tramites/vista/tramite_detalle/TramiteDetalle.php', 4, '', '90%', 'SISTRA');
+select pxp.f_insert_tgui ('TramitePersona', 'TramitePersona', 'trami.2', 'no', 0, 'sis_tramites/vista/tramite_persona/TramitePersona.php', 4, '', 'TramitePersona', 'SISTRA');
+select pxp.f_insert_tgui ('DatoTecnico', 'DatoTecnico', 'trami.1.1', 'no', 0, 'sis_tramites/vista/dato_tecnico/DatoTecnico.php', 5, '', 'DatoTecnico', 'SISTRA');
+select pxp.f_insert_tgui ('Catálogo', 'Catálogo', 'trami.1.1.1', 'no', 0, 'sis_parametros/vista/catalogo/Catalogo.php', 6, '', 'Catalogo', 'SISTRA');
+select pxp.f_insert_tgui ('Personas', 'Personas', 'trami.2.1', 'no', 0, 'sis_seguridad/vista/persona/Persona.php', 5, '', 'persona', 'SISTRA');
+select pxp.f_insert_tgui ('Subir foto', 'Subir foto', 'trami.2.1.1', 'no', 0, 'sis_seguridad/vista/persona/subirFotoPersona.php', 6, '', 'subirFotoPersona', 'SISTRA');
+select pxp.f_insert_tgui ('Archivo', 'Archivo', 'trami.2.1.2', 'no', 0, 'sis_parametros/vista/archivo/Archivo.php', 6, '', 'Archivo', 'SISTRA');
+select pxp.f_insert_tgui ('Interfaces', 'Interfaces', 'trami.2.1.2.1', 'no', 0, 'sis_parametros/vista/archivo/upload.php', 7, '', 'subirArchivo', 'SISTRA');
+select pxp.f_insert_tgui ('ArchivoHistorico', 'ArchivoHistorico', 'trami.2.1.2.2', 'no', 0, 'sis_parametros/vista/archivo/ArchivoHistorico.php', 7, '', 'ArchivoHistorico', 'SISTRA');
+select pxp.f_insert_tgui ('Valores', 'Valores', 'trami.2.1.2.3', 'no', 0, 'sis_parametros/vista/field_tipo_archivo/FieldTipoArchivoValor.php', 7, '', '40%', 'SISTRA');
+select pxp.f_insert_tgui ('Valores', 'Valores', 'trami.2.1.2.4', 'no', 0, 'sis_parametros/vista/field_valor_archivo/frmValor.php', 7, '', 'frmValor', 'SISTRA');
+select pxp.f_insert_tgui ('Catálogo', 'Catálogo', 'trami.2.1.2.4.1', 'no', 0, 'sis_parametros/vista/catalogo/Catalogo.php', 8, '', 'Catalogo', 'SISTRA');
+select pxp.f_insert_tgui ('OT Tramite', 'Informes de OT', 'OTTRA', 'si', 2, 'sis_tramites/vista/ot_tramite/OtTramite.php', 3, '', 'OtTramite', 'SISTRA');
+select pxp.f_insert_tgui ('Topografo', 'Topografo', 'TOPGRA', 'si', 3, 'sis_tramites/vista/topografo/Topografo.php', 3, '', 'Topografo', 'SISTRA');
+select pxp.f_insert_tgui ('Correlativo', 'Correlativos del informe', 'CORREL', 'si', 4, 'sis_tramites/vista/correlativo/Correlativo.php', 3, '', 'Correlativo', 'SISTRA');
+select pxp.f_insert_tgui ('Arquitecto', 'Vista para los tramites del Arquitecto', 'ARQUI', 'si', 4, 'sis_tramites/vista/arquitecto/Arquitecto.php', 3, '', 'Arquitecto', 'SISTRA');
+select pxp.f_insert_tgui ('Lotes', 'Lotes', 'trami.3', 'no', 0, 'sis_tramites/vista/lote/Lote.php', 4, '', '50%', 'SISTRA');
+select pxp.f_insert_tgui ('Matricula-Testimonio', 'Matricula-Testimonio', 'trami.4', 'no', 0, 'sis_tramites/vista/matricula/Matricula.php', 4, '', '50%', 'SISTRA');
+select pxp.f_insert_tgui ('R.M.T.A.', 'R.M.T.A.', 'trami.5', 'no', 0, 'sis_tramites/vista/trmta/Trmta.php', 4, '', '50%', 'SISTRA');
+select pxp.f_insert_tgui ('Boleta Pago', 'Boleta Pago', 'trami.6', 'no', 0, 'sis_tramites/vista/boleta/Boleta.php', 4, '', '50%', 'SISTRA');
+select pxp.f_insert_tgui ('Informe', 'Informe', 'TOPGRA.1', 'no', 0, 'sis_tramites/vista/informe/Informe.php', 4, '', '50%', 'SISTRA');
+select pxp.f_insert_tgui ('DatoTecnico', 'DatoTecnico', 'TOPGRA.2', 'no', 0, 'sis_tramites/vista/dato_tecnico/DatoTecnico.php', 4, '', 'DatoTecnico', 'SISTRA');
+select pxp.f_insert_tgui ('Catálogo', 'Catálogo', 'TOPGRA.2.1', 'no', 0, 'sis_parametros/vista/catalogo/Catalogo.php', 5, '', 'Catalogo', 'SISTRA');
+select pxp.f_insert_tgui ('Catálogo', 'Catálogo', 'CORREL.1', 'no', 0, 'sis_parametros/vista/catalogo/Catalogo.php', 4, '', 'Catalogo', 'SISTRA');
+select pxp.f_insert_tgui ('Abogado', 'Vista de abogados', 'ABOGA', 'si', 5, 'sis_tramites/vista/abogado/Abogado.php', 3, '', 'Abogado', 'SISTRA');
+select pxp.f_insert_tgui ('Resoluciones', 'Resoluciones de los tramites', 'RESOL', 'si', 7, 'sis_tramites/vista/resolucion/Resolucion.php', 3, '', 'Resolucion', 'SISTRA');
+select pxp.f_insert_tgui ('Lote', 'Lote', 'TOPGRA.3', 'no', 0, 'sis_tramites/vista/lote/Lote.php', 4, '', 'Lote', 'SISTRA');
+select pxp.f_insert_tgui ('Informe', 'Informe', 'ARQUI.1', 'no', 0, 'sis_tramites/vista/informe/Informe.php', 4, '', '50%', 'SISTRA');
+select pxp.f_insert_tgui ('BoletaLiquida', 'BoletaLiquida', 'ARQUI.2', 'no', 0, 'sis_tramites/vista/boleta_liquida/BoletaLiquida.php', 4, '', 'BoletaLiquida', 'SISTRA');
+select pxp.f_insert_tgui ('DatoTecnico', 'DatoTecnico', 'ARQUI.3', 'no', 0, 'sis_tramites/vista/dato_tecnico/DatoTecnico.php', 4, '', 'DatoTecnico', 'SISTRA');
+select pxp.f_insert_tgui ('Catálogo', 'Catálogo', 'ARQUI.3.1', 'no', 0, 'sis_parametros/vista/catalogo/Catalogo.php', 5, '', 'Catalogo', 'SISTRA');
+select pxp.f_insert_tgui ('Informe', 'Informe', 'ABOGA.1', 'no', 0, 'sis_tramites/vista/informe/Informe.php', 4, '', '50%', 'SISTRA');
+select pxp.f_insert_tgui ('Matricula', 'Matricula', 'ABOGA.2', 'no', 0, 'sis_tramites/vista/matricula/Matricula.php', 4, '', 'Matricula', 'SISTRA');
+select pxp.f_insert_tgui ('Trmta', 'Trmta', 'ABOGA.3', 'no', 0, 'sis_tramites/vista/trmta/Trmta.php', 4, '', 'Trmta', 'SISTRA');
+select pxp.f_insert_tgui ('DatosLegal', 'DatosLegal', 'ABOGA.4', 'no', 0, 'sis_tramites/vista/datos_legal/DatosLegal.php', 4, '', 'DatosLegal', 'SISTRA');
+select pxp.f_insert_tgui ('Catálogo', 'Catálogo', 'ABOGA.4.1', 'no', 0, 'sis_parametros/vista/catalogo/Catalogo.php', 5, '', 'Catalogo', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_tramite_detalle_ime', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_tipo_tramite_sel', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_tipo_tramite_ime', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_tramite_ime', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_tramite_detalle_sel', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_dato_tecnico_ime', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_dato_tecnico_sel', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_tramite_sel', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_tramite_persona_ime', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_tramite_persona_sel', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_reporte_sel', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_trmta_sel', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_matricula_ime', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_lote_ime', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_trmta_ime', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_lote_sel', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_matricula_sel', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_boleta_ime', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_boleta_sel', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_correlativo_sel', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_correlativo_ime', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_informe_sel', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_informe_ime', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.fu_numero_letras', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_datos_legal_sel', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_datos_legal_ime', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_boleta_liquida_ime', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.f_numero_letras', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_boleta_liquida_sel', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.f_actualizar_tipo_tramite', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tprocedimiento ('SISTRA_tradet_INS', 'Insercion de registros', 'si', '', '', 'sistra.ft_tramite_detalle_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_tradet_MOD', 'Modificacion de registros', 'si', '', '', 'sistra.ft_tramite_detalle_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_tradet_ELI', 'Eliminacion de registros', 'si', '', '', 'sistra.ft_tramite_detalle_ime');
+select pxp.f_insert_tprocedimiento ('TR_DETRDE_UPD', 'Derivacion de tramite', 'si', '', '', 'sistra.ft_tramite_detalle_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_tiptra_SEL', 'Consulta de datos', 'si', '', '', 'sistra.ft_tipo_tramite_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_tiptra_CONT', 'Conteo de registros', 'si', '', '', 'sistra.ft_tipo_tramite_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_tiptra_INS', 'Insercion de registros', 'si', '', '', 'sistra.ft_tipo_tramite_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_tiptra_MOD', 'Modificacion de registros', 'si', '', '', 'sistra.ft_tipo_tramite_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_tiptra_ELI', 'Eliminacion de registros', 'si', '', '', 'sistra.ft_tipo_tramite_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_trami_INS', 'Insercion de registros', 'si', '', '', 'sistra.ft_tramite_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_trami_MOD', 'Modificacion de registros', 'si', '', '', 'sistra.ft_tramite_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_trami_ELI', 'Eliminacion de registros', 'si', '', '', 'sistra.ft_tramite_ime');
+select pxp.f_insert_tprocedimiento ('TR_DERTRA_UPD', 'Derivacion de tramite', 'si', '', '', 'sistra.ft_tramite_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_tradet_SEL', 'Consulta de datos', 'si', '', '', 'sistra.ft_tramite_detalle_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_tradet_CONT', 'Conteo de registros', 'si', '', '', 'sistra.ft_tramite_detalle_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_dattec_INS', 'Insercion de registros', 'si', '', '', 'sistra.ft_dato_tecnico_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_dattec_MOD', 'Modificacion de registros', 'si', '', '', 'sistra.ft_dato_tecnico_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_dattec_ELI', 'Eliminacion de registros', 'si', '', '', 'sistra.ft_dato_tecnico_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_dattec_SEL', 'Consulta de datos', 'si', '', '', 'sistra.ft_dato_tecnico_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_dattec_CONT', 'Conteo de registros', 'si', '', '', 'sistra.ft_dato_tecnico_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_trami_SEL', 'Consulta de datos', 'si', '', '', 'sistra.ft_tramite_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_trami_CONT', 'Conteo de registros', 'si', '', '', 'sistra.ft_tramite_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_traper_INS', 'Insercion de registros', 'si', '', '', 'sistra.ft_tramite_persona_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_traper_MOD', 'Modificacion de registros', 'si', '', '', 'sistra.ft_tramite_persona_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_traper_ELI', 'Eliminacion de registros', 'si', '', '', 'sistra.ft_tramite_persona_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_traper_SEL', 'Consulta de datos', 'si', '', '', 'sistra.ft_tramite_persona_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_traper_CONT', 'Conteo de registros', 'si', '', '', 'sistra.ft_tramite_persona_sel');
+select pxp.f_insert_tprocedimiento ('TRA_DATFOR_SEL', 'Retorna los datos de la solicitud de tramites', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_DATFOR_CONT', 'Retorna los datos de la solicitud de tramite', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LISPER_SEL', 'Retorna los datos de la solicitud de tramites', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LISPER_CONT', 'Retorna los datos de la solicitud de tramites', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('SAL_REITEN_SEL', 'Retorna listado de los materiales entregados/recibidos', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('SAL_REITEN_CONT', 'Conteo de registros', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_rmta_SEL', 'Consulta de datos', 'si', '', '', 'sistra.ft_trmta_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_rmta_CONT', 'Conteo de registros', 'si', '', '', 'sistra.ft_trmta_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LISTOT_SEL', 'Retorna los datos OT', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LISTOT_CONT', 'Retorna los datos OT', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LISTOP_SEL', 'Retorna los datos Topografo', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LISTOP_CONT', 'Retorna los datos Topografo', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LISLEG_SEL', 'Retorna los datos de la solicitud de tramites', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LISLEG_CONT', 'Retorna los datos de la solicitud de tramites', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LISARQ_SEL', 'Retorna los datos de la solicitud de tramites', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LISARQ_CONT', 'Retorna los datos de la solicitud de tramites', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LISBOL_SEL', 'Retorna los datos de la solicitud de tramites', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LISBOL_CONT', 'Retorna los datos de la solicitud de tramites', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LISLOT_SEL', 'Retorna los datos de la solicitud de tramites', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LISLOT_CONT', 'Retorna los datos de la solicitud de tramites', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LISINF_SEL', 'Retorna los datos de la cabecera del informe', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LISINF_CONT', 'Retorna los datos de la  cabecera del informe', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LICUIN_SEL', 'Retorna los datos de la cuerpo del informe', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LICUIN_CONT', 'Retorna los datos de la  cabecera del informe', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_matri_INS', 'Insercion de registros', 'si', '', '', 'sistra.ft_matricula_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_matri_MOD', 'Modificacion de registros', 'si', '', '', 'sistra.ft_matricula_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_matri_ELI', 'Eliminacion de registros', 'si', '', '', 'sistra.ft_matricula_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_lotes_INS', 'Insercion de registros', 'si', '', '', 'sistra.ft_lote_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_lotes_MOD', 'Modificacion de registros', 'si', '', '', 'sistra.ft_lote_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_lotes_ELI', 'Eliminacion de registros', 'si', '', '', 'sistra.ft_lote_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_rmta_INS', 'Insercion de registros', 'si', '', '', 'sistra.ft_trmta_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_rmta_MOD', 'Modificacion de registros', 'si', '', '', 'sistra.ft_trmta_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_rmta_ELI', 'Eliminacion de registros', 'si', '', '', 'sistra.ft_trmta_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_lotes_SEL', 'Consulta de datos', 'si', '', '', 'sistra.ft_lote_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_lotes_CONT', 'Conteo de registros', 'si', '', '', 'sistra.ft_lote_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_matri_SEL', 'Consulta de datos', 'si', '', '', 'sistra.ft_matricula_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_matri_CONT', 'Conteo de registros', 'si', '', '', 'sistra.ft_matricula_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_boleta_INS', 'Insercion de registros', 'si', '', '', 'sistra.ft_boleta_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_boleta_MOD', 'Modificacion de registros', 'si', '', '', 'sistra.ft_boleta_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_boleta_ELI', 'Eliminacion de registros', 'si', '', '', 'sistra.ft_boleta_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_boleta_SEL', 'Consulta de datos', 'si', '', '', 'sistra.ft_boleta_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_boleta_CONT', 'Conteo de registros', 'si', '', '', 'sistra.ft_boleta_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_CORREL_SEL', 'Consulta de datos', 'si', '', '', 'sistra.ft_correlativo_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_CORREL_CONT', 'Conteo de registros', 'si', '', '', 'sistra.ft_correlativo_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_CORREL_INS', 'Insercion de registros', 'si', '', '', 'sistra.ft_correlativo_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_CORREL_MOD', 'Modificacion de registros', 'si', '', '', 'sistra.ft_correlativo_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_CORREL_ELI', 'Eliminacion de registros', 'si', '', '', 'sistra.ft_correlativo_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_INFOR_SEL', 'Consulta de datos', 'si', '', '', 'sistra.ft_informe_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_INFOR_CONT', 'Conteo de registros', 'si', '', '', 'sistra.ft_informe_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_INFOR_INS', 'Insercion de registros', 'si', '', '', 'sistra.ft_informe_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_INFOR_MOD', 'Modificacion de registros', 'si', '', '', 'sistra.ft_informe_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_INFOR_ELI', 'Eliminacion de registros', 'si', '', '', 'sistra.ft_informe_ime');
+select pxp.f_insert_tprocedimiento ('TR_CORTRA_UPD', 'CORREGIR  tramite', 'si', '', '', 'sistra.ft_tramite_detalle_ime');
+select pxp.f_insert_tprocedimiento ('TR_COREDO_UPD', 'CORREGIdo  tramite', 'si', '', '', 'sistra.ft_tramite_detalle_ime');
+select pxp.f_insert_tprocedimiento ('TRA_LIPEBO_SEL', 'Retorna los datos de la solicitud de tramites', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LIPEBO_CONT', 'Retorna los datos de la solicitud de tramites', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LIPETR_SEL', 'Retorna los datos de la solicitud de tramites', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LIPETR_CONT', 'Retorna los datos de la solicitud de tramites', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LICALE_SEL', 'Retorna los datos de la cabecera del informe', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LICALE_CONT', 'Retorna los datos de la  cabecera del informe', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LICULE_SEL', 'Retorna los datos de la cabecera del informe', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LICULE_CONT', 'Retorna los datos de la  cabecera del informe', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LICAAR_SEL', 'Retorna los datos de la cabecera del informe', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LICAAR_CONT', 'Retorna los datos de la  cabecera del informe', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LICUAR_SEL', 'Retorna los datos de la cabecera del informe', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LICUAR_CONT', 'Retorna los datos de la  cabecera del informe', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LILORE_SEL', 'Retorna los datos de la solicitud de tramites', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LILORE_CONT', 'Retorna los datos de la solicitud de tramites', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_INFLEG_INS', 'Insercion de registros', 'si', '', '', 'sistra.ft_informe_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_datleg_SEL', 'Consulta de datos', 'si', '', '', 'sistra.ft_datos_legal_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_datleg_CONT', 'Conteo de registros', 'si', '', '', 'sistra.ft_datos_legal_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_datleg_INS', 'Insercion de registros', 'si', '', '', 'sistra.ft_datos_legal_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_datleg_MOD', 'Modificacion de registros', 'si', '', '', 'sistra.ft_datos_legal_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_datleg_ELI', 'Eliminacion de registros', 'si', '', '', 'sistra.ft_datos_legal_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_bolliq_INS', 'Insercion de registros', 'si', '', '', 'sistra.ft_boleta_liquida_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_bolliq_MOD', 'Modificacion de registros', 'si', '', '', 'sistra.ft_boleta_liquida_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_bolliq_ELI', 'Eliminacion de registros', 'si', '', '', 'sistra.ft_boleta_liquida_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_bolliq_SEL', 'Consulta de datos', 'si', '', '', 'sistra.ft_boleta_liquida_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_bolliq_CONT', 'Conteo de registros', 'si', '', '', 'sistra.ft_boleta_liquida_sel');
+select pxp.f_insert_trol ('Tramites', 'SISTRA-Tramites', 'SISTRA');
+----------------------------------
+--COPY LINES TO dependencies.sql FILE  
+---------------------------------
+
+select pxp.f_insert_testructura_gui ('SISTRA', 'SISTEMA');
+select pxp.f_insert_testructura_gui ('paratr', 'SISTRA');
+select pxp.f_insert_testructura_gui ('protra', 'SISTRA');
+select pxp.f_insert_testructura_gui ('reptra', 'SISTRA');
+select pxp.f_insert_testructura_gui ('tiptra', 'paratr');
+select pxp.f_insert_testructura_gui ('trami', 'protra');
+select pxp.f_insert_testructura_gui ('CARGO', 'paratr');
+select pxp.f_insert_testructura_gui ('trami.1', 'trami');
+select pxp.f_insert_testructura_gui ('trami.2', 'trami');
+select pxp.f_insert_testructura_gui ('trami.1.1', 'trami.1');
+select pxp.f_insert_testructura_gui ('trami.1.1.1', 'trami.1.1');
+select pxp.f_insert_testructura_gui ('trami.2.1', 'trami.2');
+select pxp.f_insert_testructura_gui ('trami.2.1.1', 'trami.2.1');
+select pxp.f_insert_testructura_gui ('trami.2.1.2', 'trami.2.1');
+select pxp.f_insert_testructura_gui ('trami.2.1.2.1', 'trami.2.1.2');
+select pxp.f_insert_testructura_gui ('trami.2.1.2.2', 'trami.2.1.2');
+select pxp.f_insert_testructura_gui ('trami.2.1.2.3', 'trami.2.1.2');
+select pxp.f_insert_testructura_gui ('trami.2.1.2.4', 'trami.2.1.2');
+select pxp.f_insert_testructura_gui ('trami.2.1.2.4.1', 'trami.2.1.2.4');
+select pxp.f_insert_testructura_gui ('OTTRA', 'protra');
+select pxp.f_insert_testructura_gui ('TOPGRA', 'protra');
+select pxp.f_insert_testructura_gui ('CORREL', 'paratr');
+select pxp.f_insert_testructura_gui ('ARQUI', 'protra');
+select pxp.f_insert_testructura_gui ('trami.3', 'trami');
+select pxp.f_insert_testructura_gui ('trami.4', 'trami');
+select pxp.f_insert_testructura_gui ('trami.5', 'trami');
+select pxp.f_insert_testructura_gui ('trami.6', 'trami');
+select pxp.f_insert_testructura_gui ('TOPGRA.1', 'TOPGRA');
+select pxp.f_insert_testructura_gui ('TOPGRA.2', 'TOPGRA');
+select pxp.f_insert_testructura_gui ('TOPGRA.2.1', 'TOPGRA.2');
+select pxp.f_insert_testructura_gui ('CORREL.1', 'CORREL');
+select pxp.f_insert_testructura_gui ('ABOGA', 'protra');
+select pxp.f_insert_testructura_gui ('RESOL', 'protra');
+select pxp.f_insert_testructura_gui ('TOPGRA.3', 'TOPGRA');
+select pxp.f_insert_testructura_gui ('ARQUI.1', 'ARQUI');
+select pxp.f_insert_testructura_gui ('ARQUI.2', 'ARQUI');
+select pxp.f_insert_testructura_gui ('ARQUI.3', 'ARQUI');
+select pxp.f_insert_testructura_gui ('ARQUI.3.1', 'ARQUI.3');
+select pxp.f_insert_testructura_gui ('ABOGA.1', 'ABOGA');
+select pxp.f_insert_testructura_gui ('ABOGA.2', 'ABOGA');
+select pxp.f_insert_testructura_gui ('ABOGA.3', 'ABOGA');
+select pxp.f_insert_testructura_gui ('ABOGA.4', 'ABOGA');
+select pxp.f_insert_testructura_gui ('ABOGA.4.1', 'ABOGA.4');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tiptra_INS', 'tiptra', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tiptra_MOD', 'tiptra', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tiptra_ELI', 'tiptra', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tiptra_SEL', 'tiptra', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tiptra_SEL', 'trami', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_trami_INS', 'trami', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_trami_MOD', 'trami', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_trami_ELI', 'trami', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_trami_SEL', 'trami', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TR_DERTRA_UPD', 'trami', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_DATFOR_SEL', 'trami', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LISPER_SEL', 'trami', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tradet_INS', 'trami.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tradet_MOD', 'trami.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tradet_ELI', 'trami.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tradet_SEL', 'trami.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TR_DETRDE_UPD', 'trami.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_dattec_INS', 'trami.1.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_dattec_MOD', 'trami.1.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_dattec_ELI', 'trami.1.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_dattec_SEL', 'trami.1.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_traper_INS', 'trami.2', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_traper_MOD', 'trami.2', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_traper_ELI', 'trami.2', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_traper_SEL', 'trami.2', 'no');
+select pxp.f_insert_tprocedimiento_gui ('RH_FUNCIO_SEL', 'trami', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LISLEG_SEL', 'trami', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LISTOP_SEL', 'trami', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LISARQ_SEL', 'trami', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LISBOL_SEL', 'trami', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LISLOT_SEL', 'trami', 'no');
+select pxp.f_insert_tprocedimiento_gui ('RH_FUNCIO_SEL', 'trami.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_lotes_INS', 'trami.3', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_lotes_MOD', 'trami.3', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_lotes_ELI', 'trami.3', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_lotes_SEL', 'trami.3', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_matri_INS', 'trami.4', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_matri_MOD', 'trami.4', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_matri_ELI', 'trami.4', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_matri_SEL', 'trami.4', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_rmta_INS', 'trami.5', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_rmta_MOD', 'trami.5', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_rmta_ELI', 'trami.5', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_rmta_SEL', 'trami.5', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_boleta_INS', 'trami.6', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_boleta_MOD', 'trami.6', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_boleta_ELI', 'trami.6', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_boleta_SEL', 'trami.6', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SEG_PERSON_SEL', 'trami.2', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SEG_PERSONMIN_SEL', 'trami.2', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SEG_PERSON_INS', 'trami.2.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SEG_PERSONMIN_SEL', 'trami.2.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SEG_PERSONVAL_MOD', 'trami.2.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('OR_TCARGO_INS', 'CARGO', 'no');
+select pxp.f_insert_tprocedimiento_gui ('OR_TCARGO_MOD', 'CARGO', 'no');
+select pxp.f_insert_tprocedimiento_gui ('OR_TCARGO_ELI', 'CARGO', 'no');
+select pxp.f_insert_tprocedimiento_gui ('OR_TCARGO_SEL', 'CARGO', 'no');
+select pxp.f_insert_tprocedimiento_gui ('RH_FUNCIO_SEL', 'OTTRA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tradet_INS', 'OTTRA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tradet_MOD', 'OTTRA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tradet_ELI', 'OTTRA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tradet_SEL', 'OTTRA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TR_DETRDE_UPD', 'OTTRA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('RH_FUNCIO_SEL', 'TOPGRA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tradet_INS', 'TOPGRA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tradet_MOD', 'TOPGRA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tradet_ELI', 'TOPGRA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tradet_SEL', 'TOPGRA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TR_DETRDE_UPD', 'TOPGRA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LISINF_SEL', 'TOPGRA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LICUIN_SEL', 'TOPGRA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('RH_FUNCIO_SEL', 'TOPGRA.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_INFOR_INS', 'TOPGRA.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_INFOR_MOD', 'TOPGRA.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_INFOR_ELI', 'TOPGRA.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_INFOR_SEL', 'TOPGRA.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_dattec_INS', 'TOPGRA.2', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_dattec_MOD', 'TOPGRA.2', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_dattec_ELI', 'TOPGRA.2', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_dattec_SEL', 'TOPGRA.2', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_CORREL_INS', 'CORREL', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_CORREL_MOD', 'CORREL', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_CORREL_ELI', 'CORREL', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_CORREL_SEL', 'CORREL', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LIPETR_SEL', 'trami', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LIPEBO_SEL', 'trami', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_bolliq_SEL', 'trami', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LILORE_SEL', 'trami', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TR_CORTRA_UPD', 'trami.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LICALE_SEL', 'TOPGRA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LICAAR_SEL', 'TOPGRA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LICULE_SEL', 'TOPGRA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LICUAR_SEL', 'TOPGRA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LILORE_SEL', 'TOPGRA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TR_COREDO_UPD', 'TOPGRA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_lotes_INS', 'TOPGRA.3', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_lotes_MOD', 'TOPGRA.3', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_lotes_ELI', 'TOPGRA.3', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_lotes_SEL', 'TOPGRA.3', 'no');
+select pxp.f_insert_tprocedimiento_gui ('RH_FUNCIO_SEL', 'ARQUI', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tradet_INS', 'ARQUI', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tradet_MOD', 'ARQUI', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tradet_ELI', 'ARQUI', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tradet_SEL', 'ARQUI', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TR_DETRDE_UPD', 'ARQUI', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LICAAR_SEL', 'ARQUI', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LICUAR_SEL', 'ARQUI', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LIPETR_SEL', 'ARQUI', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TR_COREDO_UPD', 'ARQUI', 'no');
+select pxp.f_insert_tprocedimiento_gui ('RH_FUNCIO_SEL', 'ARQUI.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_INFOR_INS', 'ARQUI.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_INFOR_MOD', 'ARQUI.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_INFOR_ELI', 'ARQUI.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_INFOR_SEL', 'ARQUI.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_bolliq_INS', 'ARQUI.2', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_bolliq_MOD', 'ARQUI.2', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_bolliq_ELI', 'ARQUI.2', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_bolliq_SEL', 'ARQUI.2', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LIPEBO_SEL', 'ARQUI.2', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_dattec_INS', 'ARQUI.3', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_dattec_MOD', 'ARQUI.3', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_dattec_ELI', 'ARQUI.3', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_dattec_SEL', 'ARQUI.3', 'no');
+select pxp.f_insert_tprocedimiento_gui ('RH_FUNCIO_SEL', 'ABOGA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tradet_INS', 'ABOGA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tradet_MOD', 'ABOGA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tradet_ELI', 'ABOGA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tradet_SEL', 'ABOGA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TR_DETRDE_UPD', 'ABOGA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LICALE_SEL', 'ABOGA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LIPETR_SEL', 'ABOGA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TR_COREDO_UPD', 'ABOGA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('RH_FUNCIO_SEL', 'ABOGA.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_INFOR_INS', 'ABOGA.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_INFOR_MOD', 'ABOGA.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_INFOR_ELI', 'ABOGA.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_INFOR_SEL', 'ABOGA.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_matri_INS', 'ABOGA.2', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_matri_MOD', 'ABOGA.2', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_matri_ELI', 'ABOGA.2', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_matri_SEL', 'ABOGA.2', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_rmta_INS', 'ABOGA.3', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_rmta_MOD', 'ABOGA.3', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_rmta_ELI', 'ABOGA.3', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_rmta_SEL', 'ABOGA.3', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_datleg_INS', 'ABOGA.4', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_datleg_MOD', 'ABOGA.4', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_datleg_ELI', 'ABOGA.4', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_datleg_SEL', 'ABOGA.4', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tiptra_SEL', 'RESOL', 'no');
+select pxp.f_insert_tprocedimiento_gui ('RH_FUNCIO_SEL', 'RESOL', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_trami_INS', 'RESOL', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_trami_MOD', 'RESOL', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_trami_ELI', 'RESOL', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_trami_SEL', 'RESOL', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_DATFOR_SEL', 'RESOL', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LISPER_SEL', 'RESOL', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LIPETR_SEL', 'RESOL', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LIPEBO_SEL', 'RESOL', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LISLEG_SEL', 'RESOL', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LISTOP_SEL', 'RESOL', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LISARQ_SEL', 'RESOL', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LISBOL_SEL', 'RESOL', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_bolliq_SEL', 'RESOL', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LISLOT_SEL', 'RESOL', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LILORE_SEL', 'RESOL', 'no');
+select pxp.f_insert_tgui_rol ('trami', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('protra', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('SISTRA', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('SISTEMA', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('trami.1', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('trami.1.1', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('trami.1.1.1', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('trami.2', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('trami.2.1', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('trami.2.1.1', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('trami.2.1.2', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('trami.2.1.2.2', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('trami.2.1.2.3', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('trami.2.1.2.4', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('trami.2.1.2.4.1', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('trami.2.1.2.1', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('FUNCIO', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('PROCRH', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('ORGA', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('USUARI', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('PROCSEGU', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('SEGU', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('per', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('o', 'SISTRA-Tramites');
+select pxp.f_insert_trol_procedimiento_gui ('SISTRA-Tramites', 'SISTRA_tradet_INS', 'trami.1');
+select pxp.f_insert_trol_procedimiento_gui ('SISTRA-Tramites', 'SISTRA_tradet_MOD', 'trami.1');
+select pxp.f_insert_trol_procedimiento_gui ('SISTRA-Tramites', 'SISTRA_tradet_ELI', 'trami.1');
+select pxp.f_insert_trol_procedimiento_gui ('SISTRA-Tramites', 'TR_DETRDE_UPD', 'trami.1');
+select pxp.f_insert_trol_procedimiento_gui ('SISTRA-Tramites', 'SISTRA_tradet_SEL', 'trami.1');
+select pxp.f_insert_trol_procedimiento_gui ('SISTRA-Tramites', 'SISTRA_dattec_INS', 'trami.1.1');
+select pxp.f_insert_trol_procedimiento_gui ('SISTRA-Tramites', 'SISTRA_dattec_MOD', 'trami.1.1');
+select pxp.f_insert_trol_procedimiento_gui ('SISTRA-Tramites', 'SISTRA_dattec_ELI', 'trami.1.1');
+select pxp.f_insert_trol_procedimiento_gui ('SISTRA-Tramites', 'SISTRA_dattec_SEL', 'trami.1.1');
+select pxp.f_insert_trol_procedimiento_gui ('SISTRA-Tramites', 'SISTRA_traper_INS', 'trami.2');
+select pxp.f_insert_trol_procedimiento_gui ('SISTRA-Tramites', 'SISTRA_traper_MOD', 'trami.2');
+select pxp.f_insert_trol_procedimiento_gui ('SISTRA-Tramites', 'SISTRA_traper_ELI', 'trami.2');
+select pxp.f_insert_trol_procedimiento_gui ('SISTRA-Tramites', 'SISTRA_traper_SEL', 'trami.2');
+select pxp.f_insert_trol_procedimiento_gui ('SISTRA-Tramites', 'SISTRA_tiptra_SEL', 'trami');
+select pxp.f_insert_trol_procedimiento_gui ('SISTRA-Tramites', 'SISTRA_trami_INS', 'trami');
+select pxp.f_insert_trol_procedimiento_gui ('SISTRA-Tramites', 'SISTRA_trami_MOD', 'trami');
+select pxp.f_insert_trol_procedimiento_gui ('SISTRA-Tramites', 'SISTRA_trami_ELI', 'trami');
+select pxp.f_insert_trol_procedimiento_gui ('SISTRA-Tramites', 'TR_DERTRA_UPD', 'trami');
+select pxp.f_insert_trol_procedimiento_gui ('SISTRA-Tramites', 'SISTRA_trami_SEL', 'trami');
+select pxp.f_insert_trol_procedimiento_gui ('SISTRA-Tramites', 'TRA_DATFOR_SEL', 'trami');
+select pxp.f_insert_trol_procedimiento_gui ('SISTRA-Tramites', 'TRA_LISPER_SEL', 'trami');
+
+
+----------------------------------
+--COPY LINES TO data.sql FILE  
+---------------------------------
+
+select pxp.f_insert_tfuncion ('sistra.ft_tramite_detalle_ime', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_tipo_tramite_sel', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_tipo_tramite_ime', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_tramite_ime', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_tramite_detalle_sel', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_dato_tecnico_ime', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_dato_tecnico_sel', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_tramite_sel', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_tramite_persona_ime', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_tramite_persona_sel', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_reporte_sel', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_trmta_sel', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_matricula_ime', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_lote_ime', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_trmta_ime', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_lote_sel', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_matricula_sel', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_boleta_ime', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_boleta_sel', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_correlativo_sel', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_correlativo_ime', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_informe_sel', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_informe_ime', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.fu_numero_letras', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_datos_legal_sel', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_datos_legal_ime', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_boleta_liquida_ime', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.f_numero_letras', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.ft_boleta_liquida_sel', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tfuncion ('sistra.f_actualizar_tipo_tramite', 'Funcion para tabla     ', 'SISTRA');
+select pxp.f_insert_tprocedimiento ('SISTRA_tradet_INS', 'Insercion de registros', 'si', '', '', 'sistra.ft_tramite_detalle_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_tradet_MOD', 'Modificacion de registros', 'si', '', '', 'sistra.ft_tramite_detalle_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_tradet_ELI', 'Eliminacion de registros', 'si', '', '', 'sistra.ft_tramite_detalle_ime');
+select pxp.f_insert_tprocedimiento ('TR_DETRDE_UPD', 'Derivacion de tramite', 'si', '', '', 'sistra.ft_tramite_detalle_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_tiptra_SEL', 'Consulta de datos', 'si', '', '', 'sistra.ft_tipo_tramite_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_tiptra_CONT', 'Conteo de registros', 'si', '', '', 'sistra.ft_tipo_tramite_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_tiptra_INS', 'Insercion de registros', 'si', '', '', 'sistra.ft_tipo_tramite_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_tiptra_MOD', 'Modificacion de registros', 'si', '', '', 'sistra.ft_tipo_tramite_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_tiptra_ELI', 'Eliminacion de registros', 'si', '', '', 'sistra.ft_tipo_tramite_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_trami_INS', 'Insercion de registros', 'si', '', '', 'sistra.ft_tramite_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_trami_MOD', 'Modificacion de registros', 'si', '', '', 'sistra.ft_tramite_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_trami_ELI', 'Eliminacion de registros', 'si', '', '', 'sistra.ft_tramite_ime');
+select pxp.f_insert_tprocedimiento ('TR_DERTRA_UPD', 'Derivacion de tramite', 'si', '', '', 'sistra.ft_tramite_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_tradet_SEL', 'Consulta de datos', 'si', '', '', 'sistra.ft_tramite_detalle_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_tradet_CONT', 'Conteo de registros', 'si', '', '', 'sistra.ft_tramite_detalle_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_dattec_INS', 'Insercion de registros', 'si', '', '', 'sistra.ft_dato_tecnico_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_dattec_MOD', 'Modificacion de registros', 'si', '', '', 'sistra.ft_dato_tecnico_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_dattec_ELI', 'Eliminacion de registros', 'si', '', '', 'sistra.ft_dato_tecnico_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_dattec_SEL', 'Consulta de datos', 'si', '', '', 'sistra.ft_dato_tecnico_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_dattec_CONT', 'Conteo de registros', 'si', '', '', 'sistra.ft_dato_tecnico_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_trami_SEL', 'Consulta de datos', 'si', '', '', 'sistra.ft_tramite_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_trami_CONT', 'Conteo de registros', 'si', '', '', 'sistra.ft_tramite_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_traper_INS', 'Insercion de registros', 'si', '', '', 'sistra.ft_tramite_persona_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_traper_MOD', 'Modificacion de registros', 'si', '', '', 'sistra.ft_tramite_persona_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_traper_ELI', 'Eliminacion de registros', 'si', '', '', 'sistra.ft_tramite_persona_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_traper_SEL', 'Consulta de datos', 'si', '', '', 'sistra.ft_tramite_persona_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_traper_CONT', 'Conteo de registros', 'si', '', '', 'sistra.ft_tramite_persona_sel');
+select pxp.f_insert_tprocedimiento ('TRA_DATFOR_SEL', 'Retorna los datos de la solicitud de tramites', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_DATFOR_CONT', 'Retorna los datos de la solicitud de tramite', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LISPER_SEL', 'Retorna los datos de la solicitud de tramites', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LISPER_CONT', 'Retorna los datos de la solicitud de tramites', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('SAL_REITEN_SEL', 'Retorna listado de los materiales entregados/recibidos', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('SAL_REITEN_CONT', 'Conteo de registros', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_rmta_SEL', 'Consulta de datos', 'si', '', '', 'sistra.ft_trmta_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_rmta_CONT', 'Conteo de registros', 'si', '', '', 'sistra.ft_trmta_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LISTOT_SEL', 'Retorna los datos OT', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LISTOT_CONT', 'Retorna los datos OT', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LISTOP_SEL', 'Retorna los datos Topografo', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LISTOP_CONT', 'Retorna los datos Topografo', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LISLEG_SEL', 'Retorna los datos de la solicitud de tramites', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LISLEG_CONT', 'Retorna los datos de la solicitud de tramites', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LISARQ_SEL', 'Retorna los datos de la solicitud de tramites', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LISARQ_CONT', 'Retorna los datos de la solicitud de tramites', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LISBOL_SEL', 'Retorna los datos de la solicitud de tramites', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LISBOL_CONT', 'Retorna los datos de la solicitud de tramites', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LISLOT_SEL', 'Retorna los datos de la solicitud de tramites', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LISLOT_CONT', 'Retorna los datos de la solicitud de tramites', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LISINF_SEL', 'Retorna los datos de la cabecera del informe', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LISINF_CONT', 'Retorna los datos de la  cabecera del informe', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LICUIN_SEL', 'Retorna los datos de la cuerpo del informe', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LICUIN_CONT', 'Retorna los datos de la  cabecera del informe', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_matri_INS', 'Insercion de registros', 'si', '', '', 'sistra.ft_matricula_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_matri_MOD', 'Modificacion de registros', 'si', '', '', 'sistra.ft_matricula_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_matri_ELI', 'Eliminacion de registros', 'si', '', '', 'sistra.ft_matricula_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_lotes_INS', 'Insercion de registros', 'si', '', '', 'sistra.ft_lote_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_lotes_MOD', 'Modificacion de registros', 'si', '', '', 'sistra.ft_lote_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_lotes_ELI', 'Eliminacion de registros', 'si', '', '', 'sistra.ft_lote_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_rmta_INS', 'Insercion de registros', 'si', '', '', 'sistra.ft_trmta_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_rmta_MOD', 'Modificacion de registros', 'si', '', '', 'sistra.ft_trmta_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_rmta_ELI', 'Eliminacion de registros', 'si', '', '', 'sistra.ft_trmta_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_lotes_SEL', 'Consulta de datos', 'si', '', '', 'sistra.ft_lote_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_lotes_CONT', 'Conteo de registros', 'si', '', '', 'sistra.ft_lote_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_matri_SEL', 'Consulta de datos', 'si', '', '', 'sistra.ft_matricula_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_matri_CONT', 'Conteo de registros', 'si', '', '', 'sistra.ft_matricula_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_boleta_INS', 'Insercion de registros', 'si', '', '', 'sistra.ft_boleta_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_boleta_MOD', 'Modificacion de registros', 'si', '', '', 'sistra.ft_boleta_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_boleta_ELI', 'Eliminacion de registros', 'si', '', '', 'sistra.ft_boleta_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_boleta_SEL', 'Consulta de datos', 'si', '', '', 'sistra.ft_boleta_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_boleta_CONT', 'Conteo de registros', 'si', '', '', 'sistra.ft_boleta_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_CORREL_SEL', 'Consulta de datos', 'si', '', '', 'sistra.ft_correlativo_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_CORREL_CONT', 'Conteo de registros', 'si', '', '', 'sistra.ft_correlativo_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_CORREL_INS', 'Insercion de registros', 'si', '', '', 'sistra.ft_correlativo_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_CORREL_MOD', 'Modificacion de registros', 'si', '', '', 'sistra.ft_correlativo_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_CORREL_ELI', 'Eliminacion de registros', 'si', '', '', 'sistra.ft_correlativo_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_INFOR_SEL', 'Consulta de datos', 'si', '', '', 'sistra.ft_informe_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_INFOR_CONT', 'Conteo de registros', 'si', '', '', 'sistra.ft_informe_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_INFOR_INS', 'Insercion de registros', 'si', '', '', 'sistra.ft_informe_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_INFOR_MOD', 'Modificacion de registros', 'si', '', '', 'sistra.ft_informe_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_INFOR_ELI', 'Eliminacion de registros', 'si', '', '', 'sistra.ft_informe_ime');
+select pxp.f_insert_tprocedimiento ('TR_CORTRA_UPD', 'CORREGIR  tramite', 'si', '', '', 'sistra.ft_tramite_detalle_ime');
+select pxp.f_insert_tprocedimiento ('TR_COREDO_UPD', 'CORREGIdo  tramite', 'si', '', '', 'sistra.ft_tramite_detalle_ime');
+select pxp.f_insert_tprocedimiento ('TRA_LIPEBO_SEL', 'Retorna los datos de la solicitud de tramites', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LIPEBO_CONT', 'Retorna los datos de la solicitud de tramites', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LIPETR_SEL', 'Retorna los datos de la solicitud de tramites', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LIPETR_CONT', 'Retorna los datos de la solicitud de tramites', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LICALE_SEL', 'Retorna los datos de la cabecera del informe', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LICALE_CONT', 'Retorna los datos de la  cabecera del informe', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LICULE_SEL', 'Retorna los datos de la cabecera del informe', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LICULE_CONT', 'Retorna los datos de la  cabecera del informe', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LICAAR_SEL', 'Retorna los datos de la cabecera del informe', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LICAAR_CONT', 'Retorna los datos de la  cabecera del informe', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LICUAR_SEL', 'Retorna los datos de la cabecera del informe', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LICUAR_CONT', 'Retorna los datos de la  cabecera del informe', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LILORE_SEL', 'Retorna los datos de la solicitud de tramites', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('TRA_LILORE_CONT', 'Retorna los datos de la solicitud de tramites', 'si', '', '', 'sistra.ft_reporte_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_INFLEG_INS', 'Insercion de registros', 'si', '', '', 'sistra.ft_informe_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_datleg_SEL', 'Consulta de datos', 'si', '', '', 'sistra.ft_datos_legal_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_datleg_CONT', 'Conteo de registros', 'si', '', '', 'sistra.ft_datos_legal_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_datleg_INS', 'Insercion de registros', 'si', '', '', 'sistra.ft_datos_legal_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_datleg_MOD', 'Modificacion de registros', 'si', '', '', 'sistra.ft_datos_legal_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_datleg_ELI', 'Eliminacion de registros', 'si', '', '', 'sistra.ft_datos_legal_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_bolliq_INS', 'Insercion de registros', 'si', '', '', 'sistra.ft_boleta_liquida_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_bolliq_MOD', 'Modificacion de registros', 'si', '', '', 'sistra.ft_boleta_liquida_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_bolliq_ELI', 'Eliminacion de registros', 'si', '', '', 'sistra.ft_boleta_liquida_ime');
+select pxp.f_insert_tprocedimiento ('SISTRA_bolliq_SEL', 'Consulta de datos', 'si', '', '', 'sistra.ft_boleta_liquida_sel');
+select pxp.f_insert_tprocedimiento ('SISTRA_bolliq_CONT', 'Conteo de registros', 'si', '', '', 'sistra.ft_boleta_liquida_sel');
+select pxp.f_insert_trol ('Tramites', 'SISTRA-Tramites', 'SISTRA');
+----------------------------------
+--COPY LINES TO dependencies.sql FILE  
+---------------------------------
+
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tiptra_INS', 'tiptra', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tiptra_MOD', 'tiptra', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tiptra_ELI', 'tiptra', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tiptra_SEL', 'tiptra', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tiptra_SEL', 'trami', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_trami_INS', 'trami', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_trami_MOD', 'trami', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_trami_ELI', 'trami', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_trami_SEL', 'trami', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TR_DERTRA_UPD', 'trami', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_DATFOR_SEL', 'trami', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LISPER_SEL', 'trami', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tradet_INS', 'trami.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tradet_MOD', 'trami.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tradet_ELI', 'trami.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tradet_SEL', 'trami.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TR_DETRDE_UPD', 'trami.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_dattec_INS', 'trami.1.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_dattec_MOD', 'trami.1.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_dattec_ELI', 'trami.1.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_dattec_SEL', 'trami.1.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_traper_INS', 'trami.2', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_traper_MOD', 'trami.2', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_traper_ELI', 'trami.2', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_traper_SEL', 'trami.2', 'no');
+select pxp.f_insert_tprocedimiento_gui ('RH_FUNCIO_SEL', 'trami', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LISLEG_SEL', 'trami', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LISTOP_SEL', 'trami', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LISARQ_SEL', 'trami', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LISBOL_SEL', 'trami', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LISLOT_SEL', 'trami', 'no');
+select pxp.f_insert_tprocedimiento_gui ('RH_FUNCIO_SEL', 'trami.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_lotes_INS', 'trami.3', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_lotes_MOD', 'trami.3', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_lotes_ELI', 'trami.3', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_lotes_SEL', 'trami.3', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_matri_INS', 'trami.4', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_matri_MOD', 'trami.4', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_matri_ELI', 'trami.4', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_matri_SEL', 'trami.4', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_rmta_INS', 'trami.5', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_rmta_MOD', 'trami.5', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_rmta_ELI', 'trami.5', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_rmta_SEL', 'trami.5', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_boleta_INS', 'trami.6', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_boleta_MOD', 'trami.6', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_boleta_ELI', 'trami.6', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_boleta_SEL', 'trami.6', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SEG_PERSON_SEL', 'trami.2', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SEG_PERSONMIN_SEL', 'trami.2', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SEG_PERSON_INS', 'trami.2.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SEG_PERSONMIN_SEL', 'trami.2.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SEG_PERSONVAL_MOD', 'trami.2.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('OR_TCARGO_INS', 'CARGO', 'no');
+select pxp.f_insert_tprocedimiento_gui ('OR_TCARGO_MOD', 'CARGO', 'no');
+select pxp.f_insert_tprocedimiento_gui ('OR_TCARGO_ELI', 'CARGO', 'no');
+select pxp.f_insert_tprocedimiento_gui ('OR_TCARGO_SEL', 'CARGO', 'no');
+select pxp.f_insert_tprocedimiento_gui ('RH_FUNCIO_SEL', 'OTTRA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tradet_INS', 'OTTRA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tradet_MOD', 'OTTRA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tradet_ELI', 'OTTRA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tradet_SEL', 'OTTRA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TR_DETRDE_UPD', 'OTTRA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('RH_FUNCIO_SEL', 'TOPGRA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tradet_INS', 'TOPGRA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tradet_MOD', 'TOPGRA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tradet_ELI', 'TOPGRA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tradet_SEL', 'TOPGRA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TR_DETRDE_UPD', 'TOPGRA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LISINF_SEL', 'TOPGRA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LICUIN_SEL', 'TOPGRA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('RH_FUNCIO_SEL', 'TOPGRA.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_INFOR_INS', 'TOPGRA.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_INFOR_MOD', 'TOPGRA.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_INFOR_ELI', 'TOPGRA.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_INFOR_SEL', 'TOPGRA.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_dattec_INS', 'TOPGRA.2', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_dattec_MOD', 'TOPGRA.2', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_dattec_ELI', 'TOPGRA.2', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_dattec_SEL', 'TOPGRA.2', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_CORREL_INS', 'CORREL', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_CORREL_MOD', 'CORREL', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_CORREL_ELI', 'CORREL', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_CORREL_SEL', 'CORREL', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LIPETR_SEL', 'trami', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LIPEBO_SEL', 'trami', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_bolliq_SEL', 'trami', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LILORE_SEL', 'trami', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TR_CORTRA_UPD', 'trami.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LICALE_SEL', 'TOPGRA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LICAAR_SEL', 'TOPGRA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LICULE_SEL', 'TOPGRA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LICUAR_SEL', 'TOPGRA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LILORE_SEL', 'TOPGRA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TR_COREDO_UPD', 'TOPGRA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_lotes_INS', 'TOPGRA.3', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_lotes_MOD', 'TOPGRA.3', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_lotes_ELI', 'TOPGRA.3', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_lotes_SEL', 'TOPGRA.3', 'no');
+select pxp.f_insert_tprocedimiento_gui ('RH_FUNCIO_SEL', 'ARQUI', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tradet_INS', 'ARQUI', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tradet_MOD', 'ARQUI', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tradet_ELI', 'ARQUI', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tradet_SEL', 'ARQUI', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TR_DETRDE_UPD', 'ARQUI', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LICAAR_SEL', 'ARQUI', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LICUAR_SEL', 'ARQUI', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LIPETR_SEL', 'ARQUI', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TR_COREDO_UPD', 'ARQUI', 'no');
+select pxp.f_insert_tprocedimiento_gui ('RH_FUNCIO_SEL', 'ARQUI.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_INFOR_INS', 'ARQUI.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_INFOR_MOD', 'ARQUI.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_INFOR_ELI', 'ARQUI.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_INFOR_SEL', 'ARQUI.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_bolliq_INS', 'ARQUI.2', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_bolliq_MOD', 'ARQUI.2', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_bolliq_ELI', 'ARQUI.2', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_bolliq_SEL', 'ARQUI.2', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LIPEBO_SEL', 'ARQUI.2', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_dattec_INS', 'ARQUI.3', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_dattec_MOD', 'ARQUI.3', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_dattec_ELI', 'ARQUI.3', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_dattec_SEL', 'ARQUI.3', 'no');
+select pxp.f_insert_tprocedimiento_gui ('RH_FUNCIO_SEL', 'ABOGA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tradet_INS', 'ABOGA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tradet_MOD', 'ABOGA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tradet_ELI', 'ABOGA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tradet_SEL', 'ABOGA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TR_DETRDE_UPD', 'ABOGA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LICALE_SEL', 'ABOGA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LIPETR_SEL', 'ABOGA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TR_COREDO_UPD', 'ABOGA', 'no');
+select pxp.f_insert_tprocedimiento_gui ('RH_FUNCIO_SEL', 'ABOGA.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_INFOR_INS', 'ABOGA.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_INFOR_MOD', 'ABOGA.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_INFOR_ELI', 'ABOGA.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_INFOR_SEL', 'ABOGA.1', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_matri_INS', 'ABOGA.2', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_matri_MOD', 'ABOGA.2', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_matri_ELI', 'ABOGA.2', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_matri_SEL', 'ABOGA.2', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_rmta_INS', 'ABOGA.3', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_rmta_MOD', 'ABOGA.3', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_rmta_ELI', 'ABOGA.3', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_rmta_SEL', 'ABOGA.3', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_datleg_INS', 'ABOGA.4', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_datleg_MOD', 'ABOGA.4', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_datleg_ELI', 'ABOGA.4', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_datleg_SEL', 'ABOGA.4', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_tiptra_SEL', 'RESOL', 'no');
+select pxp.f_insert_tprocedimiento_gui ('RH_FUNCIO_SEL', 'RESOL', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_trami_INS', 'RESOL', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_trami_MOD', 'RESOL', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_trami_ELI', 'RESOL', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_trami_SEL', 'RESOL', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_DATFOR_SEL', 'RESOL', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LISPER_SEL', 'RESOL', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LIPETR_SEL', 'RESOL', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LIPEBO_SEL', 'RESOL', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LISLEG_SEL', 'RESOL', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LISTOP_SEL', 'RESOL', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LISARQ_SEL', 'RESOL', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LISBOL_SEL', 'RESOL', 'no');
+select pxp.f_insert_tprocedimiento_gui ('SISTRA_bolliq_SEL', 'RESOL', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LISLOT_SEL', 'RESOL', 'no');
+select pxp.f_insert_tprocedimiento_gui ('TRA_LILORE_SEL', 'RESOL', 'no');
+select pxp.f_insert_tgui_rol ('trami', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('protra', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('SISTRA', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('SISTEMA', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('trami.1', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('trami.1.1', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('trami.1.1.1', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('trami.2', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('trami.2.1', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('trami.2.1.1', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('trami.2.1.2', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('trami.2.1.2.2', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('trami.2.1.2.3', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('trami.2.1.2.4', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('trami.2.1.2.4.1', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('trami.2.1.2.1', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('FUNCIO', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('PROCRH', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('ORGA', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('USUARI', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('PROCSEGU', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('SEGU', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('per', 'SISTRA-Tramites');
+select pxp.f_insert_tgui_rol ('o', 'SISTRA-Tramites');
+select pxp.f_insert_trol_procedimiento_gui ('SISTRA-Tramites', 'SISTRA_tradet_INS', 'trami.1');
+select pxp.f_insert_trol_procedimiento_gui ('SISTRA-Tramites', 'SISTRA_tradet_MOD', 'trami.1');
+select pxp.f_insert_trol_procedimiento_gui ('SISTRA-Tramites', 'SISTRA_tradet_ELI', 'trami.1');
+select pxp.f_insert_trol_procedimiento_gui ('SISTRA-Tramites', 'TR_DETRDE_UPD', 'trami.1');
+select pxp.f_insert_trol_procedimiento_gui ('SISTRA-Tramites', 'SISTRA_tradet_SEL', 'trami.1');
+select pxp.f_insert_trol_procedimiento_gui ('SISTRA-Tramites', 'SISTRA_dattec_INS', 'trami.1.1');
+select pxp.f_insert_trol_procedimiento_gui ('SISTRA-Tramites', 'SISTRA_dattec_MOD', 'trami.1.1');
+select pxp.f_insert_trol_procedimiento_gui ('SISTRA-Tramites', 'SISTRA_dattec_ELI', 'trami.1.1');
+select pxp.f_insert_trol_procedimiento_gui ('SISTRA-Tramites', 'SISTRA_dattec_SEL', 'trami.1.1');
+select pxp.f_insert_trol_procedimiento_gui ('SISTRA-Tramites', 'SISTRA_traper_INS', 'trami.2');
+select pxp.f_insert_trol_procedimiento_gui ('SISTRA-Tramites', 'SISTRA_traper_MOD', 'trami.2');
+select pxp.f_insert_trol_procedimiento_gui ('SISTRA-Tramites', 'SISTRA_traper_ELI', 'trami.2');
+select pxp.f_insert_trol_procedimiento_gui ('SISTRA-Tramites', 'SISTRA_traper_SEL', 'trami.2');
+select pxp.f_insert_trol_procedimiento_gui ('SISTRA-Tramites', 'SISTRA_tiptra_SEL', 'trami');
+select pxp.f_insert_trol_procedimiento_gui ('SISTRA-Tramites', 'SISTRA_trami_INS', 'trami');
+select pxp.f_insert_trol_procedimiento_gui ('SISTRA-Tramites', 'SISTRA_trami_MOD', 'trami');
+select pxp.f_insert_trol_procedimiento_gui ('SISTRA-Tramites', 'SISTRA_trami_ELI', 'trami');
+select pxp.f_insert_trol_procedimiento_gui ('SISTRA-Tramites', 'TR_DERTRA_UPD', 'trami');
+select pxp.f_insert_trol_procedimiento_gui ('SISTRA-Tramites', 'SISTRA_trami_SEL', 'trami');
+select pxp.f_insert_trol_procedimiento_gui ('SISTRA-Tramites', 'TRA_DATFOR_SEL', 'trami');
+select pxp.f_insert_trol_procedimiento_gui ('SISTRA-Tramites', 'TRA_LISPER_SEL', 'trami');
+

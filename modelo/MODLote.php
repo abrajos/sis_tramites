@@ -40,6 +40,7 @@ class MODLote extends MODbase{
 		$this->captura('co_este','varchar');
 		$this->captura('co_oeste','varchar');
 		$this->captura('porcentaje','numeric');
+		$this->captura('id_dato_tecnico','int4');
 		
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -67,6 +68,7 @@ class MODLote extends MODbase{
 		$this->setParametro('co_este','co_este','varchar');
 		$this->setParametro('co_oeste','co_oeste','varchar');
 		$this->setParametro('porcentaje','porcentaje','numeric');
+		$this->setParametro('id_dato_tecnico','id_dato_tecnico','int4');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -95,6 +97,7 @@ class MODLote extends MODbase{
 		$this->setParametro('co_este','co_este','varchar');
 		$this->setParametro('co_oeste','co_oeste','varchar');
 		$this->setParametro('porcentaje','porcentaje','numeric');
+		$this->setParametro('id_dato_tecnico','id_dato_tecnico','int4');
 		
 		//Ejecuta la instruccion
 		$this->armarConsulta();

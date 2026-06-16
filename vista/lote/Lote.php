@@ -48,6 +48,16 @@ Phx.vista.Lote=Ext.extend(Phx.gridInterfaz,{
 			type:'Field',
 			form:true 
 		},
+		{
+			//configuracion del componente
+			config:{
+					labelSeparator:'',
+					inputType:'hidden',
+					name: 'id_dato_tecnico'
+			},
+			type:'Field',
+			form:true 
+		},
 		
 		{
 			config:{
@@ -60,12 +70,12 @@ Phx.vista.Lote=Ext.extend(Phx.gridInterfaz,{
                 triggerAction: 'all',
                 lazyRender: true,
                 mode: 'local',
-                store: ['via','area_verde', 'lote']
+                store: ['via','area_verde', 'lote', 'construccion']
 			},
 				type:'ComboBox',
 				filters:{   pfiltro:'lotes.tipo_cesion',
                         type: 'list',
-                         options: ['via','area_verde', 'lote']  
+                         options: ['via','area_verde', 'lote', 'construccion']  
                     },
             	valorInicial: 'via',
 				id_grupo:0,
@@ -314,6 +324,7 @@ Phx.vista.Lote=Ext.extend(Phx.gridInterfaz,{
 		{name:'co_este', type: 'string'},
 		{name:'co_oeste', type: 'string'},
 		{name:'porcentaje', type: 'numeric'},
+		{name:'id_dato_tecnico', type: 'numeric'},
 	],
 	sortInfo:{
 		field: 'id_lote',
@@ -323,17 +334,17 @@ Phx.vista.Lote=Ext.extend(Phx.gridInterfaz,{
 	bsave:true,
 	onButtonNew: function () {
         Phx.vista.Lote.superclass.onButtonNew.call(this);
-        this.getComponente('id_tramite_detalle').setValue(this.maestro.id_tramite_detalle);
+        this.getComponente('id_dato_tecnico').setValue(this.maestro.id_dato_tecnico);
     },
     onReloadPage: function (m) {
         this.maestro = m;
         console.log(this.maestro);
-        this.store.baseParams = {id_tramite_detalle: this.maestro.id_tramite_detalle};
+        this.store.baseParams = {id_dato_tecnico: this.maestro.id_dato_tecnico};
         this.load({params: {start: 0, limit: 50}})
     },
 	loadValoresIniciales:function(){
         Phx.vista.Lote.superclass.loadValoresIniciales.call(this);
-        this.Cmp.id_tramite_detalle.setValue(this.maestro.id_tramite_detalle);
+        this.Cmp.id_dato_tecnico.setValue(this.maestro.id_dato_tecnico);
     },
 	}
 )

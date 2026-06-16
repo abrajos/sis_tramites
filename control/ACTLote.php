@@ -14,8 +14,8 @@ class ACTLote extends ACTbase{
 
 		$this->objParam->defecto('dir_ordenacion','asc');
 
-		if($this->objParam->getParametro('id_tramite_detalle')!=''){
-            $this->objParam->addFiltro("trami.id_tramite_detalle = ".$this->objParam->getParametro('id_tramite_detalle'));    
+		if($this->objParam->getParametro('id_dato_tecnico')!=''){
+            $this->objParam->addFiltro("dattec.id_dato_tecnico = ".$this->objParam->getParametro('id_dato_tecnico'));    
         }
 		
 		if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){

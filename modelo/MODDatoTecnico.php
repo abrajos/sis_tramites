@@ -57,6 +57,7 @@ class MODDatoTecnico extends MODbase{
 		$this->captura('super_excedente','numeric');
 		$this->captura('super_inexistente','numeric');
 		$this->captura('nombre_lote','varchar');
+		$this->captura('id_tramite','int4');
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
@@ -100,6 +101,7 @@ class MODDatoTecnico extends MODbase{
 		$this->setParametro('super_excedente','super_excedente','numeric');
 		$this->setParametro('super_inexistente','super_inexistente','numeric');
 		$this->setParametro('nombre_lote','nombre_lote','varchar');
+		$this->setParametro('id_tramite','id_tramite','int4');
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();
@@ -144,6 +146,7 @@ class MODDatoTecnico extends MODbase{
 		$this->setParametro('super_excedente','super_excedente','numeric');
 		$this->setParametro('super_inexistente','super_inexistente','numeric');
 		$this->setParametro('nombre_lote','nombre_lote','varchar');
+		$this->setParametro('id_tramite','id_tramite','int4');
 		
 		//Ejecuta la instruccion
 		$this->armarConsulta();

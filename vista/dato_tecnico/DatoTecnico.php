@@ -19,7 +19,8 @@ Phx.vista.DatoTecnico=Ext.extend(Phx.gridInterfaz,{
 		console.log("id:" + this.id_tramite_detalle);
 		this.init();
 		this.getComponente('id_tramite_detalle').setValue(this.id_tramite_detalle);
-		this.store.baseParams = {id_tramite_detalle: this.id_tramite_detalle};
+		this.getComponente('id_tramite').setValue(this.id_tramite);
+		this.store.baseParams = {id_tramite: this.id_tramite};
 		this.load({params:{start:0, limit:this.tam_pag}})
 		this.iniciarEventos();
 		
@@ -105,6 +106,16 @@ Phx.vista.DatoTecnico=Ext.extend(Phx.gridInterfaz,{
 					labelSeparator:'',
 					inputType:'hidden',
 					name: 'id_tramite_detalle'
+			},
+			type:'Field',
+			form:true 
+		},
+		{
+			//configuracion del componente
+			config:{
+					labelSeparator:'',
+					inputType:'hidden',
+					name: 'id_tramite'
 			},
 			type:'Field',
 			form:true 
@@ -585,9 +596,9 @@ Phx.vista.DatoTecnico=Ext.extend(Phx.gridInterfaz,{
 				type:'ComboBox',
 				filters:{   pfiltro:'dattec.rasante_municipal',
                         type: 'list',
-                         options: ['si','no']  
+                         options: ['SI','NO']  
                     },
-            	valorInicial: 'si',
+            	valorInicial: 'SI',
 				id_grupo:0,
 				grid:true,
 				form:true
@@ -744,6 +755,7 @@ Phx.vista.DatoTecnico=Ext.extend(Phx.gridInterfaz,{
 		{name:'super_excedente', type: 'numeric'},
 		{name:'super_inexistente', type: 'numeric'},
 		{name:'nombre_lote', type: 'string'},
+		{name:'id_tramite', type: 'numeric'},
 	],
 	sortInfo:{
 		field: 'id_dato_tecnico',
@@ -751,6 +763,12 @@ Phx.vista.DatoTecnico=Ext.extend(Phx.gridInterfaz,{
 	},
 	bdel:true,
 	bsave:true,
+	south:{
+		url:'../../../sis_tramites/vista/lote/Lote.php',
+        title:'Lotes',
+        height:'50%',
+        cls:'Lote'
+   		},
 	preparaMenu: function (tb) {
         // llamada funcion clace padre
         Phx.vista.DatoTecnico.superclass.preparaMenu.call(this, tb)
@@ -762,6 +780,7 @@ Phx.vista.DatoTecnico=Ext.extend(Phx.gridInterfaz,{
 	onButtonNew: function () {
         Phx.vista.DatoTecnico.superclass.onButtonNew.call(this);
         this.getComponente('id_tramite_detalle').setValue(this.id_tramite_detalle);
+		this.getComponente('id_tramite').setValue(this.id_tramite);
         this.mostrarGrupo(0);
         this.mostrarGrupo(1);
         this.mostrarGrupo(2);

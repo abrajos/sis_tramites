@@ -32,12 +32,12 @@ Phx.vista.Topografo=Ext.extend(Phx.gridInterfaz,{
                 disabled: false,
                 handler: this.datosTecnicos
             });
-		this.addButton('lote', {
+		/*this.addButton('lote', {
                 argument: {imprimir: 'lote'},
-                text: '<i class="fa fa-thumbs-o-up fa-2x"></i> Lotes ', /*iconCls:'' ,*/
+                text: '<i class="fa fa-thumbs-o-up fa-2x"></i> Lotes ',
                 disabled: false,
                 handler: this.lote
-            });
+            });*/
 
 		this.addButton('imprimirInfor', {
 				text: 'Imprimir Informe',
@@ -433,7 +433,7 @@ Phx.vista.Topografo=Ext.extend(Phx.gridInterfaz,{
 	east:{
         url:'../../../sis_tramites/vista/informe/Informe.php',
         title:'Informe',
-        height:'50%',
+        height:'80%',
         cls:'Informe'
    		},
 	preparaMenu: function (tb) {
@@ -566,13 +566,12 @@ Phx.vista.Topografo=Ext.extend(Phx.gridInterfaz,{
 		Phx.CP.loadWindows('../../../sis_tramites/vista/dato_tecnico/DatoTecnico.php',
 			'DatoTecnico',
 			{
-				width: 900,
-				height: 400
+				width: 1000,
+				height: 700
 			}, rec, this.idContenedor, 'DatoTecnico');
 
 	},
-
-	lote: function () {
+/*	lote: function () {
 		var rec = this.getSelectedData();
 		//enviamos el id seleccionado para cual el archivo se deba subir
 		rec.datos_extras_id = rec.id_tramite_detalle;
@@ -592,7 +591,7 @@ Phx.vista.Topografo=Ext.extend(Phx.gridInterfaz,{
 				height: 400
 			}, rec, this.idContenedor, 'Lote');
 
-	},
+	},*/
 
 	BInforme:function () {
 			var rec = this.getSelectedData();

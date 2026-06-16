@@ -74,6 +74,8 @@ class CustomReport extends TCPDF {
 Class RFormularioTramite extends Report {
 
     function write($fileName) {
+        $celularTitular = 'NN';
+        $emailTitular = 'NN';
         $pdf = new CustomReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
         $pdf->setDataSource($this->getDataSource());
         $dataSource = $this->getDataSource();
@@ -131,11 +133,40 @@ Class RFormularioTramite extends Report {
             $pdf->SetFont('', 'N');
 	        $pdf->Cell($w = 7, $h = $hMedium, $txt = 'Yo: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
 			$pdf->SetFont('', 'B');
+            $countList = 0;
+            foreach ($dataSource->getDataSet() as $row) {
+                $tipo_persona = $row['tipo_persona'];
+                //var_dump("tipo: ",$tipo_persona); 
+                if ( $tipo_persona == "apoderado" && $row['celular1'] != ''){
+                    $countList = 1;
+                    $celularTitular = $row['celular1'];
+                }
+                if ( $tipo_persona == "apoderado" && $row['correo'] != ''){
+                    $countList = 1;
+                    $emailTitular =  $row['correo'];
+                }
+            }
             foreach ($dataSource->getDataSet() as $row) {
                 
                 $tipo_persona = $row['tipo_persona'];
                 //var_dump("tipo: ",$tipo_persona); 
-                if ( $tipo_persona == "tramitador"){
+                if ($countList == 1 && $tipo_persona == "apoderado") {
+                    $pdf->Cell($w = 110, $h = $hMedium, $txt = $row['nombre_completo1'].' (Apoderado)', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+                    $pdf->SetFont('', 'N');
+	                $pdf->Cell($w = 18, $h = $hMedium, $txt = 'con C.I. N°: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
+                    $pdf->SetFont('', 'B');
+                    $pdf->Cell($w = 12, $h = $hMedium, $txt = $row['ci'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+                    $pdf->Cell($w = 7, $h = $hMedium, $txt = '  ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   	
+                    $pdf->Cell($w = 5, $h = $hMedium, $txt = $row['expedicion'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+                    $pdf->Ln();
+                    /*
+                    if ($countList == 0) {
+                        $pdf->SetFont('', 'N');
+                        $pdf->Cell($w = 30, $h = $hMedium, $txt = 'Domiciliado en : ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
+                        $pdf->SetFont('', 'B');
+                        $pdf->Cell($w = 20, $h = $hMedium, $txt = $row['domicilio'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');   
+                    }*/
+                } elseif ($countList == 0) {
                     $pdf->Cell($w = 110, $h = $hMedium, $txt = $row['nombre_completo1'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
                     $pdf->SetFont('', 'N');
 	                $pdf->Cell($w = 18, $h = $hMedium, $txt = 'con C.I. N°: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
@@ -144,24 +175,17 @@ Class RFormularioTramite extends Report {
                     $pdf->Cell($w = 7, $h = $hMedium, $txt = '  ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   	
                     $pdf->Cell($w = 5, $h = $hMedium, $txt = $row['expedicion'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
                     $pdf->Ln();
-                    $pdf->SetFont('', 'N');
-                    $pdf->Cell($w = 30, $h = $hMedium, $txt = 'Domiciliado en : ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-                    $pdf->SetFont('', 'B');
-                    $pdf->Cell($w = 20, $h = $hMedium, $txt = $row['domicilio'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-                } else {
-                    $pdf->Cell($w = 110, $h = $hMedium, $txt = $row['nombre_completo1'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-                    $pdf->SetFont('', 'N');
-	                $pdf->Cell($w = 18, $h = $hMedium, $txt = 'con C.I. N°: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-                    $pdf->SetFont('', 'B');
-                    $pdf->Cell($w = 12, $h = $hMedium, $txt = $row['ci'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-                    $pdf->Cell($w = 7, $h = $hMedium, $txt = '  ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   	
-                    $pdf->Cell($w = 5, $h = $hMedium, $txt = $row['expedicion'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-                    $pdf->Ln();
-                    $pdf->SetFont('', 'N');
-                    $pdf->Cell($w = 30, $h = $hMedium, $txt = 'Domiciliado en : ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-                    $pdf->SetFont('', 'B');
-                    $pdf->Cell($w = 20, $h = $hMedium, $txt = $row['domicilio'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-                };                 
+                    $celularTitular = $row['celular1'];
+                    $emailTitular =  $row['correo'];
+                    /*
+                    if ($countList > 0) {
+                        $pdf->SetFont('', 'N');
+                        $pdf->Cell($w = 30, $h = $hMedium, $txt = 'Domiciliado en : ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
+                        $pdf->SetFont('', 'B');
+                        $pdf->Cell($w = 20, $h = $hMedium, $txt = $row['domicilio'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+                    }*/
+                    $countList = 3;
+                }  
             };
             $pdf->Ln();
             $pdf->SetFont('', 'N');
@@ -235,7 +259,7 @@ Class RFormularioTramite extends Report {
             $pdf->Cell($w = 10, $h = $hMedium, $txt = $dataSource->getParameter('fojas'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
             $pdf->Ln();
             $pdf->SetFont('', 'N');
-	        $pdf->Cell($w = 45, $h = $hMedium, $txt = 'señalo Teléfono y/o correo: '.$dataSource->getParameter('celular1').'     '.$dataSource->getParameter('correo'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
+	        $pdf->Cell($w = 45, $h = $hMedium, $txt = 'señalo Teléfono y/o correo: '.$celularTitular.'     '.$emailTitular, $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
             foreach ($dataSource->getDataSet() as $row) {
                 
                 $tipo_persona = $row['tipo_persona'];

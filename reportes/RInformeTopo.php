@@ -3,174 +3,148 @@ require_once dirname(__FILE__) . '/pxpReport/Report.php';
 require_once dirname(__FILE__) . '/pxpReport/DataSource.php';
 //require_once dirname(__FILE__) . '/../../lib/tcpdf/tcpdf.php';
 //ini_set('display_errors', 'On');
-class CustomReport extends TCPDF {
+class CustomReport extends TCPDF
+{
 
     private $dataSource;
 
-    public function setDataSource(DataSource $dataSource) {
+    public function setDataSource(DataSource $dataSource)
+    {
         $this->dataSource = $dataSource;
     }
 
-    public function getDataSource() {
+    public function getDataSource()
+    {
         return $this->dataSource;
     }
 
-    public function Header() {
-        $dataSource = $this->getDataSource();
-        $height = 6;
-        $midHeight = 9;
-        $longHeight = 18;
-
-        $x = $this->GetX();
-        $y = $this->GetY();
-        $this->SetXY($x, $y);
-
-        $this->Image(dirname(__FILE__).'/../../lib'.$_SESSION['_DIR_LOGO'], 16, 12, 36);
-        $x = $this->GetX();
-        $y = $this->GetY();
-        $this->SetFontSize(16);
-        $this->SetFont('', 'B');
-        
-        //$this->Cell(60, $longHeight, '', '', 0, 'C', false, '', 0, false, 'T', 'C');
-        $this->Cell(180, $longHeight, ' INFORME TECNICO', ' ', 0, 'R', false, '', 0, false, 'T', 'C');
-        $this->Ln(5);
-        $this->SetFontSize(12);
-        $this->Cell(180, $longHeight, $dataSource->getParameter('num_informe'), 'B', 0, 'R', false, '', 0, false, 'T', 'C');
-        $x = $this->GetX();
-        $y = $this->GetY();
-
-       
+    // --- AÑADE ESTO AQUÍ ---
+    public function verificarEspacio($h)
+    {
+        return $this->checkPageBreak($h);
     }
 
-    public function Footer() {
-        //TODO: implement the footer manager
+    public function Header()
+    {
         $dataSource = $this->getDataSource();
-        //$this->SetFooterMargin(PDF_MARGIN_FOOTER);
-        $x = $this->GetX();
-        $y = $this->GetY();
-        $this->SetY(-15);
-        $this->SetFont('helvetica', 'I', 6);
-        $this->Cell(180, 0, 'usuario: '.$dataSource->getParameter('de'), 0, 1, 'L');
-        $this->Cell(180, 10, 'Pagina: '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
-        $html = 'Numero Tramite: '.$dataSource->getParameter('num_informe')."\n".'Tramite: '.$dataSource->getParameter('nombre_tramite')."\n".'Usuario: '.$dataSource->getParameter('de')."\n".'Sistema de Tramites ';
+
+        // 1. Dibujar el Logo
+        $logo = dirname(__FILE__) . '/../../lib' . $_SESSION['_DIR_LOGO'];
+        if (file_exists($logo)) {
+            $this->Image($logo, 15, 10, 35); // Posición fija solo para la imagen
+        }
+
+        // 2. Título del Informe
+        $this->SetY(10); // Iniciamos en la parte superior
+        $this->SetFont('helvetica', 'B', 16);
+        $this->Cell(0, 15, 'INFORME LEGAL', 0, 1, 'R');
+
+        // 3. Número de Informe con línea inferior
+        $this->SetFont('helvetica', 'B', 12);
+        // El '1' al final del Cell es VITAL para el salto de línea automático
+        $this->Cell(0, 8, $dataSource->getParameter('num_informe'), 'B', 1, 'R');
+
+        // NO poner SetXY aquí. El margen superior hará el trabajo.
+    }
+
+
+    public function Footer()
+    {
+        $dataSource = $this->getDataSource();
+
+        // Posicionarse a 15mm del final
+        $this->SetY(-25);
+        $this->SetFont('helvetica', 'I', 8);
+
+        // Imprime los datos alineados a la izquierda
+        $this->Cell(180, 4, 'Usuario: ' . $dataSource->getParameter('de'), 0, 1, 'L');
+        $this->Cell(180, 4, 'SISTEMA DE TRAMITES - G.A.M.C.', 0, 1, 'L');
+
+        // Imprime la página centrada (dejando el salto de línea al final)
+        $this->Cell(180, 4, 'Página: ' . $this->getAliasNumPage() . '/' . $this->getAliasNbPages(), 0, 1, 'C');
+
+        // Configuración del QR
         $style = array(
             'border' => 0,
             'vpadding' => 'auto',
             'hpadding' => 'auto',
-            'fgcolor' => array(0,0,0),
-            'bgcolor' => false, //array(255,255,255)
-            'module_width' => 1, // width of a single module in points
-            'module_height' => 1 // height of a single module in points
+            'fgcolor' => array(0, 0, 0),
+            'bgcolor' => false,
+            'module_width' => 1,
+            'module_height' => 1
         );
-        
-        $this->write2DBarcode($html, 'QRCODE,M', 170, 290, 30, 30, $style, 'N');
-        
-      //  $this->write2DBarcode($html, 'PDF417', $x+80, $y-5, 0, 30, $style, 'N');
-        //$this->Text(20, 25, 'QRCODE M');
-       // $this->Image(dirname(__FILE__) . '/../media/firma.png', 98, 220, 35, 35, '', '', '', false, 300, '', false, false, 0);
-        
-    } 
 
+        // QR fijo a la derecha, cerca del margen inferior
+        $this->write2DBarcode($dataSource->getParameter('num_informe'), 'QRCODE,M', 170, $this->getPageHeight() - 35, 25, 25, $style, 'N');
+    }
 }
 
-Class RInformeTopo extends Report {
+class RInformeTopo extends Report
+{
 
-    function write($fileName) {
+    function write($fileName)
+    {
+        // 1. Instancia con configuración de márgenes estrictos
         $pdf = new CustomReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
         $pdf->setDataSource($this->getDataSource());
         $dataSource = $this->getDataSource();
-        // set document information
-        $pdf->SetCreator(PDF_CREATOR);
-        /*$pdf->SetAuthor('Nicola Asuni');
-         $pdf->SetTitle('TCPDF Example 006');
-         $pdf->SetSubject('TCPDF Tutorial');
-         $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
-         */
 
-        // set default monospaced font
-        $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
+        // Márgenes: Izquierdo=15, Superior=45 (espacio para Header), Derecho=15
+        $pdf->SetMargins(15, 40, 15);
+        $pdf->SetAutoPageBreak(TRUE, 40); // 40mm de margen inferior para el QR/Footer
+        $pdf->SetHeaderMargin(10);
+        $pdf->SetFooterMargin(10);
 
-        //set margins
-        $pdf->SetMargins(PDF_MARGIN_LEFT, 30, PDF_MARGIN_RIGHT);
-        $pdf->SetHeaderMargin(8);
-        $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+        $pdf->AddPage('P', array(215.9, 330)); // Tamaño Oficio
+        $pdf->SetFontSize(10);
 
-        //set auto page breaks
-        $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
 
-        //set image scale factor
-        $pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 
-        //set some language-dependent strings
-        // $pdf->setLanguageArray($l);
+        $pdf->SetFontSize(10);
+        $pdf->SetFont('', 'B');
+        $pdf->Cell($w = 15, $h = $hMedium, $txt = 'A: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+        $pdf->SetFont('', 'N');
+        $pdf->Cell($w = 5, $h = $hMedium, $txt = $dataSource->getParameter('nombrea'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+        $pdf->Ln(4);
+        $pdf->SetFont('', 'B');
+        $pdf->Cell($w = 15, $h = $hMedium, $txt = '   ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+        $pdf->Cell($w = 5, $h = $hMedium, $txt = $dataSource->getParameter('cargoa'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+        $pdf->Ln(5);
+        $pdf->SetFont('', 'B');
+        $pdf->Cell($w = 15, $h = $hMedium, $txt = 'Via: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+        $pdf->SetFont('', 'N');
+        $pdf->Cell($w = 10, $h = $hMedium, $txt = $dataSource->getParameter('via'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+        $pdf->Ln(4);
+        $pdf->SetFont('', 'B');
+        $pdf->Cell($w = 15, $h = $hMedium, $txt = '    ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+        $pdf->Cell($w = 10, $h = $hMedium, $txt = $dataSource->getParameter('cargovia'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+        $pdf->Ln(5);
+        $pdf->SetFont('', 'B');
+        $pdf->Cell($w = 15, $h = $hMedium, $txt = 'De: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+        $pdf->SetFont('', 'N');
+        $pdf->Cell($w = 10, $h = $hMedium, $txt = $dataSource->getParameter('de'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+        $pdf->Ln(4);
+        $pdf->SetFont('', 'B');
+        $pdf->Cell($w = 15, $h = $hMedium, $txt = '    ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+        $pdf->Cell($w = 10, $h = $hMedium, $txt = $dataSource->getParameter('cargode'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+        $pdf->Ln(5);
+        $pdf->SetFont('', 'B');
+        $pdf->Cell($w = 15, $h = $hMedium, $txt = 'Fecha: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+        $pdf->SetFont('', 'N');
+        $pdf->Cell($w = 10, $h = $hMedium, $txt = 'Colcapirhua, ' . $dataSource->getParameter('dia') . ' de ' . $dataSource->getParameter('mes') . ' de ' . $dataSource->getParameter('anio'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+        $pdf->Ln(5);
+        $pdf->SetFont('', 'B');
+        $pdf->Cell($w = 180, $h = $hMedium, $txt = 'REF:       ' . strtoupper($dataSource->getParameter('referencia')), 'B', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+        $pdf->Ln(8);
+        $pdf->SetFont('', 'N');
+        $pdf->writeHTMLCell(180, 0, '', '', 'Señor Arquitecto', 0, 1, 0, true, 'J', true);
+        $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+        $pdf->writeHTMLCell(180, 0, '', '', 'Se procede a la inspección y verificación técnica del expediente del trámite administrativo N°  ' . $dataSource->getParameter('cite_tramite') . ', Con referencia a la aprobación de: ' . strtoupper($dataSource->getParameter('nombre_tramite')), 0, 1, 0, true, 'J', true);
+        $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+        $pdf->writeHTMLCell(180, 0, '', '', 'Corresponde informar que el predio se encuentra dentro de la jurisdicción de Colcapirhua ubicado en:', 0, 1, 0, true, 'J', true);
+        $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
 
-        // Crea la pagina para mostrar los totales de los almacenes.
-        
-        //$ancho_mm = 216; // Ancho en milímetros
-        //$alto_mm = 330; // Alto en milímetros
-        //$pdf->SetPageFormat(Array('MediaBox', 0, 0, $ancho_mm, $alto_mm)); // Usar MediaBox para definir el tamaño
-
-        $pdf->AddPage('P', array(215.9, 330));
-
-        $hGlobal = 5;
-        $hMedium = 7.5;
-        $hLong = 15;
-
-        //var_dump($dataSource); exit;
-		
-        //$pdf->Cell($w = 30, $h = $hGlobal, $txt = '', $border = 0, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-		//$pdf->SetFontSize(12);
-		//if ($dataSource->getParameter('mostrar_costos') != 'no') {
-				
-           
-
-				
-			
-			$pdf->SetFontSize(10);
-			$pdf->SetFont('', 'B');
-            $pdf->Cell($w = 15, $h = $hMedium, $txt = 'A: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-            $pdf->SetFont('', 'N');
-			$pdf->Cell($w = 5, $h = $hMedium, $txt = $dataSource->getParameter('nombrea'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-            $pdf->Ln(4);
-            $pdf->SetFont('', 'B');
-            $pdf->Cell($w = 15, $h = $hMedium, $txt = '   ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-			$pdf->Cell($w = 5, $h = $hMedium, $txt = $dataSource->getParameter('cargoa'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-            $pdf->Ln(5);           
-            $pdf->SetFont('', 'B');             
-	        $pdf->Cell($w = 15, $h = $hMedium, $txt = 'Via: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            $pdf->SetFont('', 'N');
-            $pdf->Cell($w = 10, $h = $hMedium, $txt = $dataSource->getParameter('via'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-            $pdf->Ln(4);
-            $pdf->SetFont('', 'B');
-	        $pdf->Cell($w = 15, $h = $hMedium, $txt = '    ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	  
-            $pdf->Cell($w = 10, $h = $hMedium, $txt = $dataSource->getParameter('cargovia'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-            $pdf->Ln(5);
-            $pdf->SetFont('', 'B');
-            $pdf->Cell($w = 15, $h = $hMedium, $txt = 'De: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            $pdf->SetFont('', 'N');
-            $pdf->Cell($w = 10, $h = $hMedium, $txt = $dataSource->getParameter('de'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-            $pdf->Ln(4);
-            $pdf->SetFont('', 'B');
-	        $pdf->Cell($w = 15, $h = $hMedium, $txt = '    ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	  
-            $pdf->Cell($w = 10, $h = $hMedium, $txt = $dataSource->getParameter('cargode'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-            $pdf->Ln(5);
-            $pdf->SetFont('', 'B');
-            $pdf->Cell($w = 15, $h = $hMedium, $txt = 'Fecha: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            $pdf->SetFont('', 'N');
-            $pdf->Cell($w = 10, $h = $hMedium, $txt = 'Colcapirhua, '.$dataSource->getParameter('dia').' de '.$dataSource->getParameter('mes').' de '.$dataSource->getParameter('anio'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-            $pdf->Ln(5);
-            $pdf->SetFont('', 'B');
-	        $pdf->Cell($w = 180, $h = $hMedium, $txt = 'REF:       '.strtoupper($dataSource->getParameter('referencia')), 'B', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-			$pdf->Ln(8);
-            $pdf->SetFont('', 'N');
-            $pdf->writeHTMLCell(180, 0, '', '', 'Señor Arquitecto', 0, 1, 0, true, 'J', true);
-            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
-            $pdf->writeHTMLCell(180, 0, '', '', 'Se procede a la inspección y verificación técnica del expediente del trámite administrativo N°  '.$dataSource->getParameter('cite_tramite').', Con referencia a la aprobación de: '.strtoupper($dataSource->getParameter('nombre_tramite')), 0, 1, 0, true, 'J', true);
-            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
-            $pdf->writeHTMLCell(180, 0, '', '', 'Corresponde informar que el predio se encuentra dentro de la jurisdicción de Colcapirhua ubicado en:', 0, 1, 0, true, 'J', true);
-            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
-            
-/*
+        /*
             if ( $dataSource->getParameter('tipo_persona') == "tramitador"){
                 $pdf->SetFont('', 'B');
                 $pdf->Cell($w = 20, $h = $hMedium, $txt = ' ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
@@ -196,7 +170,7 @@ Class RInformeTopo extends Report {
                 };
 
 */
-            /*
+        /*
             $pdf->Cell($w = 90, $h = $hMedium, $txt = 'Distrito: '.$dataSource->getParameter('distrito'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
             $pdf->Cell($w = 90, $h = $hMedium, $txt = 'Zona: '.$dataSource->getParameter('zona'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
             $pdf->Ln(7);
@@ -209,49 +183,49 @@ Class RInformeTopo extends Report {
             $pdf->Cell($w = 180, $h = $hMedium, $txt = 'Avenida: '.$dataSource->getParameter('avenida'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
             */
 
-            $table0 = '<table border="1" style="width: 100%; border-collapse: collapse;">
+        $table0 = '<table border="1" style="width: 100%; border-collapse: collapse;">
                         <tr>
-                            <td colspan="3" style="text-align: left;"><b>Distrito: '.$dataSource->getParameter('distrito').'</b></td>
-                            <td colspan="3" style="text-align: left;"><b>Zona:' .$dataSource->getParameter('zona').'</b></td>
+                            <td colspan="3" style="text-align: left;"><b>Distrito: ' . $dataSource->getParameter('distrito') . '</b></td>
+                            <td colspan="3" style="text-align: left;"><b>Zona:' . $dataSource->getParameter('zona') . '</b></td>
                         </tr>
                         <tr>
-                            <td colspan="2" style="text-align: left;"><b>Manzano: '.$dataSource->getParameter('manzana').'</b></td>
-                            <td colspan="2" style="text-align: left;"><b>Lote: '.$dataSource->getParameter('nombre_lote').'</b></td>
-                            <td colspan="2" style="text-align: left;"><b>Tipo de Calle: '.$dataSource->getParameter('tipo_calle').'</b></td>
+                            <td colspan="2" style="text-align: left;"><b>Manzano: ' . $dataSource->getParameter('manzana') . '</b></td>
+                            <td colspan="2" style="text-align: left;"><b>Lote: ' . $dataSource->getParameter('nombre_lote') . '</b></td>
+                            <td colspan="2" style="text-align: left;"><b>Tipo de Calle: ' . $dataSource->getParameter('tipo_calle') . '</b></td>
                         </tr>
                         <tr>
-                            <td colspan="6" style="text-align: left;"><b>Calle: '.$dataSource->getParameter('calle').'</b></td>
+                            <td colspan="6" style="text-align: left;"><b>Calle: ' . $dataSource->getParameter('calle') . '</b></td>
                         </tr>
                         <tr>
-                            <td colspan="6" style="text-align: left;"><b>Avenida: '.$dataSource->getParameter('avenida').'</b></td>
+                            <td colspan="6" style="text-align: left;"><b>Avenida: ' . $dataSource->getParameter('avenida') . '</b></td>
                         </tr>
                     </table>';
-            
-            $pdf->writeHTMLCell(180, 0, '', '', $table0, 0, 1, 0, true, 'J', true);
-            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
-            $pdf->writeHTMLCell(180, 0, '', '', 'El predio se encuentra en RASANTE MUNICIPAL y tiene como colindantes:', 0, 1, 0, true, 'J', true);
-            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
-            $table1 = '<table border="1" style="width: 100%; border-collapse: collapse;">
+
+        $pdf->writeHTMLCell(180, 0, '', '', $table0, 0, 1, 0, true, 'J', true);
+        $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+        $pdf->writeHTMLCell(180, 0, '', '', 'El predio <b style="text-transform: uppercase;">' . $dataSource->getParameter('rasante_municipal') . '</b> se encuentra en RASANTE MUNICIPAL y tiene como colindantes:', 0, 1, 0, true, 'J', true);
+        $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+        $table1 = '<table border="1" style="width: 100%; border-collapse: collapse;">
                             <tr>
-                                <td style="text-align: right; width: 18%;"><b>NORTE:</b></td><td style="text-align: left; width: 82%;">'.$dataSource->getParameter('colindante_norte').'</td>
+                                <td style="text-align: right; width: 18%;"><b>NORTE:</b></td><td style="text-align: left; width: 82%;">' . $dataSource->getParameter('colindante_norte') . '</td>
                             </tr>
                             <tr>
-                                <td style="text-align: right;"><b>ESTE:</b></td><td>'.$dataSource->getParameter('colindante_este').'</td>
+                                <td style="text-align: right;"><b>ESTE:</b></td><td>' . $dataSource->getParameter('colindante_este') . '</td>
                             </tr>
                             <tr>
-                                <td style="text-align: right;"><b>SUD:</b></td><td>'.$dataSource->getParameter('colindante_sur').'</td>
+                                <td style="text-align: right;"><b>SUD:</b></td><td>' . $dataSource->getParameter('colindante_sur') . '</td>
                             </tr>
                             <tr>
-                                <td style="text-align: right;"><b>OESTE:</b></td><td>'.$dataSource->getParameter('colindante_oeste').'</td>
+                                <td style="text-align: right;"><b>OESTE:</b></td><td>' . $dataSource->getParameter('colindante_oeste') . '</td>
                             </tr>
                         </table>';
-            // 110 es la posición X (210mm menos el ancho de la celda y márgenes)
-            $pdf->writeHTMLCell(180, 0, '', '', $table1, 0, 1, 0, true, 'J', true);
-            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+        // 110 es la posición X (210mm menos el ancho de la celda y márgenes)
+        $pdf->writeHTMLCell(180, 0, '', '', $table1, 0, 1, 0, true, 'J', true);
+        $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
 
 
-            
-/*
+
+        /*
             $pdf->Cell($w = 160, $h = $hMedium, $txt = 'El predio '.$dataSource->getParameter('rasante_municipal').' se encuentra en RASANTE MUNICIPAL y tiene como colindantes:', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
             $pdf->Ln(8);
 
@@ -264,11 +238,11 @@ Class RInformeTopo extends Report {
             $pdf->Cell($w = 180, $h = $hMedium, $txt = 'Oeste: '.$dataSource->getParameter('colindante_oeste'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
             $pdf->Ln(7);
 */
-            
 
-            $pdf->writeHTMLCell(180, 0, '', '', '<b>RELACIÓN DE SUPERFICIE ES LA SIGUIENTE:</b>', 0, 1, 0, true, 'J', true);
-            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
-            $table2 = '<table border="1" cellpadding="4" width="80%" style="margin-left: auto;">
+
+        $pdf->writeHTMLCell(180, 0, '', '', '<b>RELACIÓN DE SUPERFICIE ES LA SIGUIENTE:</b>', 0, 1, 0, true, 'J', true);
+        $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+        $table2 = '<table border="1" cellpadding="4" width="80%" style="margin-left: auto;">
                             <tr>
                                 <td style="text-align: center;" width="50%"><b>DETALLE</b></td>
                                 <td style="text-align: center;" width="25%"><b>CANT.</b></td>
@@ -276,42 +250,42 @@ Class RInformeTopo extends Report {
                             </tr>
                             <tr>
                                 <td style="text-align: right;"><b>SUP. LOTE SEGÚN ESCRITURA</b></td>
-                                <td style="text-align: right;">'.$dataSource->getParameter('super_escritura').'</td>
+                                <td style="text-align: right;">' . $dataSource->getParameter('super_escritura') . '</td>
                                 <td style="text-align: left;">M2</td>
                             </tr>
                             <tr>
                                 <td style="text-align: right;"><b>SUP. LOTE SEGÚN MENSURA</b></td>
-                                <td style="text-align: right;">'.$dataSource->getParameter('super_mensura').'</td>
+                                <td style="text-align: right;">' . $dataSource->getParameter('super_mensura') . '</td>
                                 <td style="text-align: left;">M2</td>
                             </tr>
                             <tr>
                                 <td style="text-align: right;"><b>SUPERFICIE EXCEDENTE</b></td>
-                                <td style="text-align: right;">'.$dataSource->getParameter('super_mensura').'</td>
+                                <td style="text-align: right;">' . $dataSource->getParameter('super_excedente') . '</td>
                                 <td style="text-align: left;">M2</td>
                             </tr>
                             <tr>
                                 <td style="text-align: right;"><b>SUPERFICIE INEXISTENTE</b></td>
-                                <td style="text-align: right;">'.$dataSource->getParameter('super_mensura').'</td>
+                                <td style="text-align: right;">' . $dataSource->getParameter('super_inexistente') . '</td>
                                 <td style="text-align: left;">M2</td>
                             </tr>
                             <tr>
                                 <td style="text-align: right;"><b>SUPERFICIE ÚTIL</b></td>
-                                <td style="text-align: right;">'.$dataSource->getParameter('super_total').'</td>
+                                <td style="text-align: right;">' . $dataSource->getParameter('super_total') . '</td>
                                 <td style="text-align: left;">M2</td>
                             </tr>
                             <tr>
                                 <td style="text-align: right;"><b>LONGITUD RASANTE</b></td>
-                                <td style="text-align: right;">'.$dataSource->getParameter('long_rasante').'</td>
+                                <td style="text-align: right;">' . $dataSource->getParameter('long_rasante') . '</td>
                                 <td style="text-align: left;">M</td>
                             </tr>
                         </table>';
-            //$pdf->writeHTMLCell(180, 0, '', '', $htmlTable0, 0, 1, 0, true, 'J', true);
+        //$pdf->writeHTMLCell(180, 0, '', '', $htmlTable0, 0, 1, 0, true, 'J', true);
 
-            //$pdf->writeHTMLCell(120, 0, '', 60, $htmlTable2, 0, 1, 0, true, 'R', true);
-            $pdf->writeHTMLCell(160, 0, 40, '', $table2, 0, 1, 0, true, 'R', true);
-            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+        //$pdf->writeHTMLCell(120, 0, '', 60, $htmlTable2, 0, 1, 0, true, 'R', true);
+        $pdf->writeHTMLCell(160, 0, 40, '', $table2, 0, 1, 0, true, 'R', true);
+        $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
 
-            /*
+        /*
             $pdf->Cell($w = 20, $h = $hMedium, $txt = ' ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
             $pdf->Cell($w = 60, $h = $hMedium, $txt = 'DETALLE ', $border = 'LRTB', $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
             $pdf->Cell($w = 40, $h = $hMedium, $txt = 'CANT. ', $border = 'LRTB', $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
@@ -352,44 +326,44 @@ Class RInformeTopo extends Report {
             $pdf->Ln(10);
             */
 
-            if($dataSource->getParameter('lote')=="si"){
-                $pdf->Cell($w = 160, $h = $hMedium, $txt = 'La relación y division de lotes, esta anexo al informe. ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-                $pdf->Ln(7);
-            };
+        if ($dataSource->getParameter('lote') == "si") {
+            $pdf->Cell($w = 160, $h = $hMedium, $txt = 'La relación y division de lotes, esta anexo al informe. ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+            $pdf->Ln(7);
+        };
 
-            $pdf->writeHTMLCell(180, 0, '', '', '<b>OBSERVACIONES.- </b>', 0, 1, 0, true, 'J', true);
-            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
-            $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('observacion'), 0, 1, 0, true, 'J', true);
-            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
-            $pdf->writeHTMLCell(180, 0, '', '', 'Los servicios que tienen son:', 0, 1, 0, true, 'J', true);
-            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
-            
-            $table3 = '<table border="1" cellpadding="4" width="100%" style="margin-left: auto;">
+        $pdf->writeHTMLCell(180, 0, '', '', '<b>OBSERVACIONES.- </b>', 0, 1, 0, true, 'J', true);
+        $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+        $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('observacion'), 0, 1, 0, true, 'J', true);
+        $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+        $pdf->writeHTMLCell(180, 0, '', '', 'Los servicios que tienen son:', 0, 1, 0, true, 'J', true);
+        $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+
+        $table3 = '<table border="1" cellpadding="4" width="100%" style="margin-left: auto;">
                         <tr>
-                            <td style="text-align: right;" width="22%"><b>Vías:</b></td><td style="text-align: left;" width="25%">'.$dataSource->getParameter('vias').'</td>
-                            <td style="text-align: right;" width="28%"><b>Agua Potable:</b></td><td style="text-align: left;" width="25%">'.$dataSource->getParameter('agua_potable').'</td>
+                            <td style="text-align: right;" width="22%"><b>Vías:</b></td><td style="text-align: left;" width="25%">' . $dataSource->getParameter('vias') . '</td>
+                            <td style="text-align: right;" width="28%"><b>Agua Potable:</b></td><td style="text-align: left;" width="25%">' . $dataSource->getParameter('agua_potable') . '</td>
                         </tr>
                         <tr>
-                            <td style="text-align: right;"><b>Alcantarillado:</b></td><td style="text-align: left;">'.$dataSource->getParameter('alcantarillado').'</td>
-                            <td style="text-align: right;"><b>Alumbrado Público:</b></td><td style="text-align: left;">'.$dataSource->getParameter('alumbrado_publico').'</td>
+                            <td style="text-align: right;"><b>Alcantarillado:</b></td><td style="text-align: left;">' . $dataSource->getParameter('alcantarillado') . '</td>
+                            <td style="text-align: right;"><b>Alumbrado Público:</b></td><td style="text-align: left;">' . $dataSource->getParameter('alumbrado_publico') . '</td>
                         </tr>
                         <tr>
-                            <td style="text-align: right;"><b>Teléfono:</b></td><td style="text-align: left;">'.$dataSource->getParameter('telefonia').'</td>
-                            <td style="text-align: right;"><b>Equipamento:</b></td><td style="text-align: left;">'.$dataSource->getParameter('equipamiento').'</td>
+                            <td style="text-align: right;"><b>Teléfono:</b></td><td style="text-align: left;">' . $dataSource->getParameter('telefonia') . '</td>
+                            <td style="text-align: right;"><b>Equipamento:</b></td><td style="text-align: left;">' . $dataSource->getParameter('equipamiento') . '</td>
                         </tr>
                         <tr>
-                            <td style="text-align: right;"><b>Transporte:</b></td><td style="text-align: left;" colspan="3">'.$dataSource->getParameter('transporte').'</td>
+                            <td style="text-align: right;"><b>Transporte:</b></td><td style="text-align: left;" colspan="3">' . $dataSource->getParameter('transporte') . '</td>
                         </tr>
                     </table>';
-            
-            $pdf->writeHTMLCell(160, 0, 25, '', $table3, 0, 1, 0, true, 'R', true);
-            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
-            $pdf->writeHTMLCell(180, 0, '', '', '<b>CONCLUSIONES.- </b>', 0, 1, 0, true, 'J', true);
-            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
-            $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('conclusion'), 0, 1, 0, true, 'J', true);
-            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
 
-            /*
+        $pdf->writeHTMLCell(160, 0, 25, '', $table3, 0, 1, 0, true, 'R', true);
+        $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+        $pdf->writeHTMLCell(180, 0, '', '', '<b>CONCLUSIONES.- </b>', 0, 1, 0, true, 'J', true);
+        $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+        $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('conclusion'), 0, 1, 0, true, 'J', true);
+        $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+
+        /*
             $pdf->Cell($w = 90, $h = $hMedium, $txt = 'Vias: '.$dataSource->getParameter('vias'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
             $pdf->Cell($w = 90, $h = $hMedium, $txt = 'Agua Potable: '.$dataSource->getParameter('agua_potable'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
             $pdf->Ln(7);
@@ -403,137 +377,129 @@ Class RInformeTopo extends Report {
             $pdf->Cell($w = 90, $h = $hMedium, $txt = ' ', $border = '', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
             $pdf->Ln(9);
             */
-            //$pdf->AddPage();
-            
-            
-           
-            
-            
-            $pdf->writeHTMLCell(180, 0, '', '', 'Es cuanto informo de la inspección realizada.', 0, 1, 0, true, 'J', true);
-            $pdf->Ln(18.5); // ⬅️ ¡Aquí está el cambio!
-            $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('de').'<br>'.$dataSource->getParameter('cargode'), 0, 1, 0, true, 'C', true);
-            $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
-          
-            
+        //$pdf->AddPage();
 
 
 
-            if($dataSource->getParameter('lote')=="si"){
-               
-          
+
+
+        $pdf->writeHTMLCell(180, 0, '', '', 'Es cuanto informo de la inspección realizada.', 0, 1, 0, true, 'J', true);
+        $pdf->Ln(18.5); // ⬅️ ¡Aquí está el cambio!
+        $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('de') . '<br>' . $dataSource->getParameter('cargode'), 0, 1, 0, true, 'C', true);
+        $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+
+
+
+
+
+        if ($dataSource->getParameter('lote') == "si") {
             $pdf->AddPage();
             $pdf->SetFont('', 'B');
             $pdf->SetFontSize(16);
-            $pdf->Cell($w = 180, $h = $hMedium, $txt = 'ANEXOS', $border = 0, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
+            $pdf->Cell($w = 180, $h = $hMedium, $txt = 'ANEXOS', $border = 0, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
             $pdf->Ln(8);
             $pdf->SetFontSize(10);
-            $pdf->Cell($w = 30, $h = $hMedium, $txt = ' ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-            $pdf->Cell($w = 120, $h = $hMedium, $txt = 'RELACION Y DIVISION DE LOTES', $border = 1, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+            $pdf->Cell($w = 30, $h = $hMedium, $txt = ' ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+            $pdf->Cell($w = 120, $h = $hMedium, $txt = 'RELACION Y DIVISION DE LOTES', $border = 1, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
             $pdf->Ln();
-            
+
             foreach ($dataSource->getDataSet() as $row) {
                 $pdf->SetFontSize(10);
                 $pdf->SetFont('', 'N');
-                $total_area ;
-                $total_via ;
-                $total_lote ;
+                $total_area;
+                $total_via;
+                $total_lote;
 
-                $total_area_p ;
-                $total_via_p ;
-                $total_lote_p ;
-               // $tipo_persona = $row['tipo_persona'];
+                $total_area_p;
+                $total_via_p;
+                $total_lote_p;
+                // $tipo_persona = $row['tipo_persona'];
                 //var_dump("tipo: ",$tipo_persona); 
-                if ( $row['tipo_cesion'] == "lote"){
+                if ($row['tipo_cesion'] == "lote") {
                     $total_lote = $total_lote + floatval($row['superficie']);
                     $total_lote_p = $total_lote_p + $row['porcentaje'];
-                    $pdf->Cell($w = 30, $h = $hMedium, $txt = ' ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-                    $pdf->Cell($w = 30, $h = $hMedium, $txt = $row['tipo_cesion'], $border = 1, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-	                $pdf->Cell($w = 50, $h = $hMedium, $txt = $row['nombre'], $border = 1, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-                    $pdf->Cell($w = 20, $h = $hMedium, $txt = $row['superficie'].' m2', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-                    $pdf->Cell($w = 20, $h = $hMedium, $txt = $row['porcentaje'].' %', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+                    $pdf->Cell($w = 30, $h = $hMedium, $txt = ' ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+                    $pdf->Cell($w = 30, $h = $hMedium, $txt = $row['tipo_cesion'], $border = 1, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+                    $pdf->Cell($w = 50, $h = $hMedium, $txt = $row['nombre'], $border = 1, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+                    $pdf->Cell($w = 20, $h = $hMedium, $txt = $row['superficie'] . ' m2', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+                    $pdf->Cell($w = 20, $h = $hMedium, $txt = $row['porcentaje'] . ' %', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
                     $pdf->Ln();
-                };     
-                
-                     
+                };
             };
             $pdf->SetFont('', 'B');
-            $pdf->Cell($w = 30, $h = $hMedium, $txt = ' ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-                $pdf->Cell($w = 80, $h = $hMedium, $txt = 'SUP. TOTAL UTIL ', $border = 1, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	     
-                $pdf->Cell($w = 20, $h = $hMedium, $txt =  $total_lote.' m2', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-                $pdf->Cell($w = 20, $h = $hMedium, $txt = $total_lote_p.' %', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+            $pdf->Cell($w = 30, $h = $hMedium, $txt = ' ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+            $pdf->Cell($w = 80, $h = $hMedium, $txt = 'SUP. TOTAL UTIL ', $border = 1, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+            $pdf->Cell($w = 20, $h = $hMedium, $txt =  $total_lote . ' m2', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+            $pdf->Cell($w = 20, $h = $hMedium, $txt = $total_lote_p . ' %', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
 
-                    $pdf->Ln();
+            $pdf->Ln();
 
             foreach ($dataSource->getDataSet() as $row) {
                 $pdf->SetFontSize(10);
                 $pdf->SetFont('', 'N');
-                $total_area ;
-                $total_via ;
-                $total_lote ;
+                $total_area;
+                $total_via;
+                $total_lote;
 
-                $total_area_p ;
-                $total_via_p ;
-                $total_lote_p ;
-               // $tipo_persona = $row['tipo_persona'];
+                $total_area_p;
+                $total_via_p;
+                $total_lote_p;
+                // $tipo_persona = $row['tipo_persona'];
                 //var_dump("tipo: ",$tipo_persona); 
-                if ( $row['tipo_cesion'] == "area_verde"){
+                if ($row['tipo_cesion'] == "area_verde") {
                     $total_area = $total_area + floatval($row['superficie']);
                     $total_area_p = $total_area_p + $row['porcentaje'];
-                    $pdf->Cell($w = 30, $h = $hMedium, $txt = ' ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-                    $pdf->Cell($w = 30, $h = $hMedium, $txt = $row['tipo_cesion'], $border = 1, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-	                $pdf->Cell($w = 50, $h = $hMedium, $txt = $row['nombre'], $border = 1, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-                    $pdf->Cell($w = 20, $h = $hMedium, $txt = $row['superficie'].' m2', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-                    $pdf->Cell($w = 20, $h = $hMedium, $txt = $row['porcentaje'].' %', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+                    $pdf->Cell($w = 30, $h = $hMedium, $txt = ' ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+                    $pdf->Cell($w = 30, $h = $hMedium, $txt = $row['tipo_cesion'], $border = 1, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+                    $pdf->Cell($w = 50, $h = $hMedium, $txt = $row['nombre'], $border = 1, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+                    $pdf->Cell($w = 20, $h = $hMedium, $txt = $row['superficie'] . ' m2', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+                    $pdf->Cell($w = 20, $h = $hMedium, $txt = $row['porcentaje'] . ' %', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
                     $pdf->Ln();
-                };     
-                
-                     
+                };
             };
             $pdf->SetFont('', 'B');
-            $pdf->Cell($w = 30, $h = $hMedium, $txt = ' ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-                $pdf->Cell($w = 80, $h = $hMedium, $txt = 'SUP. TOTAL AREA VERDE', $border = 1, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	     
-                $pdf->Cell($w = 20, $h = $hMedium, $txt =  $total_area.' m2', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-                $pdf->Cell($w = 20, $h = $hMedium, $txt = $total_area_p.' %', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+            $pdf->Cell($w = 30, $h = $hMedium, $txt = ' ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+            $pdf->Cell($w = 80, $h = $hMedium, $txt = 'SUP. TOTAL AREA VERDE', $border = 1, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+            $pdf->Cell($w = 20, $h = $hMedium, $txt =  $total_area . ' m2', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+            $pdf->Cell($w = 20, $h = $hMedium, $txt = $total_area_p . ' %', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
 
-                $pdf->Ln();
-           foreach ($dataSource->getDataSet() as $row) {
-                        $pdf->SetFontSize(10);
-                        $pdf->SetFont('', 'N');
-                        $total_area ;
-                        $total_via ;
-                        $total_lote ;
-        
-                        $total_area_p ;
-                        $total_via_p ;
-                        $total_lote_p ;
-                       // $tipo_persona = $row['tipo_persona'];
-                        //var_dump("tipo: ",$tipo_persona); 
-                        if ( $row['tipo_cesion'] == "via"){
-                            $total_via = $total_via + floatval($row['superficie']);
-                            $total_via_p = $total_via_p + $row['porcentaje'];
-                            $pdf->Cell($w = 30, $h = $hMedium, $txt = ' ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-                            $pdf->Cell($w = 30, $h = $hMedium, $txt = $row['tipo_cesion'], $border = 1, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-                            $pdf->Cell($w = 50, $h = $hMedium, $txt = $row['nombre'], $border = 1, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-                            $pdf->Cell($w = 20, $h = $hMedium, $txt = $row['superficie'].' m2', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-                            $pdf->Cell($w = 20, $h = $hMedium, $txt = $row['porcentaje'].' %', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-                            $pdf->Ln();
-                        };     
-                        
-                             
-                    };
-                    $pdf->SetFont('', 'B');
-                        $pdf->Cell($w = 30, $h = $hMedium, $txt = ' ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-                        $pdf->Cell($w = 80, $h = $hMedium, $txt = 'SUP. TOTAL VIA ', $border = 1, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	     
-                        $pdf->Cell($w = 20, $h = $hMedium, $txt =  $total_via.' m2', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-                        $pdf->Cell($w = 20, $h = $hMedium, $txt = $total_via_p.' %', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-                        $pdf->Ln();
-                        $pdf->Cell($w = 30, $h = $hMedium, $txt = ' ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-                        $pdf->Cell($w = 80, $h = $hMedium, $txt = 'SUP. LOTE - S/MENSURA ', $border = 1, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	     
-                        $pdf->Cell($w = 20, $h = $hMedium, $txt =  ($total_via+$total_area+$total_lote).' m2', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-                        $pdf->Cell($w = 20, $h = $hMedium, $txt = ($total_via_p+$total_area_p+$total_lote_p).' %', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-                        $pdf->Ln();
-                 };
-            /* foreach ($dataSource->getDataSet() as $row) {
+            $pdf->Ln();
+            foreach ($dataSource->getDataSet() as $row) {
+                $pdf->SetFontSize(10);
+                $pdf->SetFont('', 'N');
+                $total_area;
+                $total_via;
+                $total_lote;
+
+                $total_area_p;
+                $total_via_p;
+                $total_lote_p;
+                // $tipo_persona = $row['tipo_persona'];
+                //var_dump("tipo: ",$tipo_persona); 
+                if ($row['tipo_cesion'] == "via") {
+                    $total_via = $total_via + floatval($row['superficie']);
+                    $total_via_p = $total_via_p + $row['porcentaje'];
+                    $pdf->Cell($w = 30, $h = $hMedium, $txt = ' ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+                    $pdf->Cell($w = 30, $h = $hMedium, $txt = $row['tipo_cesion'], $border = 1, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+                    $pdf->Cell($w = 50, $h = $hMedium, $txt = $row['nombre'], $border = 1, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+                    $pdf->Cell($w = 20, $h = $hMedium, $txt = $row['superficie'] . ' m2', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+                    $pdf->Cell($w = 20, $h = $hMedium, $txt = $row['porcentaje'] . ' %', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+                    $pdf->Ln();
+                };
+            };
+            $pdf->SetFont('', 'B');
+            $pdf->Cell($w = 30, $h = $hMedium, $txt = ' ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+            $pdf->Cell($w = 80, $h = $hMedium, $txt = 'SUP. TOTAL VIA ', $border = 1, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+            $pdf->Cell($w = 20, $h = $hMedium, $txt =  $total_via . ' m2', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+            $pdf->Cell($w = 20, $h = $hMedium, $txt = $total_via_p . ' %', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+            $pdf->Ln();
+            $pdf->Cell($w = 30, $h = $hMedium, $txt = ' ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+            $pdf->Cell($w = 80, $h = $hMedium, $txt = 'SUP. LOTE - S/MENSURA ', $border = 1, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+            $pdf->Cell($w = 20, $h = $hMedium, $txt =  ($total_via + $total_area + $total_lote) . ' m2', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+            $pdf->Cell($w = 20, $h = $hMedium, $txt = ($total_via_p + $total_area_p + $total_lote_p) . ' %', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+            $pdf->Ln();
+        };
+        /* foreach ($dataSource->getDataSet() as $row) {
                 $tipo_persona = $row['tipo_persona'];
                 //var_dump("tipo: ",$tipo_persona); 
                 if ( $tipo_persona == "propietario"){
@@ -558,7 +524,7 @@ Class RInformeTopo extends Report {
                     $pdf->Cell($w = 70, $h = $hMedium, $txt = $row['tipo_persona'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
                     $pdf->Ln();
                 };    */
-              /*  if ( $tipo_persona == "apoderado"){
+        /*  if ( $tipo_persona == "apoderado"){
                     $pdf->SetFont('', 'N');
                     $pdf->Cell($w = 60, $h = $hMedium, $txt = 'Solicitud que se realizó en calidad de : ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
                     $pdf->SetFont('', 'B');
@@ -655,9 +621,9 @@ Class RInformeTopo extends Report {
 	        $pdf->Cell($w = 30, $h = $hMedium, $txt = 'Saldo Vacación: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
 			$pdf->Cell($w = 20, $h = $hMedium, $txt = $dataSource->getParameter('total_vacacion'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
 			$pdf->Ln();*/
-			
-	
-	/*
+
+
+        /*
 	
 	        //TODO: Se tiene que adicionar un bucle para mostrar las tablas totales por cada almacen.
 	        $pdf->SetFontSize(7);
@@ -701,11 +667,11 @@ Class RInformeTopo extends Report {
 	        $pdf->Cell($w = $wDetalle+$wDetalle+$wTotal, $h = $hGlobal, $txt = 'VACACION TOTAL', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
 	        $pdf->Cell($w = $wTotal, $h = $hGlobal, $txt = number_format($totalVaca, 2), $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
 	*/
-	    
-               
-	        //$pdf->AddPage();
-	    //}
-/*
+
+
+        //$pdf->AddPage();
+        //}
+        /*
         $pdf->SetFontSize(8);
         $pdf->SetFont('', 'B');
 		
@@ -727,24 +693,25 @@ Class RInformeTopo extends Report {
             $this->writeClasificacionDetalle($pdf, $clasificacionDataSource,$dataSource->getParameter('mostrar_costos'));
         }
 		*/
-		/*if ($dataSource->getParameter('mostrar_costos') != 'no') {
+        /*if ($dataSource->getParameter('mostrar_costos') != 'no') {
 			$pdf->Cell($w = $wDetalle+$wCodigo+40, $h = $hGlobal, $txt = 'COSTO TOTAL', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
         	$pdf->Cell($w = 20, $h = $hGlobal, $txt = number_format($dataSource->getParameter('costoTotal'), 2), $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
 		}*/
-		
-		//$pdf->copyPage(1);
+
+        //$pdf->copyPage(1);
         $pdf->Output($fileName, 'F');
     }
 
-    function writeClasificacionDetalle($pdf, $dataSource,$mostrar_costos) {
+    function writeClasificacionDetalle($pdf, $dataSource, $mostrar_costos)
+    {
         $hGlobal = 5;
-        
+
         $wNro = 10;
         $wCodigo = 15;
         $wDescripcionItem = 80;
         $wUnidad = 15;
         $wCantidad = 15;
-		$wCantidadAlerta = 15;
+        $wCantidadAlerta = 15;
         $wCostoUnitario = 15;
         $wCostoTotal = 20;
         $pdf->Ln();
@@ -761,11 +728,11 @@ Class RInformeTopo extends Report {
         $pdf->Cell($w = $wDescripcionItem, $h = $hGlobal, $txt = 'Descripcion del Material', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
         $pdf->Cell($w = $wUnidad, $h = $hGlobal, $txt = 'Unidad', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
         $pdf->Cell($w = $wCantidad, $h = $hGlobal, $txt = 'Cantidad', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-		$pdf->Cell($w = $wCantidad, $h = $hGlobal, $txt = 'Cant. Min.', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+        $pdf->Cell($w = $wCantidad, $h = $hGlobal, $txt = 'Cant. Min.', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
         if ($mostrar_costos != 'no') {
-	        $pdf->Cell($w = $wCostoUnitario, $h = $hGlobal, $txt = 'C/Unit.', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-	        $pdf->Cell($w = $wCostoTotal, $h = $hGlobal, $txt = 'C/Total', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-		}
+            $pdf->Cell($w = $wCostoUnitario, $h = $hGlobal, $txt = 'C/Unit.', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+            $pdf->Cell($w = $wCostoTotal, $h = $hGlobal, $txt = 'C/Total', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+        }
         $pdf->Ln();
 
         $count = 1;
@@ -777,32 +744,30 @@ Class RInformeTopo extends Report {
             $pdf->Cell($w = $wDescripcionItem, $h = $hGlobal, $txt = $datarow['nombre'], $border = 1, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
             $pdf->Cell($w = $wUnidad, $h = $hGlobal, $txt = $datarow['unidad_medida'], $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
             $pdf->Cell($w = $wCantidad, $h = $hGlobal, $txt = number_format($datarow['cantidad'], 2), $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-			$pdf->Cell($w = $wCantidadAlerta, $h = $hGlobal, $txt = number_format($datarow['cantidad_min'], 2), $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+            $pdf->Cell($w = $wCantidadAlerta, $h = $hGlobal, $txt = number_format($datarow['cantidad_min'], 2), $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
             $costoUnitario = 0;
             if ($datarow['cantidad'] != 0) {
-                $costoUnitario = $datarow['costo']/$datarow['cantidad'];
+                $costoUnitario = $datarow['costo'] / $datarow['cantidad'];
             }
-			 if ($mostrar_costos != 'no') {
-	            $pdf->Cell($w = $wCostoUnitario, $h = $hGlobal, $txt = number_format($costoUnitario, 2), $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-	            $pdf->Cell($w = $wCostoTotal, $h = $hGlobal, $txt = number_format($datarow['costo'], 2), $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-			}
+            if ($mostrar_costos != 'no') {
+                $pdf->Cell($w = $wCostoUnitario, $h = $hGlobal, $txt = number_format($costoUnitario, 2), $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+                $pdf->Cell($w = $wCostoTotal, $h = $hGlobal, $txt = number_format($datarow['costo'], 2), $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+            }
             $pdf->Ln();
             $count++;
         }
-		if ($mostrar_costos != 'no') {
-	        $pdf->SetFont('', 'B');
-	        $pdf->Cell($w = $wNro, $h = $hGlobal, $txt = '', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-	        $pdf->Cell($w = $wCodigo, $h = $hGlobal, $txt = '', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-	        $pdf->Cell($w = $wDescripcionItem, $h = $hGlobal, $txt = 'Total', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-	        $pdf->Cell($w = $wUnidad, $h = $hGlobal, $txt = '', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-	        $pdf->Cell($w = $wCantidad, $h = $hGlobal, $txt = '', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-	        $pdf->Cell($w = $wCantidadAlerta, $h = $hGlobal, $txt = '' , $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-        
-	        $pdf->Cell($w = $wCostoUnitario, $h = $hGlobal, $txt = '', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-	        $pdf->Cell($w = $wCostoTotal, $h = $hGlobal, $txt = number_format($dataSource->getParameter('totalCosto'), 2), $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-		}
+        if ($mostrar_costos != 'no') {
+            $pdf->SetFont('', 'B');
+            $pdf->Cell($w = $wNro, $h = $hGlobal, $txt = '', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+            $pdf->Cell($w = $wCodigo, $h = $hGlobal, $txt = '', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+            $pdf->Cell($w = $wDescripcionItem, $h = $hGlobal, $txt = 'Total', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+            $pdf->Cell($w = $wUnidad, $h = $hGlobal, $txt = '', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+            $pdf->Cell($w = $wCantidad, $h = $hGlobal, $txt = '', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+            $pdf->Cell($w = $wCantidadAlerta, $h = $hGlobal, $txt = '', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+
+            $pdf->Cell($w = $wCostoUnitario, $h = $hGlobal, $txt = '', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+            $pdf->Cell($w = $wCostoTotal, $h = $hGlobal, $txt = number_format($dataSource->getParameter('totalCosto'), 2), $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+        }
         $pdf->Ln();
     }
-
 }
-?>

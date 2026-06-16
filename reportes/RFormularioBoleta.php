@@ -83,7 +83,7 @@ Class RFormularioBoleta extends Report {
          $pdf->SetSubject('TCPDF Tutorial');
          $pdf->SetKeywords('TCPDF, PDF, example, test, guide');
          */
-
+//var_dump($dataSource); exit;
         // set default monospaced font
         $pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 

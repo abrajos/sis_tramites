@@ -469,13 +469,13 @@ Phx.vista.Topografo=Ext.extend(Phx.gridInterfaz,{
 		 
 		 this.getBoton('corregido').enable();
 		 this.getBoton('datosTecnicos').enable();
-		 this.getBoton('lote').enable();
+		 
 		 }
 	   else {
 		this.getBoton('corregido').disable();
 		 this.getBoton('edit').enable();
 		 this.getBoton('Derivar').enable();
-		 this.getBoton('lote').enable();
+		 
 	   };
 
          if(data.estado_reg=="inactivo"){
@@ -483,14 +483,14 @@ Phx.vista.Topografo=Ext.extend(Phx.gridInterfaz,{
 			this.getBoton('edit').disable();
 			this.getBoton('Derivar').disable();
             this.getBoton('datosTecnicos').disable();
-			this.getBoton('lote').disable();
+			
 		    }
           else {
           
             this.getBoton('edit').enable();
 			this.getBoton('Derivar').enable();
 			this.getBoton('datosTecnicos').enable();
-			this.getBoton('lote').enable();
+			
           };
 		  	
 		  

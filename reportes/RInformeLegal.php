@@ -33,7 +33,7 @@ class CustomReport extends TCPDF
         // 2. Título del Informe
         $this->SetY(10); // Iniciamos en la parte superior
         $this->SetFont('helvetica', 'B', 16);
-        $this->Cell(0, 15, 'INFORME TECNICO', 0, 1, 'R');
+        $this->Cell(0, 15, 'INFORME LEGAL', 0, 1, 'R');
 
         // 3. Número de Informe con línea inferior
         $this->SetFont('helvetica', 'B', 12);
@@ -699,6 +699,9 @@ class RInformeLegal extends Report
 
         // 1. Mensaje de cierre condicional
         // Solo si no es un rechazo específico y la aprobación está en curso
+        ////////////////////////////////////////////////
+        // cOMENTADO POR CONSULTA
+        /*
         if ($dataSource->getParameter('aprobacion') != 'no' && 
             !in_array($dataSource->getParameter('tipo_rechazo'), ["FRU", "APAU", "Doble", "Innova"])) {
             
@@ -706,7 +709,7 @@ class RInformeLegal extends Report
             $pdf->SetFont('', 'N');
             $pdf->writeHTMLCell(180, 0, '', '', 'Es cuanto informo de la inspección realizada.', 0, 1, 0, true, 'L', true);
         }
-
+            */
         // 2. BLOQUE DE FIRMA (Indivisible)
         // Verificamos 40mm para asegurar espacio para el nombre, cargo y el sello/firma física
         $pdf->verificarEspacio(40);

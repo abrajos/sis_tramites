@@ -272,7 +272,7 @@ class MODReporte extends MODbase {
         $this->captura('tipo_aprobacion', 'varchar');
 
         $this->armarConsulta();
-		echo $this->consulta;exit;
+		//echo $this->consulta;exit;
         $this->ejecutarConsulta();
 
         return $this->respuesta;

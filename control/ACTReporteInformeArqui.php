@@ -171,7 +171,7 @@ class ACTReporteInformeArqui extends ACTbase{
         $costoTotal = 0;
 		$dataSource->setDataSet($mainDataSet);
 		
-		//var_dump($dataSource->getDataset()); exit;
+		
 		
 		$reporte = new RInformeArqui();
         

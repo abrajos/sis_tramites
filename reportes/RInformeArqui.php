@@ -92,7 +92,7 @@ class RInformeArqui extends Report {
 
         $pdf->AddPage('P', array(215.9, 330));
         $hMedium = 6.5;
-        
+        //var_dump($dataSource); exii();
         // --- SECCIÓN ENCABEZADO INTERNO (A:, Vía:, De:) ---
         $pdf->SetFontSize(10);
         $pdf->SetFont('', 'B');

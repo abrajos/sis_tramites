@@ -33,7 +33,7 @@ class CustomReport extends TCPDF
         // 2. Título del Informe
         $this->SetY(10); // Iniciamos en la parte superior
         $this->SetFont('helvetica', 'B', 16);
-        $this->Cell(0, 15, 'INFORME LEGAL', 0, 1, 'R');
+        $this->Cell(0, 15, 'INFORME TECNICO', 0, 1, 'R');
 
         // 3. Número de Informe con línea inferior
         $this->SetFont('helvetica', 'B', 12);

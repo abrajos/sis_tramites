@@ -7,6 +7,11 @@ class CustomReport extends TCPDF {
 
     private $dataSource;
 
+    // --- AÑADE ESTO AQUÍ ---
+    public function verificarEspacio($h) {
+        return $this->checkPageBreak($h);
+    }
+
     public function setDataSource(DataSource $dataSource) {
         $this->dataSource = $dataSource;
     }
@@ -41,33 +46,33 @@ class CustomReport extends TCPDF {
     }
 
     public function Footer() {
-        //TODO: implement the footer manager
         $dataSource = $this->getDataSource();
-        //$this->SetFooterMargin(PDF_MARGIN_FOOTER);
-        $x = $this->GetX();
-        $y = $this->GetY();
-        $this->SetY(-15);
-        $this->SetFont('helvetica', 'I', 6);
-        $this->Cell(0, 0, 'usuario: '.$dataSource->getParameter('cuenta'), 0, 1, 'L');
         
-        $html = 'Numero Tramite: '.$dataSource->getParameter('cite_tramite')."\n".'Tramite: '.$dataSource->getParameter('nombre_tramite')."\n".'Usuario: '.$dataSource->getParameter('cuenta')."\n".'Sistema de Tramites ';
+        // Posicionarse a 15mm del final
+        $this->SetY(-25);
+        $this->SetFont('helvetica', 'I', 8);
+        
+        // Imprime los datos alineados a la izquierda
+        $this->Cell(180, 4, 'Usuario: VENTANILLA UNICA', 0, 1, 'L');
+        $this->Cell(180, 4, 'URBANISMO - Sistema de Tramites - GAMC', 0, 1, 'L'); 
+        
+        // Imprime la página centrada (dejando el salto de línea al final)
+        $this->Cell(180, 4, 'Página: '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, 1, 'C');
+
+        // Configuración del QR
         $style = array(
             'border' => 0,
             'vpadding' => 'auto',
             'hpadding' => 'auto',
             'fgcolor' => array(0,0,0),
-            'bgcolor' => false, //array(255,255,255)
-            'module_width' => 1, // width of a single module in points
-            'module_height' => 1 // height of a single module in points
+            'bgcolor' => false,
+            'module_width' => 1,
+            'module_height' => 1
         );
-        
-        $this->write2DBarcode($html, 'QRCODE,M', 170, 230, 30, 30, $style, 'N');
-        
-      //  $this->write2DBarcode($html, 'PDF417', $x+80, $y-5, 0, 30, $style, 'N');
-        //$this->Text(20, 25, 'QRCODE M');
-       // $this->Image(dirname(__FILE__) . '/../media/firma.png', 98, 220, 35, 35, '', '', '', false, 300, '', false, false, 0);
-        
-    } 
+
+        // QR fijo a la derecha, cerca del margen inferior
+        $this->write2DBarcode($dataSource->getParameter('num_informe'), 'QRCODE,M', 170, $this->getPageHeight() - 35, 25, 25, $style, 'N');
+    }
 
 }
 
@@ -130,9 +135,9 @@ Class RFormularioTramite extends Report {
 			$pdf->Ln();
             $pdf->Ln();
             $pdf->SetFontSize(10);
-            $pdf->SetFont('', 'N');
-	        $pdf->Cell($w = 7, $h = $hMedium, $txt = 'Yo: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
-			$pdf->SetFont('', 'B');
+            //$pdf->SetFont('', 'N');
+	        //$pdf->Cell($w = 7, $h = $hMedium, $txt = 'Yo: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	
+			//$pdf->SetFont('', 'B');
             $countList = 0;
             foreach ($dataSource->getDataSet() as $row) {
                 $tipo_persona = $row['tipo_persona'];
@@ -151,14 +156,17 @@ Class RFormularioTramite extends Report {
                 $tipo_persona = $row['tipo_persona'];
                 //var_dump("tipo: ",$tipo_persona); 
                 if ($countList == 1 && $tipo_persona == "apoderado") {
-                    $pdf->Cell($w = 110, $h = $hMedium, $txt = $row['nombre_completo1'].' (Apoderado)', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+                    $pdf->writeHTMLCell(180, 0, '', '', 'Yo: <b>'.$row['nombre_completo1'].'</b> (Apoderado)  con C.I. N°: <b>'.$row['ci'].'</b> expedicion <b>'.$row['expedicion'].'</b>', 0, 1, 0, true, 'J', true);
+                    /*
+                    $pdf->Cell($w = 180, $h = $hMedium, $txt = $row['nombre_completo1'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
                     $pdf->SetFont('', 'N');
 	                $pdf->Cell($w = 18, $h = $hMedium, $txt = 'con C.I. N°: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
                     $pdf->SetFont('', 'B');
                     $pdf->Cell($w = 12, $h = $hMedium, $txt = $row['ci'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-                    $pdf->Cell($w = 7, $h = $hMedium, $txt = '  ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   	
+                    $pdf->Cell($w = 7, $h = $hMedium, $txt = 'expedicion', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   	
                     $pdf->Cell($w = 5, $h = $hMedium, $txt = $row['expedicion'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-                    $pdf->Ln();
+                    */
+                    $pdf->Ln(2);
                     /*
                     if ($countList == 0) {
                         $pdf->SetFont('', 'N');
@@ -167,6 +175,8 @@ Class RFormularioTramite extends Report {
                         $pdf->Cell($w = 20, $h = $hMedium, $txt = $row['domicilio'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');   
                     }*/
                 } elseif ($countList == 0) {
+                    $pdf->writeHTMLCell(180, 0, '', '', 'Yo: <b>'.$row['nombre_completo1'].'</b>  con C.I. N°: <b>'.$row['ci'].'</b> expedicion <b>'.$row['expedicion'].'</b>', 0, 1, 0, true, 'J', true);
+                    /*
                     $pdf->Cell($w = 110, $h = $hMedium, $txt = $row['nombre_completo1'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
                     $pdf->SetFont('', 'N');
 	                $pdf->Cell($w = 18, $h = $hMedium, $txt = 'con C.I. N°: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
@@ -174,7 +184,8 @@ Class RFormularioTramite extends Report {
                     $pdf->Cell($w = 12, $h = $hMedium, $txt = $row['ci'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
                     $pdf->Cell($w = 7, $h = $hMedium, $txt = '  ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   	
                     $pdf->Cell($w = 5, $h = $hMedium, $txt = $row['expedicion'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-                    $pdf->Ln();
+                    */
+                    $pdf->Ln(2);
                     $celularTitular = $row['celular1'];
                     $emailTitular =  $row['correo'];
                     /*
@@ -186,8 +197,7 @@ Class RFormularioTramite extends Report {
                     }*/
                     $countList = 3;
                 }  
-            };
-            $pdf->Ln();
+            }
             $pdf->SetFont('', 'N');
             $pdf->Cell($w = 30, $h = $hMedium, $txt = 'Solicito el tramite: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
             $pdf->SetFont('', 'B');
@@ -201,11 +211,13 @@ Class RFormularioTramite extends Report {
             $pdf->Ln();
             $pdf->SetFont('', 'N');
             $pdf->Cell($w = 30, $h = $hMedium, $txt = 'de propiedad de: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            $pdf->Ln();
+            $pdf->Ln(8);
             foreach ($dataSource->getDataSet() as $row) {
                 $tipo_persona = $row['tipo_persona'];
                 //var_dump("tipo: ",$tipo_persona); 
                 if ( $tipo_persona == "propietario"){
+                    $pdf->writeHTMLCell(180, 0, '', '', '<b>'.$row['nombre_completo1'].'</b> con C.I. N°: <b>'.$row['ci'].'</b> expedicion <b>'.$row['expedicion'].'</b>', 0, 1, 0, true, 'J', true);
+                    /*
                     $pdf->SetFont('', 'B');
                     $pdf->Cell($w = 70, $h = $hMedium, $txt = $row['nombre_completo1'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
                     $pdf->SetFont('', 'N');
@@ -214,7 +226,8 @@ Class RFormularioTramite extends Report {
                     $pdf->Cell($w = 12, $h = $hMedium, $txt = $row['ci'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
                     $pdf->Cell($w = 7, $h = $hMedium, $txt = '  ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   	
                     $pdf->Cell($w = 5, $h = $hMedium, $txt = $row['expedicion'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-                    $pdf->Ln();
+                    */
+                    $pdf->Ln(2);
                 };                 
             };
             foreach ($dataSource->getDataSet() as $row) {
@@ -228,6 +241,7 @@ Class RFormularioTramite extends Report {
                     $pdf->Ln();
                 };    */
                 if ( $tipo_persona == "apoderado"){
+                    
                     $pdf->SetFont('', 'N');
                     $pdf->Cell($w = 60, $h = $hMedium, $txt = 'Solicitud que se realizó en calidad de : ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
                     $pdf->SetFont('', 'B');
@@ -251,8 +265,7 @@ Class RFormularioTramite extends Report {
                     $pdf->SetFont('', 'B');
                     $pdf->Cell($w = 12, $h = $hMedium, $txt = $row['notario'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
                 };             
-            };
-            $pdf->Ln();
+            }
             $pdf->SetFont('', 'N');
             $pdf->Cell($w = 100, $h = $hMedium, $txt = 'A tal efecto acompaño los documentos exigidos, en fs.: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
             $pdf->SetFont('', 'B');

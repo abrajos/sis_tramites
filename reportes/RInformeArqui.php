@@ -5,6 +5,11 @@ require_once dirname(__FILE__) . '/pxpReport/DataSource.php';
 class CustomReport extends TCPDF {
     private $dataSource;
 
+    // --- AÑADE ESTO AQUÍ ---
+    public function verificarEspacio($h) {
+        return $this->checkPageBreak($h);
+    }
+
     public function setDataSource(DataSource $dataSource) {
         $this->dataSource = $dataSource;
     }
@@ -40,19 +45,18 @@ class CustomReport extends TCPDF {
     public function Footer() {
         $dataSource = $this->getDataSource();
         
-        // Nos posicionamos a 35mm antes del final de la hoja para asegurar espacio al QR
-        $this->SetY(-35);
-        $this->SetFont('helvetica', 'I', 7);
+        // Posicionarse a 15mm del final
+        $this->SetY(-25);
+        $this->SetFont('helvetica', 'I', 8);
         
-        // Forzamos saltos de línea naturales pasándole 1 en el parámetro ln
+        // Imprime los datos alineados a la izquierda
         $this->Cell(180, 4, 'Usuario: '.$dataSource->getParameter('de'), 0, 1, 'L');
-        $this->Cell(180, 4, 'Página: '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
+        $this->Cell(180, 4, 'SISTEMA DE TRAMITES - G.A.M.C.', 0, 1, 'L'); 
         
-        $html = 'Número Trámite: '.$dataSource->getParameter('num_informe')."\n"
-               .'Trámite: '.$dataSource->getParameter('nombre_tramite')."\n"
-               .'Usuario: '.$dataSource->getParameter('de')."\n"
-               .'Sistema de Trámites ';
-               
+        // Imprime la página centrada (dejando el salto de línea al final)
+        $this->Cell(180, 4, 'Página: '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, 1, 'C');
+
+        // Configuración del QR
         $style = array(
             'border' => 0,
             'vpadding' => 'auto',
@@ -62,10 +66,10 @@ class CustomReport extends TCPDF {
             'module_width' => 1,
             'module_height' => 1
         );
-        
-        // El QR se calcula de forma dinámica restando espacio al alto total real del documento
-        $this->write2DBarcode($html, 'QRCODE,M', 170, $this->getPageHeight() - 32, 23, 23, $style, 'N');
-    } 
+
+        // QR fijo a la derecha, cerca del margen inferior
+        $this->write2DBarcode($dataSource->getParameter('num_informe'), 'QRCODE,M', 170, $this->getPageHeight() - 35, 25, 25, $style, 'N');
+    }
 }
 
 class RInformeArqui extends Report {

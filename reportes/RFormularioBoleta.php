@@ -7,6 +7,11 @@ class CustomReport extends TCPDF {
 
     private $dataSource;
 
+    // --- AÑADE ESTO AQUÍ ---
+    public function verificarEspacio($h) {
+        return $this->checkPageBreak($h);
+    }
+    
     public function setDataSource(DataSource $dataSource) {
         $this->dataSource = $dataSource;
     }
@@ -40,33 +45,33 @@ class CustomReport extends TCPDF {
     }
 
     public function Footer() {
-        //TODO: implement the footer manager
         $dataSource = $this->getDataSource();
-        //$this->SetFooterMargin(PDF_MARGIN_FOOTER);
-        $x = $this->GetX();
-        $y = $this->GetY();
-        $this->SetY(-15);
-        $this->SetFont('helvetica', 'I', 6);
-        $this->Cell(0, 0, 'usuario: '.$dataSource->getParameter('cuenta'), 0, 1, 'L');
         
-        $html = 'Nro Boleta: '.$dataSource->getParameter('nro_boleta')."\n".'Cite Tramite: '.$dataSource->getParameter('cite_tramite')."\n".'Total: '.$dataSource->getParameter('total_redon')."\n".'Sistema de Tramites ';
+        // Posicionarse a 15mm del final
+        $this->SetY(-25);
+        $this->SetFont('helvetica', 'I', 8);
+        
+        // Imprime los datos alineados a la izquierda
+        $this->Cell(180, 4, 'Usuario: VENTANILLA UNICA', 0, 1, 'L');
+        $this->Cell(180, 4, 'URBANISMO - Sistema de Tramites - GAMC', 0, 1, 'L'); 
+        
+        // Imprime la página centrada (dejando el salto de línea al final)
+        $this->Cell(180, 4, 'Página: '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, 1, 'C');
+
+        // Configuración del QR
         $style = array(
             'border' => 0,
             'vpadding' => 'auto',
             'hpadding' => 'auto',
             'fgcolor' => array(0,0,0),
-            'bgcolor' => false, //array(255,255,255)
-            'module_width' => 1, // width of a single module in points
-            'module_height' => 1 // height of a single module in points
+            'bgcolor' => false,
+            'module_width' => 1,
+            'module_height' => 1
         );
-        
-        $this->write2DBarcode($html, 'QRCODE,M', 170, 230, 30, 30, $style, 'N');
-        
-      //  $this->write2DBarcode($html, 'PDF417', $x+80, $y-5, 0, 30, $style, 'N');
-        //$this->Text(20, 25, 'QRCODE M');
-       // $this->Image(dirname(__FILE__) . '/../media/firma.png', 98, 220, 35, 35, '', '', '', false, 300, '', false, false, 0);
-        
-    } 
+
+        // QR fijo a la derecha, cerca del margen inferior
+        $this->write2DBarcode($dataSource->getParameter('num_informe'), 'QRCODE,M', 170, $this->getPageHeight() - 35, 25, 25, $style, 'N');
+    }
 
 }
 
@@ -199,51 +204,80 @@ Class RFormularioBoleta extends Report {
             $pdf->Ln(7);
             $pdf->SetFont('', 'N');
             //$pdf->Cell($w = , $h = $hMedium, $txt = '', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-            $pdf->Cell($w = 65, $h = $hMedium, $txt = 'Aprob. Plano de Construcción', $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-            $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('plano_cons_m').' m2', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('plano_cons_bs').' Bs./m2', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-            $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('plano_cons_tot').' Bs.', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-            $pdf->Ln(7);
-            $pdf->Cell($w = 65, $h = $hMedium, $txt = 'Aprob. Plano ', $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-            $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('plano_m').' m2', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('plano_bs').' Bs./m2', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-            $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('plano_tot').' Bs.', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-            $pdf->Ln(7);
-            $pdf->Cell($w = 65, $h = $hMedium, $txt = 'Aprob. Plano de verja', $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-            $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('plano_verja_m').' m2', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('plano_verja_bs').' Bs./m2', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-            $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('plano_verja_tot').' Bs.', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-            $pdf->Ln(7);
-            $pdf->Cell($w = 65, $h = $hMedium, $txt = 'Fijación de lineas y nivel', $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-            $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('linea_nivel_m').' m2', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('linea_nivel_bs').' Bs./m2', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-            $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('linea_nivel_tot').' Bs.', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-            $pdf->Ln(7);
-            $pdf->Cell($w = 65, $h = $hMedium, $txt = 'Anexion', $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-            $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('anexion_m').' m2', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('anexion_bs').' Bs./m2', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-            $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('anexion_tot').' Bs.', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-            $pdf->Ln(7);
-            $pdf->Cell($w = 65, $h = $hMedium, $txt = 'División', $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-            $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('division_m').' m2', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('division_bs').' Bs./m2', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-            $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('division_tot').' Bs.', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-            $pdf->Ln(7);
-            $pdf->Cell($w = 65, $h = $hMedium, $txt = 'Avance sobre Prop. Municipal', $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-            $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('avance_m').' m2', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('avance_bs').' Bs./m2', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-            $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('avance_tot').' Bs.', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-            $pdf->Ln(7);
-            $pdf->Cell($w = 65, $h = $hMedium, $txt = $dataSource->getParameter('nombre_concepto_a'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-            $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('concepto_a_m').' ', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('concepto_a_bs').' Bs.', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-            $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('concep_a_tot').' Bs.', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-            $pdf->Ln(7);
-            $pdf->Cell($w = 65, $h = $hMedium, $txt = $dataSource->getParameter('nombre_concepto_b'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-            $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('concepto_b_m').' ', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('concepto_b_bs').' Bs.', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-            $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('concep_b_tot').' Bs.', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-            $pdf->Ln(7);
+            if ($dataSource->getParameter('plano_cons_m') != '' && $dataSource->getParameter('plano_cons_bs') != ''  && $dataSource->getParameter('plano_cons_tot') != '') {
+                $pdf->Cell($w = 65, $h = $hMedium, $txt = 'Aprob. Plano de Construcción', $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+                $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('plano_cons_m').' m2', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
+                $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('plano_cons_bs').' Bs./m2', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+                $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('plano_cons_tot').' Bs.', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+                $pdf->Ln(7);
+            }
+            
+            if ($dataSource->getParameter('plano_m') != '' && $dataSource->getParameter('plano_bs') != ''  && $dataSource->getParameter('plano_tot') != '') {
+                $pdf->Cell($w = 65, $h = $hMedium, $txt = 'Aprob. Plano ', $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+                $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('plano_m').' m2', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
+                $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('plano_bs').' Bs./m2', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+                $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('plano_tot').' Bs.', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+                $pdf->Ln(7);
+            }
+            
+            if ($dataSource->getParameter('plano_m') != '' && $dataSource->getParameter('plano_verja_m') != ''  && $dataSource->getParameter('plano_verja_tot') != '') {
+                $pdf->Cell($w = 65, $h = $hMedium, $txt = 'Aprob. Plano de verja', $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+                $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('plano_verja_m').' m2', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
+                $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('plano_verja_bs').' Bs./m2', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+                $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('plano_verja_tot').' Bs.', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+                $pdf->Ln(7);
+            }
+            
+            if ($dataSource->getParameter('linea_nivel_m') != '' && $dataSource->getParameter('linea_nivel_bs') != ''  && $dataSource->getParameter('linea_nivel_tot') != '') {
+                $pdf->Cell($w = 65, $h = $hMedium, $txt = 'Fijación de lineas y nivel', $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+                $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('linea_nivel_m').' m2', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
+                $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('linea_nivel_bs').' Bs./m2', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+                $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('linea_nivel_tot').' Bs.', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+                $pdf->Ln(7);
+            }
+            
+            if ($dataSource->getParameter('anexion_m') != '' && $dataSource->getParameter('anexion_bs') != ''  && $dataSource->getParameter('anexion_tot') != '') {
+                $pdf->Cell($w = 65, $h = $hMedium, $txt = 'Anexion', $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+                $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('anexion_m').' m2', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
+                $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('anexion_bs').' Bs./m2', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+                $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('anexion_tot').' Bs.', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+                $pdf->Ln(7);
+            }
+            
+            if ($dataSource->getParameter('division_m') != '' && $dataSource->getParameter('division_bs') != ''  && $dataSource->getParameter('division_tot') != '') {
+                $pdf->Cell($w = 65, $h = $hMedium, $txt = 'División', $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+                $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('division_m').' m2', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
+                $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('division_bs').' Bs./m2', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+                $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('division_tot').' Bs.', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+                $pdf->Ln(7);
+            }
+            
+            if ($dataSource->getParameter('avance_m') != '' && $dataSource->getParameter('avance_bs') != ''  && $dataSource->getParameter('avance_tot') != '') {
+                $pdf->Cell($w = 65, $h = $hMedium, $txt = 'Avance sobre Prop. Municipal', $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+                $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('avance_m').' m2', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
+                $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('avance_bs').' Bs./m2', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+                $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('avance_tot').' Bs.', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+                $pdf->Ln(7);
+            }
+            
+            if ($dataSource->getParameter('concepto_a_m') != '' && $dataSource->getParameter('concepto_a_bs') != ''  && $dataSource->getParameter('concep_a_tot') != '') {
+                $pdf->Cell($w = 65, $h = $hMedium, $txt = $dataSource->getParameter('nombre_concepto_a'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+                $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('concepto_a_m').' ', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
+                $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('concepto_a_bs').' Bs.', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+                $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('concep_a_tot').' Bs.', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+                $pdf->Ln(7);
+            }
+            
+            if ($dataSource->getParameter('concepto_b_m') != '' && $dataSource->getParameter('concepto_b_bs') != ''  && $dataSource->getParameter('concep_b_tot') != '') {
+                $pdf->Cell($w = 65, $h = $hMedium, $txt = $dataSource->getParameter('nombre_concepto_b'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+                $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('concepto_b_m').' ', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
+                $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('concepto_b_bs').' Bs.', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+                $pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('concep_b_tot').' Bs.', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
+                $pdf->Ln(7);
+            }
+            
+            
+            //var_dump($dataSource); exit();
             //$pdf->Cell($w = 65, $h = $hMedium, $txt = $dataSource->getParameter('nombre_concepto_b'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
             //$pdf->Cell($w = 40, $h = $hMedium, $txt = $dataSource->getParameter('concepto_b_m').' ', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
             $pdf->Cell($w = 145, $h = $hMedium, $txt = ' Total ', $border = 'LRTB', $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	

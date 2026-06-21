@@ -98,7 +98,7 @@ class RInformeTopo extends Report
         $pdf->AddPage('P', array(215.9, 330)); // Tamaño Oficio
         $pdf->SetFontSize(10);
 
-
+        //var_dump($dataSource); exit();
 
         $pdf->SetFontSize(10);
         $pdf->SetFont('', 'B');
@@ -205,20 +205,28 @@ class RInformeTopo extends Report
         $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
         $pdf->writeHTMLCell(180, 0, '', '', 'El predio <b style="text-transform: uppercase;">' . $dataSource->getParameter('rasante_municipal') . '</b> se encuentra en RASANTE MUNICIPAL y tiene como colindantes:', 0, 1, 0, true, 'J', true);
         $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
-        $table1 = '<table border="1" style="width: 100%; border-collapse: collapse;">
-                            <tr>
-                                <td style="text-align: right; width: 18%;"><b>NORTE:</b></td><td style="text-align: left; width: 82%;">' . $dataSource->getParameter('colindante_norte') . '</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align: right;"><b>ESTE:</b></td><td>' . $dataSource->getParameter('colindante_este') . '</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align: right;"><b>SUD:</b></td><td>' . $dataSource->getParameter('colindante_sur') . '</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align: right;"><b>OESTE:</b></td><td>' . $dataSource->getParameter('colindante_oeste') . '</td>
-                            </tr>
-                        </table>';
+        $table1 = '<table border="1" style="width: 100%; border-collapse: collapse;">';
+        if ($dataSource->getParameter('colindante_norte') != '' && $dataSource->getParameter('colindante_norte') != NULL) {
+            $table1 .= '<tr>
+                            <td style="text-align: right; width: 18%;"><b>NORTE:</b></td><td style="text-align: left; width: 82%;">' . $dataSource->getParameter('colindante_norte') . '</td>
+                        </tr>';
+        }
+        if ($dataSource->getParameter('colindante_este') != '' && $dataSource->getParameter('colindante_este') != NULL) {
+            $table1 .= '<tr>
+                            <td style="text-align: right;"><b>ESTE:</b></td><td>' . $dataSource->getParameter('colindante_este') . '</td>
+                        </tr>';
+        }
+        if ($dataSource->getParameter('colindante_sur') != '' && $dataSource->getParameter('colindante_sur') != NULL) {
+            $table1 .= '<tr>
+                            <td style="text-align: right;"><b>SUD:</b></td><td>' . $dataSource->getParameter('colindante_sur') . '</td>
+                        </tr>';
+        }
+        if ($dataSource->getParameter('colindante_oeste') != '' && $dataSource->getParameter('colindante_oeste') != NULL) {
+            $table1 .= '<tr>
+                            <td style="text-align: right;"><b>OESTE:</b></td><td>' . $dataSource->getParameter('colindante_oeste') . '</td>
+                        </tr>';
+        }
+        $table1 .= '</table>';
         // 110 es la posición X (210mm menos el ancho de la celda y márgenes)
         $pdf->writeHTMLCell(180, 0, '', '', $table1, 0, 1, 0, true, 'J', true);
         $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
@@ -247,38 +255,55 @@ class RInformeTopo extends Report
                                 <td style="text-align: center;" width="50%"><b>DETALLE</b></td>
                                 <td style="text-align: center;" width="25%"><b>CANT.</b></td>
                                 <td style="text-align: center;" width="25%"><b>UNIDAD</b></td>
-                            </tr>
-                            <tr>
+                            </tr>';
+                    if ($dataSource->getParameter('super_escritura') != '' && $dataSource->getParameter('super_escritura') != NULL) {
+                        $table2 .= '<tr>
                                 <td style="text-align: right;"><b>SUP. LOTE SEGÚN ESCRITURA</b></td>
                                 <td style="text-align: right;">' . $dataSource->getParameter('super_escritura') . '</td>
                                 <td style="text-align: left;">M2</td>
-                            </tr>
-                            <tr>
+                            </tr>';
+                    }
+                    if ($dataSource->getParameter('super_mensura') != '' && $dataSource->getParameter('super_mensura') != NULL) {
+                        $table2 .= '<tr>
                                 <td style="text-align: right;"><b>SUP. LOTE SEGÚN MENSURA</b></td>
                                 <td style="text-align: right;">' . $dataSource->getParameter('super_mensura') . '</td>
                                 <td style="text-align: left;">M2</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align: right;"><b>SUPERFICIE EXCEDENTE</b></td>
-                                <td style="text-align: right;">' . $dataSource->getParameter('super_excedente') . '</td>
-                                <td style="text-align: left;">M2</td>
-                            </tr>
-                            <tr>
+                            </tr>';
+                    }
+                    
+                    if ($dataSource->getParameter('super_excedente') != '' && $dataSource->getParameter('super_excedente') != NULL) {
+                        $table2 .= '<tr>
+                            <td style="text-align: right;"><b>SUPERFICIE EXCEDENTE</b></td>
+                            <td style="text-align: right;">' . $dataSource->getParameter('super_excedente') . '</td>
+                            <td style="text-align: left;">M2</td>
+                        </tr>';
+                    } 
+
+                    if ($dataSource->getParameter('super_inexistente') != '' && $dataSource->getParameter('super_inexistente') != NULL) {
+                        $table2 .= '<tr>
                                 <td style="text-align: right;"><b>SUPERFICIE INEXISTENTE</b></td>
                                 <td style="text-align: right;">' . $dataSource->getParameter('super_inexistente') . '</td>
                                 <td style="text-align: left;">M2</td>
-                            </tr>
-                            <tr>
+                            </tr>';
+                    }
+
+                    if ($dataSource->getParameter('super_total') != '' && $dataSource->getParameter('super_total') != NULL) {
+                        $table2 .= '<tr>
                                 <td style="text-align: right;"><b>SUPERFICIE ÚTIL</b></td>
                                 <td style="text-align: right;">' . $dataSource->getParameter('super_total') . '</td>
                                 <td style="text-align: left;">M2</td>
-                            </tr>
-                            <tr>
+                            </tr>';
+                    }
+
+                    if ($dataSource->getParameter('long_rasante') != '' && $dataSource->getParameter('long_rasante') != NULL) {
+                        $table2 .= '<tr>
                                 <td style="text-align: right;"><b>LONGITUD RASANTE</b></td>
                                 <td style="text-align: right;">' . $dataSource->getParameter('long_rasante') . '</td>
                                 <td style="text-align: left;">M</td>
-                            </tr>
-                        </table>';
+                            </tr>';
+                    }
+                            
+                    $table2 .= '</table>';
         //$pdf->writeHTMLCell(180, 0, '', '', $htmlTable0, 0, 1, 0, true, 'J', true);
 
         //$pdf->writeHTMLCell(120, 0, '', 60, $htmlTable2, 0, 1, 0, true, 'R', true);

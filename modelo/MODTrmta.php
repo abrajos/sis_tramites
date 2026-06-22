@@ -76,7 +76,7 @@ class MODTrmta extends MODbase{
 				
 		//Define los parametros para la funcion
 		$this->setParametro('id_rmta','id_rmta','int4');
-		$this->setParametro('id_tramite_detalle','id_tramite_detalle','int4');
+		$this->setParametro('id_matricula','id_matricula','int4');
 		$this->setParametro('fecha_rmta','fecha_rmta','date');
 		$this->setParametro('tipo_aprobacion','tipo_aprobacion','varchar');
 		$this->setParametro('estado_reg','estado_reg','varchar');

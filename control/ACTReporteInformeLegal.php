@@ -54,17 +54,7 @@ class ACTReporteInformeLegal extends ACTbase{
 		$id_tramite = $resultData[0]['id_tramite'];
 		$observacion = $resultData[0]['observacion'];
 		$conclusion = $resultData[0]['conclusion'];
-		$nro_matricula = $resultData[0]['nro_matricula'];
-		$superficie = $resultData[0]['superficie'];
-		$asiento = $resultData[0]['asiento'];
-		$fecha_asiento = $resultData[0]['fecha_asiento'];
-		$nro_testimonio = $resultData[0]['nro_testimonio'];
-		$fecha_testimonio = $resultData[0]['fecha_testimonio'];
-		$nro_notario = $resultData[0]['nro_notario'];
-		$nombre_notario = $resultData[0]['nombre_notario'];
-		$nro_rmta = $resultData[0]['nro_rmta'];
-		$fecha_rmta = $resultData[0]['fecha_rmta'];
-
+		
 		
 		$distrito = $resultData[0]['distrito'];
 		$zona = $resultData[0]['zona'];
@@ -76,10 +66,7 @@ class ACTReporteInformeLegal extends ACTbase{
 		$ddrr_registro = $resultData[0]['ddrr_registro'];
 		$kami = $resultData[0]['kami'];
 		$superficie_leg = $resultData[0]['superficie_leg'];
-		$tipo = $resultData[0]['tipo'];
-		$complemento = $resultData[0]['complemento'];
-		$tipo_aprobacion = $resultData[0]['tipo_aprobacion'];
-		$complemento_matri = $resultData[0]['complemento_matri'];
+		
 		$tipo_rechazo = $resultData[0]['tipo_rechazo'];
 		
 		/*$this->objFunc = $this->create('MODReporte');
@@ -112,12 +99,22 @@ class ACTReporteInformeLegal extends ACTbase{
 		
 		//var_dump($resultListarVacacion->getDatos());exit;
 		
-		$mainDataSet = $resultListarPersonas->getDatos();
+		//$mainDataSet = $resultListarPersonas->getDatos();
+		$resultPersonas = $resultListarPersonas->getDatos();
 		//var_dump($resultListarVacacion->getDatos());exit;
 		
+		$this->objFunc = $this->create('MODReporte');
+		$resultListarMatriculas = $this->objFunc->listarMatriculaLegal($this->objParam);
+        
+        if($resultListarMatriculas->getTipo()=='ERROR'){
+          $resultListarMatriculas->imprimirRespuesta($resultListarMatriculas-> generarMensajeJson());
+          exit;
+        }
+		
+
 		//$mainDataSet = $resultListarInformes->getDatos();
-		//$resultData2 = $resultlistarVacacion->getDatos();
-		//$mainDataSet[] = array("listarCuerpoInformeLegal" => $resultlistarCuerpoInformeLegal, );
+		$resultMatri = $resultListarMatriculas->getDatos();
+		$mainDataSet[] = array("listarPersonas" => $resultListarPersonas, "listarMatriculas" => $resultListarMatriculas );
 		
 		//var_dump($mainDataSet);exit;
 		

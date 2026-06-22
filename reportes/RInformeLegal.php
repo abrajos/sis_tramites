@@ -137,11 +137,12 @@ class RInformeLegal extends Report
         $pdf->MultiCell(180, $h = $hMedium, 'Conforme a la documentación presentada por:', 0, 'L', 0, 0, '', '', true);
         $pdf->Ln(5);
         $count = 0;
-
+        
         $count = 0;
         foreach ($dataSource->getDataSet() as $row) {
             $tipo_persona = $row['tipo_persona'];
             //var_dump("tipo: ",$tipo_persona); 
+            //var_dump("tipo: ",$row); 
             /*
             if ($tipo_persona == "propietario") {
                 if ($count == 0) {

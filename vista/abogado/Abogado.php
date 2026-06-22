@@ -32,12 +32,12 @@ Phx.vista.Abogado=Ext.extend(Phx.gridInterfaz,{
                 disabled: false,
                 handler: this.matricula
             });
-		this.addButton('rmta', {
+		/*this.addButton('rmta', {
                 argument: {imprimir: 'rmta'},
                 text: '<i class="fa fa-thumbs-o-up fa-2x"></i> RMTA', /*iconCls:'' ,*/
-                disabled: false,
+               /* disabled: false,
                 handler: this.rmta
-            });
+            });*/
 		this.addButton('datosLegal', {
                 argument: {imprimir: 'datosLegal'},
                 text: '<i class="fa fa-thumbs-o-up fa-2x"></i> Datos Legal', /*iconCls:'' ,*/
@@ -439,7 +439,7 @@ Phx.vista.Abogado=Ext.extend(Phx.gridInterfaz,{
 	east:{
         url:'../../../sis_tramites/vista/informe/Informe.php',
         title:'Informe',
-        height:'50%',
+        height:'60%',
         cls:'Informe'
    		},
 	preparaMenu: function (tb) {
@@ -474,7 +474,7 @@ Phx.vista.Abogado=Ext.extend(Phx.gridInterfaz,{
 		 this.getBoton('Derivar').disable();
 		 this.getBoton('matricula').enable();
 		 this.getBoton('corregido').enable();
-		 this.getBoton('rmta').enable();
+		// this.getBoton('rmta').enable();
 		 this.getBoton('datoslegal').enable();
 		 }
 	   else {
@@ -490,7 +490,7 @@ Phx.vista.Abogado=Ext.extend(Phx.gridInterfaz,{
 			this.getBoton('Derivar').disable();
             this.getBoton('matricula').disable();
 			this.getBoton('corregido').disable();
-            this.getBoton('rmta').disable();
+            //this.getBoton('rmta').disable();
 			//this.getBoton('datoslegal').disable();
 		    }
           else {
@@ -506,7 +506,7 @@ Phx.vista.Abogado=Ext.extend(Phx.gridInterfaz,{
 		 this.getBoton('Derivar').enable();
 		 this.getBoton('matricula').enable();
 		 this.getBoton('corregido').disable();
-		 this.getBoton('rmta').enable();
+		// this.getBoton('rmta').enable();
 		// this.getBoton('datoslegal').enable();
 		 }
 	   else {
@@ -586,12 +586,12 @@ Phx.vista.Abogado=Ext.extend(Phx.gridInterfaz,{
 		Phx.CP.loadWindows('../../../sis_tramites/vista/matricula/Matricula.php',
 			'Matricula',
 			{
-				width: 900,
-				height: 400
+				width: 999,
+				height: 900
 			}, rec, this.idContenedor, 'Matricula');
 
 	},
-
+/*
 	rmta: function () {
 		var rec = this.getSelectedData();
 		//enviamos el id seleccionado para cual el archivo se deba subir
@@ -612,7 +612,7 @@ Phx.vista.Abogado=Ext.extend(Phx.gridInterfaz,{
 				height: 400
 			}, rec, this.idContenedor, 'Trmta');
 
-	},
+	},*/
 
 	datosLegal: function () {
 		var rec = this.getSelectedData();

@@ -364,6 +364,19 @@ Phx.vista.Matricula=Ext.extend(Phx.gridInterfaz,{
 	},
 	bdel:true,
 	bsave:true,
+	south:{
+		url:'../../../sis_tramites/vista/asiento/Asiento.php',
+        title:'Asientos',
+        height:'40%',
+        cls:'Asiento'
+   		},
+	east:{
+		url:'../../../sis_tramites/vista/trmta/Trmta.php',
+        title:'Resoluciones',
+        height:'80%',
+		width:'50%',
+        cls:'Trmta'
+   		},
 	onButtonNew: function () {
         Phx.vista.Matricula.superclass.onButtonNew.call(this);
         this.getComponente('id_tramite_detalle').setValue(this.maestro.id_tramite_detalle);

@@ -43,6 +43,9 @@ class MODInforme extends MODbase{
 		$this->captura('funcionarioa','text');
 		$this->captura('funcionario','text');
 		$this->captura('funcionariovia','text');
+		$this->captura('doc_adjunto','varchar');
+		$this->captura('norma_aplica','varchar');
+		$this->captura('infor_comple','varchar');
 		
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -70,6 +73,9 @@ class MODInforme extends MODbase{
 		$this->setParametro('estado_reg','estado_reg','varchar');
 		$this->setParametro('observacion','observacion','varchar');
 		$this->setParametro('path_pdf','path_pdf','varchar');
+		$this->setParametro('doc_adjunto','doc_adjunto','varchar');
+		$this->setParametro('norma_aplica','norma_aplica','varchar');
+		$this->setParametro('infor_comple','infor_comple','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -98,6 +104,9 @@ class MODInforme extends MODbase{
 		$this->setParametro('estado_reg','estado_reg','varchar');
 		$this->setParametro('observacion','observacion','varchar');
 		$this->setParametro('path_pdf','path_pdf','varchar');
+		$this->setParametro('doc_adjunto','doc_adjunto','varchar');
+		$this->setParametro('norma_aplica','norma_aplica','varchar');
+		$this->setParametro('infor_comple','infor_comple','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();

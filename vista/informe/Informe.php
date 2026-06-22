@@ -213,8 +213,8 @@ Phx.vista.Informe=Ext.extend(Phx.gridInterfaz,{
 				fieldLabel: 'Observación o Fundamento Legal',
 				allowBlank: true,
 				anchor: '80%',
-				gwidth: 100,
-				maxLength:700
+				gwidth: 150,
+				maxLength:1000
 			},
 				type:'TextArea',
 				filters:{pfiltro:'infor.observacion',type:'string'},
@@ -229,8 +229,8 @@ Phx.vista.Informe=Ext.extend(Phx.gridInterfaz,{
 				fieldLabel: 'Conclusión y Recomendaciones',
 				allowBlank: true,
 				anchor: '80%',
-				gwidth: 100,
-				maxLength:700
+				gwidth: 150,
+				maxLength:1000
 			},
 				type:'TextArea',
 				filters:{pfiltro:'infor.conclusion',type:'string'},
@@ -238,7 +238,51 @@ Phx.vista.Informe=Ext.extend(Phx.gridInterfaz,{
 				grid:true,
 				form:true
 		},
-			
+		{
+			config:{
+				name: 'doc_adjunto',
+				fieldLabel: 'Documentos Adjunta',
+				allowBlank: true,
+				anchor: '80%',
+				gwidth: 150,
+				maxLength:1000
+			},
+				type:'TextArea',
+				filters:{pfiltro:'infor.doc_adjunto',type:'string'},
+				id_grupo:1,
+				grid:true,
+				form:true
+		},
+		{
+			config:{
+				name: 'norma_aplica',
+				fieldLabel: 'Normativa Aplicable',
+				allowBlank: true,
+				anchor: '80%',
+				gwidth: 150,
+				maxLength:1000
+			},
+				type:'TextArea',
+				filters:{pfiltro:'infor.norma_aplica',type:'string'},
+				id_grupo:1,
+				grid:true,
+				form:true
+		},
+		{
+			config:{
+				name: 'infor_comple',
+				fieldLabel: 'Informes Complementarios',
+				allowBlank: true,
+				anchor: '80%',
+				gwidth: 150,
+				maxLength:1000
+			},
+				type:'TextArea',
+				filters:{pfiltro:'infor.infor_comple',type:'string'},
+				id_grupo:1,
+				grid:true,
+				form:true
+		},	
 		{
 			config:{
 				name: 'fecha_informe',
@@ -408,6 +452,9 @@ Phx.vista.Informe=Ext.extend(Phx.gridInterfaz,{
 		{name:'funcionarioa', type: 'string'},
 		{name:'funcionario', type: 'string'},
 		{name:'funcionariovia', type: 'string'},
+		{name:'doc_adjunto', type: 'string'},
+		{name:'norma_aplica', type: 'string'},
+		{name:'infor_comple', type: 'string'},
 	],
 	sortInfo:{
 		field: 'id_informe',

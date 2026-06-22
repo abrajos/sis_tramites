@@ -125,7 +125,7 @@ Phx.vista.Lote=Ext.extend(Phx.gridInterfaz,{
 				filters:{pfiltro:'lotes.porcentaje',type:'string'},
 				id_grupo:1,
 				grid:true,
-				form:true
+				form:false
 		},
 		
 		{

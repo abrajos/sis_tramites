@@ -49,7 +49,10 @@ class ACTReporteInforme extends ACTbase{
 		$dia = $resultData[0]['dia'];
 		$anio = $resultData[0]['anio'];
 		$referencia = $resultData[0]['referencia'];
-		
+		$cite_tramite = $resultDataCuerpoInforme[0]['cite_tramite'];
+		$nombre_tramite = $resultDataCuerpoInforme[0]['nombre_tramite'];
+		$conclusion = $resultDataCuerpoInforme[0]['conclusion'];
+		$nombre_lote = $resultDataCuerpoInforme[0]['nombre_lote'];
 		
 		$this->objFunc = $this->create('MODReporte');
 		$resultListarCuerpoInforme = $this->objFunc->listarCuerpoInforme($this->objParam);
@@ -59,7 +62,7 @@ class ACTReporteInforme extends ACTbase{
           exit;
         }
 		
-		$resultDataCuerpoInforme = $resultListarCuerpoInforme->getDatos();
+		/*$resultDataCuerpoInforme = $resultListarCuerpoInforme->getDatos();
 		$cite_tramite = $resultDataCuerpoInforme[0]['cite_tramite'];
 		$nombre_tramite = $resultDataCuerpoInforme[0]['nombre_tramite'];
 		$distrito = $resultDataCuerpoInforme[0]['distrito'];
@@ -89,14 +92,14 @@ class ACTReporteInforme extends ACTbase{
 		$transporte = $resultDataCuerpoInforme[0]['transporte'];
 		$observacion = $resultDataCuerpoInforme[0]['observacion'];
 		$conclusion = $resultDataCuerpoInforme[0]['conclusion'];
-		$nombre_lote = $resultDataCuerpoInforme[0]['nombre_lote'];
+		$nombre_lote = $resultDataCuerpoInforme[0]['nombre_lote'];*/
 
 		//var_dump($resultListarVacacion->getDatos());exit;
 		
 		//$mainDataSet = $resultListarInformes->getDatos();
 		//$resultData2 = $resultlistarVacacion->getDatos();
 		//$mainDataSet[] = array("listarCuerpoInforme" => $resultListarCuerpoInforme, );
-		$this->objParam->addFiltro("tradet.id_tramite_detalle = ".$this->objParam->getParametro('id_tramite_detalle'));
+		/*$this->objParam->addFiltro("tradet.id_tramite_detalle = ".$this->objParam->getParametro('id_tramite_detalle'));
         $this->objParam->addParametroConsulta('ordenacion', 'lot.tipo_cesion');
         $this->objParam->addParametroConsulta('dir_ordenacion', 'asc');
         $this->objParam->addParametroConsulta('cantidad', 10000);
@@ -107,8 +110,8 @@ class ACTReporteInforme extends ACTbase{
         if($resultListarLotes->getTipo()=='ERROR'){
           $resultListarLotes->imprimirRespuesta($resultListarLotes-> generarMensajeJson());
           exit;
-        }
-		$mainDataSet = $resultListarLotes->getDatos();
+        }*/
+		$mainDataSet = $resultListarCuerpoInforme->getDatos();
 		//var_dump($mainDataSet);exit;
 		
 		$dataSource->putParameter('num_informe', $num_informe);
@@ -124,7 +127,7 @@ class ACTReporteInforme extends ACTbase{
 		$dataSource->putParameter('referencia', $referencia);
 		
 		//ListarCuerpoInforme
-		
+		/*
 		$dataSource->putParameter('cite_tramite', $cite_tramite);
 		$dataSource->putParameter('nombre_tramite', $nombre_tramite);
 		$dataSource->putParameter('distrito', $distrito);
@@ -155,7 +158,7 @@ class ACTReporteInforme extends ACTbase{
 		$dataSource->putParameter('observacion', $observacion);
 		$dataSource->putParameter('conclusion', $conclusion);
 		$dataSource->putParameter('nombre_lote', $nombre_lote);
-
+*/
 		
 		$dataSourceArray = Array();
         $dataSourceClasificacion = new DataSource();

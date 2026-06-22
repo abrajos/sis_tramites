@@ -63,7 +63,10 @@ class MODReporte extends MODbase {
         $this->captura('dia', 'double PRECISION');
         $this->captura('anio', 'double PRECISION');
         $this->captura('referencia', 'varchar');
-		;
+		$this->captura('cite_tramite', 'varchar');
+        $this->captura('nombre_tramite', 'varchar');
+        $this->captura('conclusion', 'varchar');
+        $this->captura('nombre_lote', 'varchar');
 
         $this->armarConsulta();
 		//echo $this->consulta;exit;
@@ -79,8 +82,8 @@ class MODReporte extends MODbase {
 
         $this->setParametro('id_tramite_detalle', 'id_tramite_detalle', 'integer');
 	
-        $this->captura('cite_tramite', 'varchar');
-        $this->captura('nombre_tramite', 'varchar');
+        //$this->captura('cite_tramite', 'varchar');
+       // $this->captura('nombre_tramite', 'varchar');
         $this->captura('distrito', 'varchar');
         $this->captura('zona', 'varchar');
         $this->captura('manzana', 'varchar');
@@ -106,9 +109,16 @@ class MODReporte extends MODbase {
         $this->captura('telefonia', 'varchar');
         $this->captura('equipamiento', 'varchar');
         $this->captura('transporte', 'varchar');
-        $this->captura('observacion', 'varchar');
-        $this->captura('conclusion', 'varchar');
+        //$this->captura('observacion', 'varchar');
+        //$this->captura('conclusion', 'varchar');
         $this->captura('nombre_lote', 'varchar');
+        $this->captura('tipo_cesion', 'varchar');
+        $this->captura('superficie_lote', 'numeric');
+        $this->captura('porcentaje', 'numeric');
+        $this->captura('co_norte', 'varchar');
+        $this->captura('co_sud', 'varchar');
+        $this->captura('co_este', 'varchar');
+        $this->captura('co_oeste', 'varchar');
 		
         $this->armarConsulta();
 		//echo $this->consulta;exit;

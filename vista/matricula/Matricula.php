@@ -90,8 +90,8 @@ Phx.vista.Matricula=Ext.extend(Phx.gridInterfaz,{
 				type:'TextField',
 				filters:{pfiltro:'matri.asiento',type:'string'},
 				id_grupo:1,
-				grid:true,
-				form:true
+				grid:false,
+				form:false
 		},
 		{
 			config:{
@@ -106,8 +106,8 @@ Phx.vista.Matricula=Ext.extend(Phx.gridInterfaz,{
 				type:'DateField',
 				filters:{pfiltro:'matri.fecha_asiento',type:'date'},
 				id_grupo:1,
-				grid:true,
-				form:true
+				grid:false,
+				form:false
 		},
 		{
 			config:{

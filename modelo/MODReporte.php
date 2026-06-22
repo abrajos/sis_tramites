@@ -143,16 +143,6 @@ class MODReporte extends MODbase {
         $this->captura('observacion', 'varchar');
         $this->captura('conclusion', 'varchar');
 
-        $this->captura('nro_matricula', 'varchar');
-        $this->captura('superficie', 'numeric');
-        $this->captura('asiento', 'varchar');
-		$this->captura('fecha_asiento', 'date');
-        $this->captura('nro_testimonio', 'varchar');
-		$this->captura('fecha_testimonio', 'date');
-        $this->captura('nro_notario', 'varchar');
-        $this->captura('nombre_notario', 'varchar');
-        $this->captura('nro_rmta', 'varchar');
-        $this->captura('fecha_rmta', 'date');
         $this->captura('aprobacion', 'varchar');
         $this->captura('area_agro', 'varchar');
         $this->captura('cod_catastral', 'varchar');
@@ -163,11 +153,42 @@ class MODReporte extends MODbase {
         $this->captura('manzana', 'varchar');
         $this->captura('superficie_leg', 'numeric');
         $this->captura('zona', 'varchar');
-        $this->captura('tipo', 'varchar');
-        $this->captura('complemento', 'varchar');
-        $this->captura('tipo_aprobacion', 'varchar');
-        $this->captura('complemento_matri', 'varchar');
+       
         $this->captura('tipo_rechazo', 'varchar');
+		
+        $this->armarConsulta();
+		//echo $this->consulta;exit;
+        $this->ejecutarConsulta();
+
+        return $this->respuesta;
+    }
+
+    function listarMatriculaLegal() {
+        $this->procedimiento = 'sistra.ft_reporte_sel';
+        $this->transaccion = 'TRA_LEGMAT_SEL';
+        $this->tipo_procedimiento = 'SEL';
+
+        $this->setParametro('id_tramite_detalle', 'id_tramite_detalle', 'integer');
+	
+        $this->captura('superficie_matri', 'numeric');
+        $this->captura('nro_matricula', 'varchar');
+        $this->captura('nro_testimonio', 'varchar');
+        $this->captura('nro_notario', 'varchar');
+        $this->captura('nombre_notario', 'varchar');
+        $this->captura('fecha_testimonio', 'date');
+		$this->captura('decreto_registrador', 'varchar');
+        $this->captura('fecha_decreto', 'date');
+		$this->captura('complemento_matri', 'varchar');
+        $this->captura('nro_asiento', 'int4');
+        $this->captura('fecha_asiento', 'date');
+        $this->captura('motivo', 'varchar');
+
+        $this->captura('tipo_rmta', 'varchar');
+        $this->captura('nro_rmta', 'varchar');
+        $this->captura('fecha_rmta', 'date');
+        $this->captura('tipo_aprobacion', 'varchar');
+        $this->captura('complemento_rmta', 'varchar');
+       
 		
         $this->armarConsulta();
 		//echo $this->consulta;exit;

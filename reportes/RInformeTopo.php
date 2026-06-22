@@ -356,10 +356,10 @@ class RInformeTopo extends Report
             $pdf->Ln(7);
         };
 
-        $pdf->writeHTMLCell(180, 0, '', '', '<b>OBSERVACIONES.- </b>', 0, 1, 0, true, 'J', true);
-        $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
-        $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('observacion'), 0, 1, 0, true, 'J', true);
-        $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+        
+
+
+        /*  El plano de lote tiene una aprobacion con rmta:nº445/2014 en fecha 11/06/2014, el predio se encuentra delimitado con muro consolidado, existe construccion dentro del inmueble a la fecha, se controlo la medicion,  la inspeccion y mensura  en presencia e indicacion del interesado, segun el estatuto del funcionario publico y reglamento art. 4 - inciso e) "principio de buena fe", es cuanto informo respecto a la relacion de superficies, limites, rasantes y tipo de servicio para consideracion y visto bueno de su jefatura.  */
         $pdf->writeHTMLCell(180, 0, '', '', 'Los servicios que tienen son:', 0, 1, 0, true, 'J', true);
         $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
 
@@ -381,12 +381,22 @@ class RInformeTopo extends Report
                         </tr>
                     </table>';
 
+        $pdf->writeHTMLCell(180, 0, '', '', '<b>OBSERVACIONES.- </b>', 0, 1, 0, true, 'J', true);
+        $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+        $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('observacion'), 0, 1, 0, true, 'J', true);
+        $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+        //$pdf->writeHTMLCell(180, 0, '', '', 'El plano de lote tiene una aprobacion con rmta:nº445/2014 en fecha 11/06/2014, el predio se encuentra delimitado con muro consolidado, existe construccion dentro del inmueble a la fecha, se controlo la medicion,  la inspeccion y mensura  en presencia e indicacion del interesado, segun el estatuto del funcionario publico y reglamento art. 4 - inciso e) "principio de buena fe", es cuanto informo respecto a la relacion de superficies, limites, rasantes y tipo de servicio para consideracion y visto bueno de su jefatura.', 0, 1, 0, true, 'J', true);
+        //$pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+
         $pdf->writeHTMLCell(160, 0, 25, '', $table3, 0, 1, 0, true, 'R', true);
         $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
         $pdf->writeHTMLCell(180, 0, '', '', '<b>CONCLUSIONES.- </b>', 0, 1, 0, true, 'J', true);
         $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
         $pdf->writeHTMLCell(180, 0, '', '', $dataSource->getParameter('conclusion'), 0, 1, 0, true, 'J', true);
         $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+        //$pdf->writeHTMLCell(180, 0, '', '', 'El siguiente informe tecnico topografico de ubicación no define el derecho propietario sobre el predio, solo determina la situacion fisica y la ubicación proporcionada por el interesado enmarcado en la buena fe de los datos proporcionado, en caso de existir algun problema de derecho propietario el mismo sera de entera responsabilidad del interesado.', 0, 1, 0, true, 'J', true);
+        //$pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+        /**   EL SIGUIENTE INFORME TECNICO TOPOGRAFICO DE UBICACIÓN NO DEFINE EL DERECHO PROPIETARIO SOBRE EL PREDIO, SOLO DETERMINA LA SITUACION FISICA Y LA UBICACIÓN PROPORCIONADA POR EL INTERESADO ENMARCADO EN LA BUENA FE DE LOS DATOS PROPORCIONADO, EN CASO DE EXISTIR ALGUN PROBLEMA DE DERECHO PROPIETARIO EL MISMO SERA DE ENTERA RESPONSABILIDAD DEL INTERESADO.  */
 
         /*
             $pdf->Cell($w = 90, $h = $hMedium, $txt = 'Vias: '.$dataSource->getParameter('vias'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	

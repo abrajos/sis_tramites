@@ -82,7 +82,6 @@ class RInformeLegal extends Report
         $pdf = new CustomReport(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
         $pdf->setDataSource($this->getDataSource());
         $dataSource = $this->getDataSource();
-
         // Márgenes: Izquierdo=15, Superior=45 (espacio para Header), Derecho=15
         $pdf->SetMargins(15, 45, 15);
         $pdf->SetAutoPageBreak(TRUE, 40); // 40mm de margen inferior para el QR/Footer
@@ -91,7 +90,7 @@ class RInformeLegal extends Report
 
         $pdf->AddPage('P', array(215.9, 330)); // Tamaño Oficio
         $pdf->SetFontSize(10);
-
+        //var_dump($dataSource); exit();
         $pdf->SetFontSize(10);
         $pdf->SetFont('', 'B');
         $pdf->Cell($w = 15, $h = $hMedium, $txt = 'A: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
@@ -136,53 +135,53 @@ class RInformeLegal extends Report
         $pdf->Ln(8);
         $pdf->MultiCell(180, $h = $hMedium, 'Conforme a la documentación presentada por:', 0, 'L', 0, 0, '', '', true);
         $pdf->Ln(5);
-        $count = 0;
-        
-        $count = 0;
-        foreach ($dataSource->getDataSet() as $row) {
-            $tipo_persona = $row['tipo_persona'];
-            //var_dump("tipo: ",$tipo_persona); 
-            //var_dump("tipo: ",$row); 
-            /*
-            if ($tipo_persona == "propietario") {
-                if ($count == 0) {
-                    $propietariosList = $row['nombre_completo1'];
-                } else {
-                    $propietariosList .= "|" . $row['nombre_completo1'];
-                }
 
-                $count++;
-                $pdf->SetFont('', 'B');
-                $pdf->Cell($w = 70, $h = $hMedium, $txt = $row['nombre_completo1'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-                $pdf->SetFont('', 'N');
-                $pdf->Cell($w = 18, $h = $hMedium, $txt = ' con C.I. N°: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-                $pdf->SetFont('', 'B');
-                $pdf->Cell($w = 12, $h = $hMedium, $txt = $row['ci'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-                $pdf->Cell($w = 7, $h = $hMedium, $txt = '  ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-                $pdf->Cell($w = 5, $h = $hMedium, $txt = $row['expedicion'], $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-                $pdf->Ln();
-            }
-                */
+        // 1. Obtenemos el dataset (el array principal)
+        $dataset = $dataSource->getDataset(); // O el método público que tenga tu clase para retornar 'dataset'
+        // 2. Apuntamos a la primera posición [0] que es donde están tus listados
+        $listados = $dataset[0];
+        // 3. Extraemos el objeto Mensaje de 'listarPersonas'
+        $objetoMensaje = $listados['listarPersonas'];
+        // 4. Accedemos a la propiedad pública o método de los datos (en tu var_dump dice ["datos"] público)
+        $personas = $objetoMensaje->datos;
+        // 5. Ahora sí, recorremos las personas con un foreach
+        // Inicializamos las variables para evitar errores de PHP Notice
+        $count = 0;
+        $propietariosList = ""; 
+        $nombre_completo = "";
+
+        // 5. Recorremos las personas con un único foreach limpio
+        foreach ($personas as $persona) {
+            $tipo_persona = $persona['tipo_persona'];
+            
             if ($tipo_persona == "propietario") {
+                // Lógica para armar el string plano de propietarios
                 if ($count == 0) {
-                    $propietariosList = $row['nombre_completo1'];
+                    $nombre_completo = $persona['nombre_completo1'];
+                    $propietariosList = $persona['nombre_completo1'];
                 } else {
-                    $propietariosList .= "|" . $row['nombre_completo1'];
+                    $propietariosList .= "|" . $persona['nombre_completo1'];
                 }
+                
                 $count++;
 
-                // 1. Construimos el bloque de texto con etiquetas HTML sólidas para controlar las negritas
-                $htmlPropietario = '• <b>' . $row['nombre_completo1'] . '</b> con C.I. N°: <b>' . $row['ci'] . ' ' . $row['expedicion'] . '</b>';
+                // 1. Construimos el bloque de texto HTML
+                $htmlPropietario = '• <b>' . $persona['nombre_completo1'] . '</b> con C.I. N°: <b>' . $persona['ci'] . ' ' . $persona['expedicion'] . '</b>';
 
-                // 2. Renderizamos en una sola celda HTML flexible que ocupa todo el ancho disponible (180mm)
-                // El '0' en el alto permite que crezca automáticamente de forma segura si el nombre es extremadamente largo
-                $pdf->SetFont('', 'N'); // Fuente base normal
+                // 2. Renderizamos en el PDF de manera segura
+                $pdf->SetFont('', ''); // 'N' no es válido en TCPDF, se deja vacío para regular/normal
                 $pdf->writeHTMLCell(180, 0, '', '', $htmlPropietario, 0, 1, 0, true, 'L', true);
                 
-                // Un pequeño espacio de separación natural entre cada propietario (opcional)
+                // Espacio de separación entre propietarios
                 $pdf->Ln(1); 
             }
         }
+
+        //echo "Lista propietarios: ".$propietariosList;
+
+
+
+        
 
         $pdf->SetFont('', 'N');
 
@@ -204,17 +203,83 @@ class RInformeLegal extends Report
         $pdf->Cell(90, $hMedium, 'Superficie: ' . $dataSource->getParameter('superficie') . ' m2', 1, 1, 'L');
 
         // 3. Registro Derechos Reales
-        $pdf->Cell(90, $hMedium, 'Registrado en Derechos Reales de: ' . $dataSource->getParameter('ddrr_registro'), 1, 0, 'L');
-        $pdf->Cell(90, $hMedium, 'Bajo Matricula N°: ' . $dataSource->getParameter('nro_matricula'), 1, 1, 'L');
-
-        $pdf->Cell(90, $hMedium, 'Con Asiento N°: ' . $dataSource->getParameter('asiento'), 1, 0, 'L');
+        $pdf->Cell(180, $hMedium, 'Registrado en Derechos Reales de: ' . $dataSource->getParameter('ddrr_registro'), 1, 1, 'L');
+        
         $pdf->Cell(90, $hMedium, 'de fecha: ' . $dataSource->getParameter('fecha_asiento'), 1, 1, 'L');
+
+        // 1. Obtenemos el dataset (el array principal)
+        $dataset = $dataSource->getDataset(); 
+
+        // 2. Apuntamos a la posición [0] (Tanto personas como matrículas están aquí adentro)
+        $listados = $dataset[0]; 
+
+        // 3. Extraemos el objeto Mensaje de 'listarMatriculas' usando la posición 0 correcta
+        $objetoMensaje2 = $listados['listarMatriculas'];
+
+        // 4. Accedemos a los datos
+        $matriculaList = $objetoMensaje2->datos;
+
+        // --- CONTROL DE SEGURIDAD (Opcional pero recomendado) ---
+        // Si por alguna razón la consulta de la BD falló o vino vacía, 
+        // convertimos la variable en un array vacío para que el foreach no rompa el sistema.
+        if (!is_array($matriculaList)) {
+            $matriculaList = array();
+        }
+
+        $pdf->Ln(2);
+        // 5. Estructura de la Tabla HTML
+        $pdf->Cell(180, $hMedium, 'Datos matricula (s): ', 0, 1, 'L');
+
+        $table0 = '<table border="1" style="border-collapse: collapse; width: 100%; text-align: center;">
+                    <thead>
+                        <tr>
+                            <th width="10%">#</th>
+                            <th width="40%">Detalle</th>
+                            <th width="50%">Referencia</th>
+                        </tr>
+                    </thead>
+                    <tbody>';
+
+            $num = 1; // Contador para enumerar las matrículas
+            foreach ($matriculaList as $matricula) {
+                $table0 .= '<tr>
+                                <td rowspan="4" style="vertical-align: middle;"  width="10%"><br><br><br>'.$num.'</td>
+                                <td width="40%"><b>Matricula</b></td>
+                                <td width="50%">'.$matricula['nro_matricula'].'</td>
+                            </tr>
+                            <tr>
+                                <td><b>Asiento</b></td>
+                                <td>'.$matricula['nro_asiento'].'</td>
+                            </tr>
+                            <tr>
+                                <td><b>RMTA</b></td>
+                                <td>'.$matricula['nro_rmta'].'</td>
+                            </tr>
+                            <tr>
+                                <td><b>Complemento</b></td>
+                                <td>'.$matricula['complemento_matri'].'</td>
+                            </tr>';
+                $num++;
+            }
+
+            $table0 .= '</tbody>
+                        </table>';
+
+            // Renderizado seguro en el PDF
+            $pdf->writeHTMLCell(180, 0, '', '', $table0, 0, 1, 0, true, 'L', true);
+
+        // Espacio de separación entre propietarios
+        $pdf->Ln(2);
+        // Aqui es solo matricula
+        
+        // $pdf->Cell(180, $hMedium, 'Bajo Matricula N°: ' . $dataSource->getParameter('nro_matricula'), 1, 1, 'L');
+        // $pdf->MultiCell(180, 0, 'Complemento: ' . $dataSource->getParameter('complemento_matri'), 1, 'L', false, 1);
 
         // 4. Celdas de ancho completo (Ancho 180, ln=1)
         //$pdf->Cell(180, $hMedium, 'Complemento: ' . $dataSource->getParameter('complemento_matri'), 1, 1, 'L');
         // --- CELDA DE ANCHO COMPLETO CON ALTO DINÁMICO ---
         // Parámetros: Ancho (180), Alto inicial (0 para que sea dinámico), Texto, Borde (1), Alineación ('L'), Fondo (false), Salto de línea (1)
-        $pdf->MultiCell(180, 0, 'Complemento: ' . $dataSource->getParameter('complemento_matri'), 1, 'L', false, 1);
+        
 
         $pdf->Ln(2);
         $pdf->Cell(180, $hMedium, 'Aprobado mediante: ', 0, 1, 'L');
@@ -230,9 +295,9 @@ class RInformeLegal extends Report
         $pdf->Ln(4);
 
         // 5. Segundo párrafo largo (ln=1 al final para que el Fundamento Legal no se encime)
-        $pdf->MultiCell(180, 0, 'Conforme el testimonio N° ' . $dataSource->getParameter('nro_testimonio') . ' de fecha ' . $dataSource->getParameter('fecha_testimonio') . ', otorgado por la Notaria de Fe Pública N° ' . $dataSource->getParameter('nro_notario') . ', ' . $dataSource->getParameter('nombre_notario') . ', (Escritura Pública de transferencia de un lote de terreno).', 0, 'J', 0, 1);
+        // $pdf->MultiCell(180, 0, 'Conforme el testimonio N° ' . $dataSource->getParameter('nro_testimonio') . ' de fecha ' . $dataSource->getParameter('fecha_testimonio') . ', otorgado por la Notaria de Fe Pública N° ' . $dataSource->getParameter('nro_notario') . ', ' . $dataSource->getParameter('nombre_notario') . ', (Escritura Pública de transferencia de un lote de terreno).', 0, 'J', 0, 1);
 
-        $pdf->Ln(5);
+        //$pdf->Ln(5);
 
         // 6. Título de Fundamento Legal
         $pdf->SetFont('', 'B');

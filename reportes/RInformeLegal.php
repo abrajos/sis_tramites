@@ -343,9 +343,9 @@ class RInformeLegal extends Report
         $table0 = '<table border="1" style="border-collapse: collapse; width: 100%; text-align: center;">
                     <thead>
                         <tr>
-                            <th width="10%">#</th>
-                            <th width="40%">Detalle</th>
-                            <th width="50%">Referencia</th>
+                            <th width="10%"><b>#</b></th>
+                            <th width="40%"><b>Detalle</b></th>
+                            <th width="50%"><b>Referencia</b></th>
                         </tr>
                     </thead>
                     <tbody>';

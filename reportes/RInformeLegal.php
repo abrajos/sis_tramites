@@ -90,7 +90,7 @@ class RInformeLegal extends Report
 
         $pdf->AddPage('P', array(215.9, 330)); // Tamaño Oficio
         $pdf->SetFontSize(10);
-        //var_dump($dataSource); exit();
+        // var_dump($dataSource); exit();
         $pdf->SetFontSize(10);
         $pdf->SetFont('', 'B');
         $pdf->Cell($w = 15, $h = $hMedium, $txt = 'A: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
@@ -199,13 +199,8 @@ class RInformeLegal extends Report
         $pdf->Cell(90, $hMedium, 'Distrito: ' . $dataSource->getParameter('distrito'), 1, 0, 'L');
         $pdf->Cell(90, $hMedium, 'Manzano: ' . $dataSource->getParameter('manzana'), 1, 1, 'L');
 
-        $pdf->Cell(90, $hMedium, 'Lote: ' . $dataSource->getParameter('lote'), 1, 0, 'L');
-        $pdf->Cell(90, $hMedium, 'Superficie: ' . $dataSource->getParameter('superficie') . ' m2', 1, 1, 'L');
-
         // 3. Registro Derechos Reales
         $pdf->Cell(180, $hMedium, 'Registrado en Derechos Reales de: ' . $dataSource->getParameter('ddrr_registro'), 1, 1, 'L');
-        
-        $pdf->Cell(90, $hMedium, 'de fecha: ' . $dataSource->getParameter('fecha_asiento'), 1, 1, 'L');
 
         // 1. Obtenemos el dataset (el array principal)
         $dataset = $dataSource->getDataset(); 
@@ -230,6 +225,121 @@ class RInformeLegal extends Report
         // 5. Estructura de la Tabla HTML
         $pdf->Cell(180, $hMedium, 'Datos matricula (s): ', 0, 1, 'L');
 
+        // Asumiendo que $matriculaList contiene tus 4 registros originales...
+        $resultadoAgrupado = array();
+        foreach ($matriculaList as $item) {
+            $idMatricula = $item['nro_matricula'];
+
+            // Si es la primera vez que vemos esta matrícula, creamos su estructura base
+            if (!isset($resultadoAgrupado[$idMatricula])) {
+                $resultadoAgrupado[$idMatricula] = array(
+                    'nro_matricula'       => $item['nro_matricula'],
+                    'superficie_matri'    => $item['superficie_matri'],
+                    'nro_testimonio'      => $item['nro_testimonio'],
+                    'nro_notario'         => $item['nro_notario'],
+                    'nombre_notario'      => $item['nombre_notario'],
+                    'fecha_testimonio'    => $item['fecha_testimonio'],
+                    'decreto_registrador' => $item['decreto_registrador'],
+                    'fecha_decreto'       => $item['fecha_decreto'],
+                    'complemento_matri'   => $item['complemento_matri'],
+                        
+                    // Inicializamos como sub-arreglos para acumular los datos variables
+                    'asientos'            => array(),
+                    'rmtas'               => array(),
+                    'contador'            => 0
+                );
+            }
+
+            // 1. Agrupamos los datos del Asiento si existen
+            if (!empty($item['nro_asiento'])) {
+                // Estructuramos el sub-objeto/arreglo del asiento
+                $nuevoAsiento = array(
+                    'nro_asiento'   => $item['nro_asiento'],
+                    'fecha_asiento' => $item['fecha_asiento'],
+                    'motivo'        => $item['motivo']
+                );
+                    
+                // Evitamos meter exactamente el mismo asiento si está repetido en la data
+                if (!in_array($nuevoAsiento, $resultadoAgrupado[$idMatricula]['asientos'])) {
+                    $resultadoAgrupado[$idMatricula]['asientos'][] = $nuevoAsiento;
+                }
+            }
+
+            // 2. Agrupamos los datos de la RMTA si existen
+            if (!empty($item['nro_rmta'])) {
+                // Estructuramos el sub-objeto/arreglo de la RMTA
+                $nuevaRmta = array(
+                    'tipo_rmta'        => $item['tipo_rmta'],
+                    'nro_rmta'         => $item['nro_rmta'],
+                    'fecha_rmta'       => $item['fecha_rmta'],
+                    'tipo_aprobacion'  => $item['tipo_aprobacion'],
+                    'complemento_rmta' => $item['complemento_rmta']
+                );
+
+                    // Evitamos meter exactamente la misma RMTA si está repetida en la data
+                if (!in_array($nuevaRmta, $resultadoAgrupado[$idMatricula]['rmtas'])) {
+                        $resultadoAgrupado[$idMatricula]['rmtas'][] = $nuevaRmta;
+                }
+            }
+        }
+        // Al final, reindexamos el array con array_values() para que vuelva a ser una lista continua [0, 1, 2...]
+        $matriculaNewList = array_values($resultadoAgrupado);
+        $counMatricula = $matriculaNewList;
+        $auxiliar = 0;
+        foreach ($counMatricula as $matricula) {
+            $nro_matricula = $matricula['nro_matricula'];
+           
+            $totalDatosLlenos = 0;
+            // 1. Contar campos "sueltos" del nivel superior (los datos generales)
+            // Definimos la lista de atributos individuales a evaluar
+            $camposGenerales = array(
+                'nro_matricula', 'superficie_matri', 'nro_testimonio', 'nro_notario', 'nombre_notario', 
+                'fecha_testimonio', 'decreto_registrador', 'fecha_decreto', 'complemento_matri'
+            );
+            
+            $datosSueltosCompletos = 0;
+            foreach ($camposGenerales as $campo) {
+                if (isset($matricula[$campo]) && trim($matricula[$campo]) !== "") {
+                    $datosSueltosCompletos++;
+                }
+            }
+            $totalDatosLlenos += $datosSueltosCompletos;
+            // 2. Conteo de Campos Internos de los Asientos
+            $camposAsiento = array('nro_asiento', 'fecha_asiento', 'motivo');
+            $conteoAsientosCampos = 0;
+            $aux = 0;
+            if (isset($matricula['asientos']) && is_array($matricula['asientos'])) {
+                foreach ($matricula['asientos'] as $asiento) {
+                    foreach ($camposAsiento as $cAsiento) {
+                        if (isset($asiento[$cAsiento]) && trim($asiento[$cAsiento]) !== "") {
+                            $conteoAsientosCampos++;
+                        }
+                    }
+                }
+            }
+            $totalDatosLlenos += $conteoAsientosCampos;
+            
+            // 3. Conteo de Campos Internos de las RMTAs
+            $camposRMTA = array('tipo_rmta', 'nro_rmta', 'fecha_rmta', 'tipo_aprobacion', 'complemento_rmta');
+            $conteoRmtasCampos = 0;
+            
+            if (isset($matricula['rmtas']) && is_array($matricula['rmtas'])) {
+                foreach ($matricula['rmtas'] as $rmta) {
+                    foreach ($camposRMTA as $cRmta) {
+                        if (isset($rmta[$cRmta]) && trim($rmta[$cRmta]) !== "") {
+                            $conteoRmtasCampos++;
+                        }
+                    }
+                }
+            }
+            $totalDatosLlenos += $conteoRmtasCampos;
+
+            // 4. Calcular el Gran Total de información válida en este bloque
+            $totalDatosRegistro = $datosSueltosCompletos + $conteoAsientosCampos + $conteoRmtasCampos;
+            $matriculaNewList[$auxiliar]["contador"] = $totalDatosLlenos; 
+            $auxiliar++;
+        }
+
         $table0 = '<table border="1" style="border-collapse: collapse; width: 100%; text-align: center;">
                     <thead>
                         <tr>
@@ -240,8 +350,177 @@ class RInformeLegal extends Report
                     </thead>
                     <tbody>';
 
-            $num = 1; // Contador para enumerar las matrículas
+        $num = 1; // Contador para enumerar las matrículas
+        //var_dump($matriculaNewList); exit();
+        foreach ($matriculaNewList as $matricula) {
+            $table0 .= '<tr>
+                            <td rowspan="'.$matricula["contador"].'" style="vertical-align: middle;" width="10%"><br><br><br>'.$num.'</td> 
+                            <td width="40%" style="text-align: right;"> Bajo matricula N°: </td> 
+                            <td width="50%" style="text-align: left;">'.$matricula['nro_matricula'].'</td>
+                        </tr>';
+            $table0 .= '<tr>
+                            <td width="40%" style="text-align: right;">Superficie:</td>
+                            <td width="50%" style="text-align: left;">'.$matricula['superficie_matri'].'</td>
+                        </tr>';
+            if ($matricula['complemento_matri'] != '' && $matricula['complemento_matri'] != NULL) {
+                $table0 .= '<tr>
+                            <td width="40%" style="text-align: right;">Complemento Matricula:</td>
+                            <td width="50%" style="text-align: left;">'.$matricula['complemento_matri'].'</td>
+                        </tr>';
+            }
+            if ($matricula['nro_notario'] != '' && $matricula['nro_notario'] != NULL) {
+                $table0 .= '<tr>
+                            <td width="40%" style="text-align: right;">N° Notario:</td>
+                            <td width="50%" style="text-align: left;">'.$matricula['nro_notario'].'</td>
+                        </tr>';
+            }
+            if ($matricula['nombre_notario'] != '' && $matricula['nombre_notario'] != NULL) {
+                $table0 .= '<tr>
+                            <td width="40%" style="text-align: right;">Nombre Notario:</td>
+                            <td width="50%" style="text-align: left;">'.$matricula['nombre_notario'].'</td>
+                        </tr>';
+            }
+            
+            if ($matricula['nro_testimonio'] != '' && $matricula['nro_testimonio'] != NULL) {
+                $table0 .= '<tr>
+                            <td width="40%" style="text-align: right;">N° Testimonio:</td>
+                            <td width="50%" style="text-align: left;">'.$matricula['nro_testimonio'].'</td>
+                        </tr>';
+            }
+            if ($matricula['fecha_testimonio'] != '' && $matricula['fecha_testimonio'] != NULL) {
+                $table0 .= '<tr>
+                            <td width="40%" style="text-align: right;">Fecha Testimonio:</td>
+                            <td width="50%" style="text-align: left;">'.$matricula['fecha_testimonio'].'</td>
+                        </tr>';
+            }
+
+            if ($matricula['decreto_registrador'] != '' && $matricula['decreto_registrador'] != NULL) {
+                $table0 .= '<tr>
+                            <td width="40%" style="text-align: right;">Decreto registrador:</td>
+                            <td width="50%" style="text-align: left;">'.$matricula['decreto_registrador'].'</td>
+                        </tr>';
+            }
+            if ($matricula['fecha_decreto'] != '' && $matricula['fecha_decreto'] != NULL) {
+                $table0 .= '<tr>
+                            <td width="40%" style="text-align: right;">Fecha Decreto:</td>
+                            <td width="50%" style="text-align: left;">'.$matricula['fecha_decreto'].'</td>
+                        </tr>';
+            }
+            $countAsieto = 1;
+            if (isset($matricula['asientos']) && is_array($matricula['asientos']) && !empty($matricula['asientos'])) {
+                foreach ($matricula['asientos'] as $asientos) {
+                    if ($asientos['nro_asiento'] != '' && $asientos['nro_asiento'] != NULL) {
+                        $table0 .= '<tr>
+                                    <td width="40%" style="text-align: right;">N° Asiento'.$countAsieto.':</td>
+                                    <td width="50%" style="text-align: left;">'.$asientos['nro_asiento'].'</td>
+                                </tr>';
+                    }  
+                    if ($asientos['fecha_asiento'] != '' && $asientos['fecha_asiento'] != NULL) {
+                        $table0 .= '<tr>
+                                    <td width="40%" style="text-align: right;">Fecha Asiento'.$countAsieto.':</td>
+                                    <td width="50%" style="text-align: left;">'.$asientos['fecha_asiento'].'</td>
+                                </tr>';
+                    }
+                    if ($asientos['motivo'] != '' && $asientos['motivo'] != NULL) {
+                        $table0 .= '<tr>
+                                    <td width="40%" style="text-align: right;">Motivo Asiento'.$countAsieto.':</td>
+                                    <td width="50%" style="text-align: left;">'.$asientos['motivo'].'</td>
+                                </tr>';
+                    }
+                    $countAsieto++;
+                }
+            }
+            
+
+            $countMRTA = 1;
+            if (isset($matricula['rmtas']) && is_array($matricula['rmtas']) && !empty($matricula['rmtas'])) {
+                foreach ($matricula['rmtas'] as $rmtasList) {
+                    if ($rmtasList['tipo_rmta'] != '' && $rmtasList['tipo_rmta'] != NULL) {
+                        $table0 .= '<tr>
+                                    <td width="40%" style="text-align: right;">Tipo RMTA'.$countMRTA.':</td>
+                                    <td width="50%" style="text-align: left;">'.$rmtasList['tipo_rmta'].'</td>
+                                </tr>';
+                    } 
+                    if ($rmtasList['nro_rmta'] != '' && $rmtasList['nro_rmta'] != NULL) {
+                        $table0 .= '<tr>
+                                    <td width="40%" style="text-align: right;">N° RMTA'.$countMRTA.':</td>
+                                    <td width="50%" style="text-align: left;">'.$rmtasList['nro_rmta'].'</td>
+                                </tr>';
+                    }  
+                    if ($rmtasList['fecha_rmta'] != '' && $rmtasList['fecha_rmta'] != NULL) {
+                        $table0 .= '<tr>
+                                    <td width="40%" style="text-align: right;">Fecha RMTA'.$countMRTA.':</td>
+                                    <td width="50%" style="text-align: left;">'.$rmtasList['fecha_rmta'].'</td>
+                                </tr>';
+                    }
+                    if ($rmtasList['tipo_aprobacion'] != '' && $rmtasList['tipo_aprobacion'] != NULL) {
+                        $table0 .= '<tr>
+                                    <td width="40%" style="text-align: right;">Motivo RMTA'.$countMRTA.':</td>
+                                    <td width="50%" style="text-align: left;">'.$rmtasList['tipo_aprobacion'].'</td>
+                                </tr>';
+                    }
+                    if ($rmtasList['complemento_rmta'] != '' && $rmtasList['complemento_rmta'] != NULL) {
+                        $table0 .= '<tr>
+                                    <td width="40%" style="text-align: right;">Cmplemento RMTA'.$countMRTA.':</td>
+                                    <td width="50%" style="text-align: left;">'.$rmtasList['complemento_rmta'].'</td>
+                                </tr>';
+                    }
+                    $countMRTA++;
+                }
+            }
+            
+
+            $num++;
+        }
+        $table0 .= '</tbody>
+                    </table>';
+        $pdf->writeHTMLCell(180, 0, '', '', $table0, 0, 1, 0, true, 'L', true);
+
+/*
             foreach ($matriculaList as $matricula) {
+                // Matricula
+                $superficie_matri = $matricula['superficie_matri'];
+                $nro_matricula = $matricula['superficie_matri'];
+                $countaux = 2;
+                $complemento_matri = '';
+                if ($matricula['superficie_matri'] != '' && $matricula['superficie_matri'] != NULL) {
+                    $complemento_matri = $matricula['superficie_matri'];
+                    $countaux++;
+                }
+                // Notario
+                $nro_notario = '';
+                if ($matricula['superficie_matri'] != '' && $matricula['superficie_matri'] != NULL) {
+                    $complemento_matri = $matricula['superficie_matri'];
+                    $countaux++;
+                }
+                $nombre_notario = '';
+                if ($matricula['nombre_notario'] != '' && $matricula['nombre_notario'] != NULL) {
+                    $complemento_matri = $matricula['nombre_notario'];
+                    $table0 .= '<td width="40%"><b>Matricula</b></td>
+                                <td width="50%">'.$matricula['nro_matricula'].'</td>';
+                    $countaux++;
+                }
+                // Testimonio
+                $nro_testimonio = '';
+                if ($matricula['nro_testimonio'] != '' && $matricula['nro_testimonio'] != NULL) {
+                    $complemento_matri = $matricula['nombre_notario'];
+                    $countaux++;
+                }
+                $fecha_testimonio = '';
+                // Decreto
+                $decreto_registrador = '';
+                $fecha_decreto = '';
+                // Asiento (Puede ser multiple)
+                $nro_asiento = '';
+                $fecha_asiento = '';
+                $motivo = '';
+                // RMTA (Puede ser multiple)
+                $tipo_rmta = '';
+                $nro_rmta = '';
+                $complemento_matri = '';
+                $tipo_aprobacion = '';
+                $complemento_rmta = '';
+                
                 $table0 .= '<tr>
                                 <td rowspan="4" style="vertical-align: middle;"  width="10%"><br><br><br>'.$num.'</td>
                                 <td width="40%"><b>Matricula</b></td>
@@ -267,7 +546,7 @@ class RInformeLegal extends Report
 
             // Renderizado seguro en el PDF
             $pdf->writeHTMLCell(180, 0, '', '', $table0, 0, 1, 0, true, 'L', true);
-
+*/
         // Espacio de separación entre propietarios
         $pdf->Ln(2);
         // Aqui es solo matricula

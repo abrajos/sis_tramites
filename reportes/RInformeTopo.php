@@ -149,64 +149,6 @@ class RInformeTopo extends Report
         $pdf->writeHTMLCell(180, 0, '', '', 'Corresponde informar que el predio se encuentra dentro de la jurisdicción de Colcapirhua ubicado en:', 0, 1, 0, true, 'J', true);
         $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
 
-        /*
-            if ( $dataSource->getParameter('tipo_persona') == "tramitador"){
-                $pdf->SetFont('', 'B');
-                $pdf->Cell($w = 20, $h = $hMedium, $txt = ' ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-                $pdf->Cell($w = 70, $h = $hMedium, $txt = $dataSource->getParameter('nombre_completo1'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-                $pdf->SetFont('', 'N');
-                $pdf->Cell($w = 18, $h = $hMedium, $txt = 'con C.I. N°: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-                $pdf->SetFont('', 'B');
-                $pdf->Cell($w = 12, $h = $hMedium, $txt = $dataSource->getParameter('ci'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-                $pdf->Cell($w = 7, $h = $hMedium, $txt = '  ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   	
-                $pdf->Cell($w = 5, $h = $hMedium, $txt = $dataSource->getParameter('expedicion'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-                $pdf->Ln(5);
-            } else{
-                $pdf->SetFont('', 'B');
-                $pdf->Cell($w = 20, $h = $hMedium, $txt = ' ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-                $pdf->Cell($w = 70, $h = $hMedium, $txt = $dataSource->getParameter('nombre_completo1'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-                $pdf->SetFont('', 'N');
-                $pdf->Cell($w = 18, $h = $hMedium, $txt = 'con C.I. N°: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-                $pdf->SetFont('', 'B');
-                $pdf->Cell($w = 12, $h = $hMedium, $txt = $dataSource->getParameter('ci'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-                $pdf->Cell($w = 7, $h = $hMedium, $txt = '  ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   	
-                $pdf->Cell($w = 5, $h = $hMedium, $txt = $dataSource->getParameter('expedicion'), $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-                $pdf->Ln(5);
-                };
-
-*/
-        /*
-            $pdf->Cell($w = 90, $h = $hMedium, $txt = 'Distrito: '.$dataSource->getParameter('distrito'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');	
-            $pdf->Cell($w = 90, $h = $hMedium, $txt = 'Zona: '.$dataSource->getParameter('zona'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            $pdf->Ln(7);
-            $pdf->Cell($w = 60, $h = $hMedium, $txt = 'Manzano: '.$dataSource->getParameter('manzana'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            $pdf->Cell($w = 60, $h = $hMedium, $txt = 'Lote: '.$dataSource->getParameter('nombre_lote'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            $pdf->Cell($w = 60, $h = $hMedium, $txt = 'Tipo de Calle: '.$dataSource->getParameter('tipo_calle'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	 
-            $pdf->Ln(7);
-            $pdf->Cell($w = 180, $h = $hMedium, $txt = 'Calle: '.$dataSource->getParameter('calle'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-            $pdf->Ln(7);	   
-            $pdf->Cell($w = 180, $h = $hMedium, $txt = 'Avenida: '.$dataSource->getParameter('avenida'), $border = 'LRTB', $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');	   
-            */
-        
-/*
-        $table0 = '<table border="1" style="width: 100%; border-collapse: collapse;">
-                        <tr>
-                            <td colspan="3" style="text-align: left;"><b>Distrito: ' . $dataSource->getParameter('distrito') . '</b></td>
-                            <td colspan="3" style="text-align: left;"><b>Zona:' . $dataSource->getParameter('zona') . '</b></td>
-                        </tr>
-                        <tr>
-                            <td colspan="2" style="text-align: left;"><b>Manzano: ' . $dataSource->getParameter('manzana') . '</b></td>
-                            <td colspan="2" style="text-align: left;"><b>Lote: ' . $dataSource->getParameter('nombre_lote') . '</b></td>
-                            <td colspan="2" style="text-align: left;"><b>Tipo de Calle: ' . $dataSource->getParameter('tipo_calle') . '</b></td>
-                        </tr>
-                        <tr>
-                            <td colspan="6" style="text-align: left;"><b>Calle: ' . $dataSource->getParameter('calle') . '</b></td>
-                        </tr>
-                        <tr>
-                            <td colspan="6" style="text-align: left;"><b>Avenida: ' . $dataSource->getParameter('avenida') . '</b></td>
-                        </tr>
-                    </table>';
-*/
         /////////////////////////////////////////////////////////////
         // Nuevo data set agrupado
         /////////////////////////////////////////////////////////////
@@ -278,7 +220,7 @@ class RInformeTopo extends Report
                 }
 
                 // --- GRUPO 3: Vías ---
-                if (strtoupper($fila['manzana']) === 'VIAS' && $fila['tipo_cesion'] === 'via') {
+                if (strtoupper($fila['manzana']) === 'VIAS' && ($fila['tipo_cesion'] === 'via' || $fila['tipo_cesion'] === 'area_verde')) {
                     $grupo_vias[] = $datosReducidos;
                 }
 
@@ -304,7 +246,7 @@ class RInformeTopo extends Report
         ];
 
         $datosTecnicos = $resultadoFinal['dataset_grupos']['datos_tecnicos'];
-        //var_dump($datosTecnicos); exit();
+        //var_dump($resultadoFinal); exit();
 
         $table0 = '<table border="1" style="width: 100%; border-collapse: collapse;">
                 <tbody>
@@ -427,7 +369,160 @@ class RInformeTopo extends Report
             $pdf->Cell($w = 30, $h = $hMedium, $txt = ' ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
             $pdf->Cell($w = 120, $h = $hMedium, $txt = 'RELACION Y DIVISION DE LOTES', $border = 1, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
             $pdf->Ln();
+            ////////////////////////////////////////////////////////////////////
+            // Adecuacion anexos por grupo de manzano, lote, via y construccion
+            ////////////////////////////////////////////////////////////////////
+            $datosLote = $resultadoFinal['dataset_grupos']['cesion_lotes'];
 
+            $tableCesion = '<table border="1" style="width: 100%; border-collapse: collapse;" cellpadding="4">
+                                <tbody>';
+
+            if (!empty($datosLote) && is_array($datosLote)) {
+                foreach ($datosLote as $nombreManzana => $lotes) {
+                    
+                    // Cabecera de la manzana
+                    $tableCesion .= '<tr>
+                                        <td colspan="3" style="text-align: left; background-color: #f2f2f2;"><b>DATOS TECNICOS: </b>'.htmlspecialchars($nombreManzana) .'</td>
+                                    </tr>';
+                    
+                    $totalPercent = 0;
+                    $totalSuperficie = 0; // Agregada para que sume real en el total del bloque
+
+                    foreach ($lotes as $lote) {
+                        // Corregido el <tr"> y el <td> style=
+                        $tableCesion .= '<tr>
+                                            <td style="text-align: left;" width="40%"><b>'.$lote['nombre_lote'].'</b></td>
+                                            <td style="text-align: right;" width="30%">'.$lote['superficie_lote'].' M2</td>
+                                            <td style="text-align: right;" width="30%">'.$lote['porcentaje'].'%</td>
+                                        </tr>';
+                        
+                        $totalPercent += floatval($lote['porcentaje']);
+                        $totalSuperficie += floatval($lote['superficie_lote']);
+                    }
+                    
+                    // Fila de Totales por Manzana (Corregida sintaxis)
+                    $tableCesion .= '<tr>
+                                        <td style="text-align: right;"><b>TOTAL:</b></td>
+                                        <td style="text-align: right; font-weight: bold;">'.$totalSuperficie.' M2</td>
+                                        <td style="text-align: right; font-weight: bold;">'.$totalPercent.'%</td>
+                                    </tr>';
+                }
+                
+                // El cierre del tbody y table debe ir FUERA del bucle principal si es una sola tabla
+                $tableCesion .= '</tbody>
+                            </table>';
+
+                // Imprimir la tabla en el PDF
+                $pdf->SetFont('helvetica', '', 10);
+                $pdf->writeHTMLCell(180, 0, '', '', $tableCesion, 0, 1, 0, true, 'J', true);
+            }
+        
+            $pdf->Ln(2.5);
+            $datosVias = $resultadoFinal['dataset_grupos']['vias'];
+
+            if (!empty($datosVias) && is_array($datosVias)) {
+                
+                // 1. SOLUCIÓN AL ERROR: Inicializar siempre la tabla antes de concatenar filas
+                $tableVias = '<table border="1" style="width: 100%; border-collapse: collapse;" cellpadding="4">
+                                <tbody>';
+
+                foreach ($datosVias as $via) { // Cambiado a $via para que coincida abajo
+                    
+                    // Obtener el nombre de la manzana real ("manzana" según tu var_dump)
+                    $nombreManzana = !empty($via['manzana']) ? $via['manzana'] : 'VIAS';
+                    
+                    // Si el lote viene vacío, le ponemos un texto genérico descriptivo
+                    $nombreVia = !empty($via['nombre_lote']) ? $via['nombre_lote'] : 'Uso de Vía Pública';
+
+                    // Cabecera de la sección
+                    $tableVias .= '<tr>
+                                        <td colspan="3" style="text-align: left; background-color: #f2f2f2; font-weight: bold;">DATOS TECNICOS: ' . htmlspecialchars($nombreManzana) . '</td>
+                                </tr>';
+                    
+                    $totalPercent = floatval($via['porcentaje']);
+                    $totalSuperficie = floatval($via['superficie_lote']);
+                    
+                    // Fila de Datos de la vía
+                    $tableVias .= '<tr>
+                                        <td style="text-align: left;" width="40%"><b>' . $via['tipo_cesion'] . '</b></td>
+                                        <td style="text-align: right;" width="30%">' . $via['superficie_lote'] . ' M2</td>
+                                        <td style="text-align: right;" width="30%">' . $via['porcentaje'] . '%</td>
+                                </tr>';
+                    
+                    // Fila de Totales
+                    $tableVias .= '<tr>
+                                        <td style="text-align: right;"><b>TOTAL:</b></td>
+                                        <td style="text-align: right; font-weight: bold;">' . $totalSuperficie . ' M2</td>
+                                        <td style="text-align: right; font-weight: bold;">' . $totalPercent . '%</td>
+                                </tr>';
+                }
+                
+                // Cierre estructurado del HTML
+                $tableVias .= '</tbody>
+                            </table>';
+
+                // Imprimir la tabla de manera segura en el PDF
+                $pdf->SetFont('helvetica', '', 10);
+                $pdf->writeHTMLCell(180, 0, '', '', $tableVias, 0, 1, 0, true, 'J', true);
+            }
+
+            $pdf->Ln(2.5);
+            $datosConstruccion = $resultadoFinal['dataset_grupos']['construccion'];
+            //var_dump($datosConstruccion); exit();
+            if (!empty($datosConstruccion) && is_array($datosConstruccion)) {
+                
+                // 1. SOLUCIÓN AL ERROR: Inicializar siempre la tabla antes de concatenar filas
+                $tableConstruccion = '<table border="1" style="width: 100%; border-collapse: collapse;" cellpadding="4">
+                                <tbody>';
+
+                foreach ($datosConstruccion as $construccion) { // Cambiado a $via para que coincida abajo
+                    
+                    // Obtener el nombre de la manzana real ("manzana" según tu var_dump)
+                    $nombreManzana = !empty($construccion['manzana']) ? $construccion['manzana'] : 'CONSTRUCCIÓN';
+                    
+                    // Si el lote viene vacío, le ponemos un texto genérico descriptivo
+                    $nombreVia = !empty($construccion['nombre_lote']) ? $construccion['nombre_lote'] : 'Construcción';
+
+                    // Cabecera de la sección
+                    $tableConstruccion .= '<tr>
+                                        <td colspan="3" style="text-align: left; background-color: #f2f2f2; font-weight: bold;">DATOS TECNICOS: ' . htmlspecialchars($nombreManzana) . '</td>
+                                </tr>';
+                    
+                    $totalPercent = floatval($construccion['porcentaje']);
+                    $totalSuperficie = floatval($construccion['superficie_lote']);
+                    
+                    // Fila de Datos de la vía
+                    $tableConstruccion .= '<tr>
+                                        <td style="text-align: left;" width="40%"><b>' . $construccion['tipo_cesion'] . '</b></td>
+                                        <td style="text-align: right;" width="30%">' . $construccion['superficie_lote'] . ' M2</td>
+                                        <td style="text-align: right;" width="30%">' . $construccion['porcentaje'] . '%</td>
+                                </tr>';
+                    
+                    // Fila de Totales
+                    $tableConstruccion .= '<tr>
+                                        <td style="text-align: right;"><b>TOTAL:</b></td>
+                                        <td style="text-align: right; font-weight: bold;">' . $totalSuperficie . ' M2</td>
+                                        <td style="text-align: right; font-weight: bold;">' . $totalPercent . '%</td>
+                                </tr>';
+                }
+                
+                // Cierre estructurado del HTML
+                $tableConstruccion .= '</tbody>
+                            </table>';
+
+                // Imprimir la tabla de manera segura en el PDF
+                $pdf->SetFont('helvetica', '', 10);
+                $pdf->writeHTMLCell(180, 0, '', '', $tableConstruccion, 0, 1, 0, true, 'J', true);
+            }
+
+
+
+
+
+
+
+
+            /*
             foreach ($dataSource->getDataSet() as $row) {
                 $pdf->SetFontSize(10);
                 $pdf->SetFont('', 'N');
@@ -512,6 +607,7 @@ class RInformeTopo extends Report
                     $pdf->Ln();
                 };
             };
+
             $pdf->SetFont('', 'B');
             $pdf->Cell($w = 30, $h = $hMedium, $txt = ' ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
             $pdf->Cell($w = 80, $h = $hMedium, $txt = 'SUP. TOTAL VIA ', $border = 1, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
@@ -523,6 +619,7 @@ class RInformeTopo extends Report
             $pdf->Cell($w = 20, $h = $hMedium, $txt =  ($total_via + $total_area + $total_lote) . ' m2', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
             $pdf->Cell($w = 20, $h = $hMedium, $txt = ($total_via_p + $total_area_p + $total_lote_p) . ' %', $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
             $pdf->Ln();
+            */
         };
         
         $pdf->Output($fileName, 'F');

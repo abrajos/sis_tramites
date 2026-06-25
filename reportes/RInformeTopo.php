@@ -366,23 +366,25 @@ class RInformeTopo extends Report
             $pdf->Cell($w = 180, $h = $hMedium, $txt = 'ANEXOS', $border = 0, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
             $pdf->Ln(8);
             $pdf->SetFontSize(10);
-            $pdf->Cell($w = 30, $h = $hMedium, $txt = ' ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-            $pdf->Cell($w = 120, $h = $hMedium, $txt = 'RELACION Y DIVISION DE LOTES', $border = 1, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
-            $pdf->Ln();
+            $pdf->Cell($w = 180, $h = $hMedium, $txt = 'RELACION Y DIVISION DE LOTES', $border = 1, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'L');
+            $pdf->Ln(7);
             ////////////////////////////////////////////////////////////////////
             // Adecuacion anexos por grupo de manzano, lote, via y construccion
             ////////////////////////////////////////////////////////////////////
             $datosLote = $resultadoFinal['dataset_grupos']['cesion_lotes'];
 
             $tableCesion = '<table border="1" style="width: 100%; border-collapse: collapse;" cellpadding="4">
-                                <tbody>';
+                                <tbody>
+                                <tr>
+                                    <td colspan="3" style="text-align: left; background-color: #f2f2f2; font-weight: bold;">DATOS TECNICOS: LOTES VINCULADAS</td>
+                                </tr>';
 
             if (!empty($datosLote) && is_array($datosLote)) {
                 foreach ($datosLote as $nombreManzana => $lotes) {
                     
                     // Cabecera de la manzana
                     $tableCesion .= '<tr>
-                                        <td colspan="3" style="text-align: left; background-color: #f2f2f2;"><b>DATOS TECNICOS: </b>'.htmlspecialchars($nombreManzana) .'</td>
+                                        <td colspan="3" style="text-align: left; background-color: #f2f2f2;"><b>MANZANA: </b>'.htmlspecialchars($nombreManzana) .'</td>
                                     </tr>';
                     
                     $totalPercent = 0;
@@ -424,7 +426,10 @@ class RInformeTopo extends Report
                 
                 // 1. SOLUCIÓN AL ERROR: Inicializar siempre la tabla antes de concatenar filas
                 $tableVias = '<table border="1" style="width: 100%; border-collapse: collapse;" cellpadding="4">
-                                <tbody>';
+                                <tbody>
+                                <tr>
+                                    <td colspan="3" style="text-align: left; background-color: #f2f2f2; font-weight: bold;">DATOS TECNICOS: VIAS Y AREAS VERDES VINCULADAS</td>
+                                </tr>';
 
                 foreach ($datosVias as $via) { // Cambiado a $via para que coincida abajo
                     
@@ -436,7 +441,7 @@ class RInformeTopo extends Report
 
                     // Cabecera de la sección
                     $tableVias .= '<tr>
-                                        <td colspan="3" style="text-align: left; background-color: #f2f2f2; font-weight: bold;">DATOS TECNICOS: ' . htmlspecialchars($nombreManzana) . '</td>
+                                        <td colspan="3" style="text-align: left; background-color: #f2f2f2; font-weight: bold;">REFERENCIA: ' . htmlspecialchars($nombreManzana) . '</td>
                                 </tr>';
                     
                     $totalPercent = floatval($via['porcentaje']);
@@ -467,50 +472,71 @@ class RInformeTopo extends Report
             }
 
             $pdf->Ln(2.5);
+            //$pdf->Ln();
             $datosConstruccion = $resultadoFinal['dataset_grupos']['construccion'];
-            //var_dump($datosConstruccion); exit();
+
             if (!empty($datosConstruccion) && is_array($datosConstruccion)) {
                 
-                // 1. SOLUCIÓN AL ERROR: Inicializar siempre la tabla antes de concatenar filas
+                // --- NORMALIZACIÓN DE ESTRUCTURA ---
+                // Detectamos si el array viene SIN manzanas (es decir, el primer índice es 0)
+                if (isset($datosConstruccion[0])) {
+                    // Lo transformamos al formato agrupado asignándole una cabecera genérica
+                    $datosNormalizados = array("INFORMACIÓN GENERAL" => $datosConstruccion);
+                } else {
+                    // Si ya viene con nombres de manzana, lo dejamos tal cual
+                    $datosNormalizados = $datosConstruccion;
+                }
+                // -------------------------------------
+
                 $tableConstruccion = '<table border="1" style="width: 100%; border-collapse: collapse;" cellpadding="4">
-                                <tbody>';
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="3" style="text-align: left; background-color: #f2f2f2; font-weight: bold;">DATOS TECNICOS: CONSTRUCCIONES VINCULADAS</td>
+                                            </tr>';
 
-                foreach ($datosConstruccion as $construccion) { // Cambiado a $via para que coincida abajo
+                // Ahora iteramos siempre sobre el array normalizado
+                foreach ($datosNormalizados as $nombreManzana => $listaLotes) { 
                     
-                    // Obtener el nombre de la manzana real ("manzana" según tu var_dump)
-                    $nombreManzana = !empty($construccion['manzana']) ? $construccion['manzana'] : 'CONSTRUCCIÓN';
+                    // Cabecera de la sección o manzana
+                    $tableConstruccion .= '<tr>
+                                                <td colspan="3" style="text-align: left; background-color: #f2f2f2; font-weight: bold;">MANZANA: ' . htmlspecialchars($nombreManzana) . '</td>
+                                        </tr>';
                     
-                    // Si el lote viene vacío, le ponemos un texto genérico descriptivo
-                    $nombreVia = !empty($construccion['nombre_lote']) ? $construccion['nombre_lote'] : 'Construcción';
+                    $totalPercent = 0;
+                    $totalSuperficie = 0;
 
-                    // Cabecera de la sección
-                    $tableConstruccion .= '<tr>
-                                        <td colspan="3" style="text-align: left; background-color: #f2f2f2; font-weight: bold;">DATOS TECNICOS: ' . htmlspecialchars($nombreManzana) . '</td>
-                                </tr>';
-                    
-                    $totalPercent = floatval($construccion['porcentaje']);
-                    $totalSuperficie = floatval($construccion['superficie_lote']);
-                    
-                    // Fila de Datos de la vía
-                    $tableConstruccion .= '<tr>
-                                        <td style="text-align: left;" width="40%"><b>' . $construccion['tipo_cesion'] . '</b></td>
-                                        <td style="text-align: right;" width="30%">' . $construccion['superficie_lote'] . ' M2</td>
-                                        <td style="text-align: right;" width="30%">' . $construccion['porcentaje'] . '%</td>
-                                </tr>';
+                    foreach ($listaLotes as $item) {
+                        // Validamos por si acaso que el item interno realmente sea un array
+                        if (!is_array($item)) {
+                            continue;
+                        }
+
+                        $totalPercent += floatval($item['porcentaje']);
+                        $totalSuperficie += floatval($item['superficie_lote']);
+                        
+                        $nombreLote = !empty($item['nombre_lote']) ? $item['nombre_lote'] : 'Ítem';
+                        $tipoCesion = !empty($item['tipo_cesion']) ? ' (' . $item['tipo_cesion'] . ')' : '';
+
+                        // Fila de Datos
+                        $tableConstruccion .= '<tr>
+                                                    <td style="text-align: left;" width="40%"><b>' . htmlspecialchars($nombreLote . $tipoCesion) . '</b></td>
+                                                    <td style="text-align: right;" width="30%">' . $item['superficie_lote'] . ' M2</td>
+                                                    <td style="text-align: right;" width="30%">' . $item['porcentaje'] . '%</td>
+                                            </tr>';
+                    }
                     
                     // Fila de Totales
                     $tableConstruccion .= '<tr>
-                                        <td style="text-align: right;"><b>TOTAL:</b></td>
-                                        <td style="text-align: right; font-weight: bold;">' . $totalSuperficie . ' M2</td>
-                                        <td style="text-align: right; font-weight: bold;">' . $totalPercent . '%</td>
-                                </tr>';
+                                                <td style="text-align: right;"><b>TOTAL:</b></td>
+                                                <td style="text-align: right; font-weight: bold;">' . $totalSuperficie . ' M2</td>
+                                                <td style="text-align: right; font-weight: bold;">' . $totalPercent . '%</td>
+                                        </tr>';
                 }
                 
-                // Cierre estructurado del HTML
                 $tableConstruccion .= '</tbody>
-                            </table>';
+                                    </table>';
 
-                // Imprimir la tabla de manera segura en el PDF
+                // Imprimir en el PDF sin errores de TCPDF
                 $pdf->SetFont('helvetica', '', 10);
                 $pdf->writeHTMLCell(180, 0, '', '', $tableConstruccion, 0, 1, 0, true, 'J', true);
             }

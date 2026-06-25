@@ -51,8 +51,8 @@ class ACTReporteInforme extends ACTbase{
 		$referencia = $resultData[0]['referencia'];
 		$cite_tramite = $resultDataCuerpoInforme[0]['cite_tramite'];
 		$nombre_tramite = $resultDataCuerpoInforme[0]['nombre_tramite'];
+		$observacion = $resultDataCuerpoInforme[0]['observacion'];
 		$conclusion = $resultDataCuerpoInforme[0]['conclusion'];
-		$nombre_lote = $resultDataCuerpoInforme[0]['nombre_lote'];
 		
 		$this->objFunc = $this->create('MODReporte');
 		$resultListarCuerpoInforme = $this->objFunc->listarCuerpoInforme($this->objParam);
@@ -125,6 +125,10 @@ class ACTReporteInforme extends ACTbase{
 		$dataSource->putParameter('dia', $dia);
 		$dataSource->putParameter('anio', $anio);
 		$dataSource->putParameter('referencia', $referencia);
+		$dataSource->putParameter('cite_tramite', $cite_tramite);
+		$dataSource->putParameter('nombre_tramite', $nombre_tramite);
+		$dataSource->putParameter('observacion', $observacion);
+		$dataSource->putParameter('conclusion', $conclusion);
 		
 		//ListarCuerpoInforme
 		/*

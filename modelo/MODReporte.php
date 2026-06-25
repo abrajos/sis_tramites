@@ -65,8 +65,8 @@ class MODReporte extends MODbase {
         $this->captura('referencia', 'varchar');
 		$this->captura('cite_tramite', 'varchar');
         $this->captura('nombre_tramite', 'varchar');
+        $this->captura('observacion', 'varchar');
         $this->captura('conclusion', 'varchar');
-        $this->captura('nombre_lote', 'varchar');
 
         $this->armarConsulta();
 		//echo $this->consulta;exit;

@@ -255,21 +255,8 @@ class RInformeTopo extends Report
         if (!empty($datosTecnicos) && is_array($datosTecnicos)) {
             foreach ($datosTecnicos as $fila){
                 $table01 = '';
-                $numberRow = 14;
-                if ($fila['rasante_municipal'] == 'SI') {
-                    $numberRow = 17;
-                    $table01 .=  '<tr>
-                                    <td colspan="2" style="text-align: center;"><b>COLINDANTES</b></td>
-                                </tr>
-                                <tr>
-                                    <td style="text-align: left;"><b>Colindante Oeste: </b>' . $fila['colindante_oeste'] . '</td>
-                                    <td style="text-align: left;"><b>Colindante Sur: </b>' . $fila['colindante_sur'] . '</td>
-                                </tr>
-                                <tr>
-                                    <td style="text-align: left;"><b>Colindante Este: </b>' . $fila['colindante_este'] . '</td>
-                                    <td style="text-align: left;"><b>Colindante Norte: </b>' . $fila['colindante_norte'] . '</td>
-                                </tr>';
-                }
+                $numberRow = 17;
+                
                 $table0 .= '<tr>
                                 <td colspan="3" style="text-align: left;"><b>DATOS TECNICOS</b></td>
                             </tr>
@@ -292,7 +279,18 @@ class RInformeTopo extends Report
                             <tr>
                                 <td colspan="2" style="text-align: left;"><b>Avenida: </b>' . $fila['avenida'] . '</td>
                             </tr>';
-                $table0 .= $table01;
+                //$table0 .= $table01;
+                $table0 .=  '<tr>
+                                    <td colspan="2" style="text-align: center;"><b>COLINDANTES</b></td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align: left;"><b>Colindante Oeste: </b>' . $fila['colindante_oeste'] . '</td>
+                                    <td style="text-align: left;"><b>Colindante Sur: </b>' . $fila['colindante_sur'] . '</td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align: left;"><b>Colindante Este: </b>' . $fila['colindante_este'] . '</td>
+                                    <td style="text-align: left;"><b>Colindante Norte: </b>' . $fila['colindante_norte'] . '</td>
+                                </tr>';
                 $table0 .=  '<tr>
                                 <td colspan="2" style="text-align: center;"><b>SUPERFICIES</b></td>
                             </tr>

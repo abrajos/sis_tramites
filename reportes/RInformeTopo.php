@@ -430,7 +430,8 @@ class RInformeTopo extends Report
                                 <tr>
                                     <td colspan="3" style="text-align: left; background-color: #f2f2f2; font-weight: bold;">DATOS TECNICOS: VIAS Y AREAS VERDES VINCULADAS</td>
                                 </tr>';
-
+                $totalPercent = floatval(0);
+                $totalSuperficie = floatval(0);
                 foreach ($datosVias as $via) { // Cambiado a $via para que coincida abajo
                     
                     // Obtener el nombre de la manzana real ("manzana" según tu var_dump)
@@ -439,13 +440,8 @@ class RInformeTopo extends Report
                     // Si el lote viene vacío, le ponemos un texto genérico descriptivo
                     $nombreVia = !empty($via['nombre_lote']) ? $via['nombre_lote'] : 'Uso de Vía Pública';
 
-                    // Cabecera de la sección
-                    $tableVias .= '<tr>
-                                        <td colspan="3" style="text-align: left; background-color: #f2f2f2; font-weight: bold;">REFERENCIA: ' . htmlspecialchars($nombreManzana) . '</td>
-                                </tr>';
-                    
-                    $totalPercent = floatval($via['porcentaje']);
-                    $totalSuperficie = floatval($via['superficie_lote']);
+                    $totalPercent = $totalPercent + floatval($via['porcentaje']);
+                    $totalSuperficie = $totalSuperficie + floatval($via['superficie_lote']);
                     
                     // Fila de Datos de la vía
                     $tableVias .= '<tr>
@@ -454,13 +450,14 @@ class RInformeTopo extends Report
                                         <td style="text-align: right;" width="30%">' . $via['porcentaje'] . '%</td>
                                 </tr>';
                     
-                    // Fila de Totales
+                    
+                }
+                // Fila de Totales
                     $tableVias .= '<tr>
                                         <td style="text-align: right;"><b>TOTAL:</b></td>
                                         <td style="text-align: right; font-weight: bold;">' . $totalSuperficie . ' M2</td>
                                         <td style="text-align: right; font-weight: bold;">' . $totalPercent . '%</td>
                                 </tr>';
-                }
                 
                 // Cierre estructurado del HTML
                 $tableVias .= '</tbody>

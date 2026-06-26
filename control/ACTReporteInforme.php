@@ -49,10 +49,10 @@ class ACTReporteInforme extends ACTbase{
 		$dia = $resultData[0]['dia'];
 		$anio = $resultData[0]['anio'];
 		$referencia = $resultData[0]['referencia'];
-		$cite_tramite = $resultDataCuerpoInforme[0]['cite_tramite'];
-		$nombre_tramite = $resultDataCuerpoInforme[0]['nombre_tramite'];
-		$observacion = $resultDataCuerpoInforme[0]['observacion'];
-		$conclusion = $resultDataCuerpoInforme[0]['conclusion'];
+		$cite_tramite = $resultData[0]['cite_tramite'];
+		$nombre_tramite = $resultData[0]['nombre_tramite'];
+		$observacion = $resultData[0]['observacion'];
+		$conclusion = $resultData[0]['conclusion'];
 		
 		$this->objFunc = $this->create('MODReporte');
 		$resultListarCuerpoInforme = $this->objFunc->listarCuerpoInforme($this->objParam);
@@ -62,6 +62,7 @@ class ACTReporteInforme extends ACTbase{
           exit;
         }
 		
+
 		/*$resultDataCuerpoInforme = $resultListarCuerpoInforme->getDatos();
 		$cite_tramite = $resultDataCuerpoInforme[0]['cite_tramite'];
 		$nombre_tramite = $resultDataCuerpoInforme[0]['nombre_tramite'];
@@ -175,7 +176,7 @@ class ACTReporteInforme extends ACTbase{
 		//var_dump($dataSource->getDataset()); exit;
 		
 		$reporte = new RInformeTopo();
-        
+        //var_dump($dataSource);exit();
         $reporte->setDataSource($dataSource); 
         //$nombreArchivo = 'SolicitudVA'.uniqid(md5(session_id())).'.pdf';
 		$nombreArchivo = 'RInformeTopo.pdf';

@@ -257,9 +257,10 @@ class MODReporte extends MODbase {
         $this->captura('id_tramite', 'int4');
         $this->captura('observacion', 'varchar');
         $this->captura('conclusion', 'varchar');
+        $this->captura('doc_adjunto', 'varchar');
+        $this->captura('norma_aplica', 'varchar');   
+		$this->captura('infor_comple', 'varchar');
 
-           
-		
         $this->armarConsulta();
 		//echo $this->consulta;exit;
         $this->ejecutarConsulta();

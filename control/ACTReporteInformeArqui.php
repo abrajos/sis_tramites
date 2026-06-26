@@ -56,15 +56,18 @@ class ACTReporteInformeArqui extends ACTbase{
 		$id_tramite = $resultData[0]['id_tramite'];
 		$observacion = $resultData[0]['observacion'];
 		$conclusion = $resultData[0]['conclusion'];
+		$doc_adjunto = $resultData[0]['doc_adjunto'];
+		$norma_aplica = $resultData[0]['norma_aplica'];
+		$infor_comple = $resultData[0]['infor_comple'];
 				
 		$this->objFunc = $this->create('MODReporte');
-		$resultlistarCuerpoInformeArqui = $this->objFunc->listarCuerpoInformeArqui($this->objParam);
+		$resultlistarCuerpoInformeArqui = $this->objFunc->listarCuerpoInforme($this->objParam);
         
         if($resultlistarCuerpoInformeArqui->getTipo()=='ERROR'){
           $resultlistarCuerpoInformeArqui->imprimirRespuesta($resultlistarCuerpoInformeArqui-> generarMensajeJson());
           exit;
         }
-		
+		/*
 		$resultDataCuerpoInformeArqui = $resultlistarCuerpoInformeArqui->getDatos();
 		
 		$id_tramite = $resultDataCuerpoInformeArqui[0]['id_tramite'];
@@ -94,19 +97,19 @@ class ACTReporteInformeArqui extends ACTbase{
 		$nro_rmta = $resultDataCuerpoInformeArqui[0]['nro_rmta'];
 		$fecha_rmta = $resultDataCuerpoInformeArqui[0]['fecha_rmta'];
 		$tipo_aprobacion = $resultDataCuerpoInformeArqui[0]['tipo_aprobacion'];
+*/
 
-
-		$this->objFunc = $this->create('MODReporte');
+		/*$this->objFunc = $this->create('MODReporte');
 		$resultListarPersonas = $this->objFunc->listarFormularioPersonasTradet($this->objParam);
         
         if($resultListarPersonas->getTipo()=='ERROR'){
           $resultListarPersonas->imprimirRespuesta($resultListarPersonas-> generarMensajeJson());
           exit;
-        }
+        }*/
 		
 		//var_dump($resultListarVacacion->getDatos());exit;
 		
-		$mainDataSet = $resultListarPersonas->getDatos();
+		$mainDataSet = $resultlistarCuerpoInformeArqui->getDatos();
 		//var_dump($resultListarVacacion->getDatos());exit;
 		
 		//$mainDataSet = $resultListarInformes->getDatos();
@@ -133,7 +136,10 @@ class ACTReporteInformeArqui extends ACTbase{
 		$dataSource->putParameter('id_tramite', $id_tramite);
 		$dataSource->putParameter('observacion', $observacion);
 		$dataSource->putParameter('conclusion', $conclusion);
-		
+		$dataSource->putParameter('doc_adjunto', $doc_adjunto);
+		$dataSource->putParameter('norma_aplica', $norma_aplica);
+		$dataSource->putParameter('infor_comple', $infor_comple);
+		/*
 		$dataSource->putParameter('id_tramite', $id_tramite);
 		$dataSource->putParameter('cite_tramite', $cite_tramite);
 		$dataSource->putParameter('id_tipo_tramite', $id_tipo_tramite);
@@ -161,7 +167,7 @@ class ACTReporteInformeArqui extends ACTbase{
 		$dataSource->putParameter('nro_rmta', $nro_rmta);
 		$dataSource->putParameter('fecha_rmta', $fecha_rmta);
 		$dataSource->putParameter('tipo_aprobacion', $tipo_aprobacion);
-
+*/
 		
 		$dataSourceArray = Array();
         $dataSourceClasificacion = new DataSource();

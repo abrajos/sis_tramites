@@ -411,19 +411,19 @@ class RInformeLegal extends Report
                 foreach ($matricula['asientos'] as $asientos) {
                     if ($asientos['nro_asiento'] != '' && $asientos['nro_asiento'] != NULL) {
                         $table0 .= '<tr>
-                                    <td width="40%" style="text-align: right;">N° Asiento'.$countAsieto.':</td>
+                                    <td width="40%" style="text-align: right;">N° Asiento:</td>
                                     <td width="50%" style="text-align: left;">'.$asientos['nro_asiento'].'</td>
                                 </tr>';
                     }  
                     if ($asientos['fecha_asiento'] != '' && $asientos['fecha_asiento'] != NULL) {
                         $table0 .= '<tr>
-                                    <td width="40%" style="text-align: right;">Fecha Asiento'.$countAsieto.':</td>
+                                    <td width="40%" style="text-align: right;">Fecha Asiento:</td>
                                     <td width="50%" style="text-align: left;">'.$asientos['fecha_asiento'].'</td>
                                 </tr>';
                     }
                     if ($asientos['motivo'] != '' && $asientos['motivo'] != NULL) {
                         $table0 .= '<tr>
-                                    <td width="40%" style="text-align: right;">Motivo Asiento'.$countAsieto.':</td>
+                                    <td width="40%" style="text-align: right;">Motivo Asiento:</td>
                                     <td width="50%" style="text-align: left;">'.$asientos['motivo'].'</td>
                                 </tr>';
                     }
@@ -437,31 +437,31 @@ class RInformeLegal extends Report
                 foreach ($matricula['rmtas'] as $rmtasList) {
                     if ($rmtasList['tipo_rmta'] != '' && $rmtasList['tipo_rmta'] != NULL) {
                         $table0 .= '<tr>
-                                    <td width="40%" style="text-align: right;">Tipo RMTA'.$countMRTA.':</td>
+                                    <td width="40%" style="text-align: right;">Tipo RMTA:</td>
                                     <td width="50%" style="text-align: left;">'.$rmtasList['tipo_rmta'].'</td>
                                 </tr>';
                     } 
                     if ($rmtasList['nro_rmta'] != '' && $rmtasList['nro_rmta'] != NULL) {
                         $table0 .= '<tr>
-                                    <td width="40%" style="text-align: right;">N° RMTA'.$countMRTA.':</td>
+                                    <td width="40%" style="text-align: right;">N° RMTA:</td>
                                     <td width="50%" style="text-align: left;">'.$rmtasList['nro_rmta'].'</td>
                                 </tr>';
                     }  
                     if ($rmtasList['fecha_rmta'] != '' && $rmtasList['fecha_rmta'] != NULL) {
                         $table0 .= '<tr>
-                                    <td width="40%" style="text-align: right;">Fecha RMTA'.$countMRTA.':</td>
+                                    <td width="40%" style="text-align: right;">Fecha RMTA:</td>
                                     <td width="50%" style="text-align: left;">'.$rmtasList['fecha_rmta'].'</td>
                                 </tr>';
                     }
                     if ($rmtasList['tipo_aprobacion'] != '' && $rmtasList['tipo_aprobacion'] != NULL) {
                         $table0 .= '<tr>
-                                    <td width="40%" style="text-align: right;">Motivo RMTA'.$countMRTA.':</td>
+                                    <td width="40%" style="text-align: right;">Motivo RMTA:</td>
                                     <td width="50%" style="text-align: left;">'.$rmtasList['tipo_aprobacion'].'</td>
                                 </tr>';
                     }
                     if ($rmtasList['complemento_rmta'] != '' && $rmtasList['complemento_rmta'] != NULL) {
                         $table0 .= '<tr>
-                                    <td width="40%" style="text-align: right;">Cmplemento RMTA'.$countMRTA.':</td>
+                                    <td width="40%" style="text-align: right;">Cmplemento RMTA:</td>
                                     <td width="50%" style="text-align: left;">'.$rmtasList['complemento_rmta'].'</td>
                                 </tr>';
                     }
@@ -562,14 +562,14 @@ class RInformeLegal extends Report
 
         $pdf->Ln(2);
         $pdf->Cell(180, $hMedium, 'Aprobado mediante: ', 0, 1, 'L');
-
+        /*
         $pdf->Cell(90, $hMedium, $dataSource->getParameter('tipo') . ' N°: ' . $dataSource->getParameter('nro_rmta'), 1, 0, 'L');
         $pdf->Cell(90, $hMedium, 'De Fecha: ' . $dataSource->getParameter('fecha_rmta'), 1, 1, 'L');
 
         $pdf->Cell(180, $hMedium, 'Tipo aprobación: ' . $dataSource->getParameter('tipo_aprobacion'), 1, 1, 'L');
         $pdf->Cell(180, $hMedium, 'Complementaria: ' . $dataSource->getParameter('complemento'), 1, 1, 'L');
-
-        $pdf->Cell(90, $hMedium, 'Código Catastral N°: ' . $dataSource->getParameter('cod_catastral'), 1, 1, 'L');
+        */
+        $pdf->Cell(180, $hMedium, 'Código Catastral N°: ' . $dataSource->getParameter('cod_catastral'), 1, 1, 'L');
 
         $pdf->Ln(4);
 

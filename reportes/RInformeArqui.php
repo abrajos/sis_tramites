@@ -96,7 +96,7 @@ class RInformeArqui extends Report {
 
         $pdf->AddPage('P', array(215.9, 330));
         $hMedium = 6.5;
-        //var_dump($dataSource); exii();
+        var_dump($dataSource); exit();
         // --- SECCIÓN ENCABEZADO INTERNO (A:, Vía:, De:) ---
         $pdf->SetFontSize(10);
         $pdf->SetFont('', 'B');
@@ -139,6 +139,107 @@ class RInformeArqui extends Report {
         $pdf->SetFont('', 'B');
         $pdf->Cell(180, $hMedium, 'REF:      '.strtoupper($dataSource->getParameter('referencia')), 'B', 1, 'L');   
         $pdf->Ln(5);
+
+
+        /////////////////////////////////////////////////////////////
+        // Nuevo data set agrupado
+        /////////////////////////////////////////////////////////////
+        // 1. Obtener el array del dataset original
+        $tablaDatos = $dataSource->getDataset();
+
+        // 2. Inicializar los contenedores para tus nuevos grupos independientes
+        $grupo_datos_tecnicos = [];
+        $grupo_cesion_lote    = [];
+        $grupo_vias           = [];
+        $grupo_construccion   = [];
+
+        // 3. Procesar y agrupar el dataset
+        if (!empty($tablaDatos) && is_array($tablaDatos)) {
+            foreach ($tablaDatos as $fila) {
+                
+                // --- GRUPO 1: Datos Técnicos (Se excluye manzana == 'VIAS') ---
+                if (strtoupper($fila['manzana']) !== 'VIAS') {
+                    $llaveTecnica = $fila['distrito'] . '|' . $fila['zona'] . '|' . $fila['manzana'] . '|' . $fila['super_total'];
+                    
+                    if (!isset($grupo_datos_tecnicos[$llaveTecnica])) {
+                        $grupo_datos_tecnicos[$llaveTecnica] = [
+                            "distrito"           => $fila['distrito'],
+                            "zona"               => $fila['zona'],
+                            "manzana"            => $fila['manzana'],
+                            "lote"               => $fila['lote'],
+                            "calle"              => $fila['calle'],
+                            "avenida"            => $fila['avenida'],
+                            "tipo_calle"         => $fila['tipo_calle'],
+                            "rasante_municipal"  => $fila['rasante_municipal'],
+                            "colindante_norte"   => $fila['colindante_norte'],
+                            "colindante_sur"     => $fila['colindante_sur'],
+                            "colindante_oeste"   => $fila['colindante_oeste'],
+                            "colindante_este"    => $fila['colindante_este'],
+                            "super_escritura"    => $fila['super_escritura'],
+                            "super_mensura"      => $fila['super_mensura'],
+                            "super_excedente"    => $fila['super_excedente'],
+                            "super_inexistente"  => $fila['super_inexistente'],
+                            "super_total"        => $fila['super_total'],
+                            "long_rasante"       => $fila['long_rasante'],
+                            "vias"               => $fila['vias'],
+                            "agua_potable"       => $fila['agua_potable'],
+                            "alcantarillado"     => $fila['alcantarillado'],
+                            "alumbrado_publico"  => $fila['alumbrado_publico'],
+                            "telefonia"          => $fila['telefonia'],
+                            "equipamiento"       => $fila['equipamiento'],
+                            "transporte"         => $fila['transporte']
+                        ];
+                    }
+                }
+
+                // --- ESTRUCTURA FILTRADA PARA LOS SUBGRUPOS ---
+                // Construimos un array limpio que solo contiene los 9 campos solicitados
+                $datosReducidos = [
+                    "manzana"         => $fila['manzana'],
+                    "tipo_cesion"     => $fila['tipo_cesion'],
+                    "nombre_lote"     => $fila['nombre_lote'],
+                    "superficie_lote" => $fila['superficie_lote'],
+                    "porcentaje"      => $fila['porcentaje'],
+                    "co_norte"        => $fila['co_norte'],
+                    "co_sud"          => $fila['co_sud'],
+                    "co_este"         => $fila['co_este'],
+                    "co_oeste"        => $fila['co_oeste']
+                ];
+
+                // --- GRUPO 2: Cesión Lote ---
+                if ($fila['tipo_cesion'] === 'lote' && strtoupper($fila['manzana']) !== 'VIAS') {
+                    $grupo_cesion_lote[$fila['manzana']][] = $datosReducidos;
+                }
+
+                // --- GRUPO 3: Vías ---
+                if (strtoupper($fila['manzana']) === 'VIAS' && ($fila['tipo_cesion'] === 'via' || $fila['tipo_cesion'] === 'area_verde')) {
+                    $grupo_vias[] = $datosReducidos;
+                }
+
+                // --- GRUPO 4: Construcción ---
+                if ($fila['tipo_cesion'] === 'construccion') {
+                    $grupo_construccion[$fila['manzana']][] = $datosReducidos;
+                }
+            }
+            
+            // Limpiar índices string del grupo técnico
+            $grupo_datos_tecnicos = array_values($grupo_datos_tecnicos);
+        }
+
+        // 4. Estructura final unificada
+        $resultadoFinal = [
+            "parameters" => $dataSource->getParameters(),
+            "dataset_grupos" => [
+                "datos_tecnicos" => $grupo_datos_tecnicos,
+                "cesion_lotes"   => $grupo_cesion_lote,
+                "vias"           => $grupo_vias,
+                "construccion"   => $grupo_construccion
+            ]
+        ];
+
+        //var_dump($resultadoFinal);
+
+
         
         // --- 1. ANTECEDENTES ---
         $pdf->SetFont('', 'N');
@@ -189,6 +290,178 @@ class RInformeArqui extends Report {
             $pdf->Ln(3);
         }
 
+        $datosTecnicos = $resultadoFinal['dataset_grupos']['datos_tecnicos'];
+        //var_dump($resultadoFinal); exit();
+
+        $tableDT = '<table border="1" style="width: 100%; border-collapse: collapse;">
+                        <tbody>
+                    ';
+        $num = 1;    
+        if (!empty($datosTecnicos) && is_array($datosTecnicos)) {
+            foreach ($datosTecnicos as $fila){
+                $numberRow = 17;
+                
+                $tableDT .= '<tr>
+                                <td colspan="3" style="text-align: left;"><b>DATOS TECNICOS</b></td>
+                            </tr>
+                            <tr>
+                                <td rowspan="'.$numberRow.'" style="vertical-align: middle;" width="5%"><br><br><br>'.$num.'</td> 
+                                <td colspan="2" style="text-align: left;" width="95%"><b>2.- UBICACIÓN</b></td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: left;" width="45%"><b>&nbsp;&nbsp;&nbsp;&nbsp;Distrito: </b>' . $fila['distrito'] . '</td>
+                                <td style="text-align: left;" width="50%"><b>Zona: </b>' . $fila['zona'] . '</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: left;"><b>&nbsp;&nbsp;&nbsp;&nbsp;Manzano: </b>' . $fila['manzana'] . '</td>
+                                <td style="text-align: left;"><b>Tipo de Calle: </b>' . $fila['tipo_calle'] . '</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: left;"><b>&nbsp;&nbsp;&nbsp;&nbsp;Rasante Municipal: </b>' . $fila['rasante_municipal'] . '</td>
+                                <td style="text-align: left;"><b>Longitud Rasante: </b>' . $fila['long_rasante'] . '</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" style="text-align: left;"><b>&nbsp;&nbsp;&nbsp;&nbsp;Calle: </b>' . $fila['calle'] . '</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" style="text-align: left;"><b>&nbsp;&nbsp;&nbsp;&nbsp;Avenida: </b>' . $fila['avenida'] . '</td>
+                            </tr>';
+                //$table0 .= $table01;
+                $tableDT .=  '<tr>
+                                <td colspan="2" style="text-align: left;"><b>3.- SUPERFICIES</b></td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right;"><b>Sup. Escritura: </b>' . $fila['super_escritura'] . '</td>
+                                <td style="text-align: left;">' . $fila['super_mensura'] . ' M2</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right;"><b>Sup. Mensura: </b></td>
+                                <td style="text-align: left;"><b>Sup. Mensura: </b>' . $fila['super_mensura'] . 'M2</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right;"><b>Sup. Excedente: </b></td>
+                                <td style="text-align: left;">' . $fila['super_excedente'] . '</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right;"><b>Sup. Inexistente: </b></td>
+                                <td style="text-align: left;">'. $fila['super_inexistente'] . '</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: right;"><b>Sup. Total: : </b></td>
+                                <td colspan="2" style="text-align: left;">' . $fila['super_total'] . '</td>
+                            </tr>';
+                $tableDT .=  '<tr>
+                                    <td colspan="2" style="text-align: left;"><b>4.- COLINDANCIAS GENERALES</b></td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align: right;"><b>Colindante Oeste: </b></td>
+                                    <td style="text-align: left;">' . $fila['colindante_oeste'] . '</td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align: right;"><b>Colindante Sud: </b></td>
+                                    <td style="text-align: left;">' . $fila['colindante_sur'] . '</td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align: right;"><b>Colindante Norte: </b></td>
+                                    <td style="text-align: left;">' . $fila['colindante_norte'] . '</td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align: right;"><b>Colindante Este: </b></td>
+                                    <td style="text-align: left;">' . $fila['colindante_este'] . '</td>
+                                </tr>';
+                
+                /*$tableDT .= '<tr>
+                                <td colspan="2" style="text-align: left;"><b>5.- SERVICIOS BÁSICOS</b></td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: left;"><b>&nbsp;&nbsp;&nbsp;&nbsp;Agua Potable: </b>' . $fila['agua_potable'] . '</td>
+                                <td style="text-align: left;"><b>Alcantarillado: </b>' . $fila['alcantarillado'] . '</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: left;"><b>&nbsp;&nbsp;&nbsp;&nbsp;Alumbrado Publ.: </b>' . $fila['alumbrado_publico'] . '</td>
+                                <td style="text-align: left;"><b>Telefonía: </b>' . $fila['telefonia'] . '</td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: left;"><b>&nbsp;&nbsp;&nbsp;&nbsp;Vias: </b>' . $fila['vias'] . '</td>
+                                <td style="text-align: left;"><b>Transporte: </b>' . $fila['transporte'] . '</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" style="text-align: left;"><b>&nbsp;&nbsp;&nbsp;&nbsp;Equipamiento: </b>' . $fila['equipamiento'] . '</td>
+                            </tr>';
+                */
+                $num++;
+            }
+        }
+        $tableDT .= '</tbody>
+                    </table>';
+
+                    // Envolvemos el contenido HTML existente para darle el ancho del 60% y centrarlo
+       
+        $pdf->writeHTMLCell(180, 0, '', '', $tableDT, 0, 1, 0, true, 'J', true);
+        $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
+        
+         ////////////////////////////////////////////////////////////////////
+        // Adecuacion anexos por grupo de manzano, lote, via y construccion
+        ////////////////////////////////////////////////////////////////////
+        $datosLote = $resultadoFinal['dataset_grupos']['cesion_lotes'];
+        //var_dump($datosLote);
+        $tableCesion = '<table border="1" style="width: 100%; border-collapse: collapse;" cellpadding="4">
+                                <tbody>
+                                <tr>
+                                    <td colspan="3" style="text-align: left; background-color: #f2f2f2; font-weight: bold;">5.- COLINDANCIAS ESPECIFICAS</td>
+                                </tr>';
+
+        if (!empty($datosLote) && is_array($datosLote)) {
+            foreach ($datosLote as $nombreManzana => $lotes) {
+                    
+                // Cabecera de la manzana
+                $tableCesion .= '<tr>
+                                        <td colspan="3" style="text-align: left; background-color: #f2f2f2;"><b>MANZANA: </b>'.htmlspecialchars($nombreManzana) .'</td>
+                                    </tr>';
+                    
+                $totalPercent = 0;
+                $totalSuperficie = 0; // Agregada para que sume real en el total del bloque
+                // Corregido el <tr"> y el <td> style=
+                $tableCesion .= '<tr>
+                                    <td style="text-align: left;" width="50%"><b>PREDIO</b></td>
+                                    <td style="text-align: left;" width="50%"><b>COLINDANCIAS</b></td>
+                                </tr>';
+                
+                foreach ($lotes as $lote) {
+                    $tableCesion .= '<tr>
+                                        <td rowspan="4" style="vertical-align: middle;" width="30%">'.$lote['nombre_lote'].'</td> 
+                                        <td style="text-align: left;" width="20%"><b>NORTE</b></td>
+                                        <td style="text-align: left;" width="50%"><b>'.$lote['co_norte'].'</b></td>
+                                    </tr>';
+                    $lotesCount++;
+                    $tableCesion .= '<tr>
+                                        <td style="text-align: left;"><b>SUD</b></td>
+                                        <td style="text-align: left;"><b>'.$lote['co_sud'].'</b></td>
+                                    </tr>';
+                    $tableCesion .= '<tr>
+                                        <td style="text-align: left;"><b>ESTE</b></td>
+                                        <td style="text-align: left;"><b>'.$lote['co_este'].'</b></td>
+                                    </tr>';
+                    $tableCesion .= '<tr>
+                                        <td style="text-align: left;"><b>OESTE</b></td>
+                                        <td style="text-align: left;"><b>'.$lote['co_oeste'].'</b></td>
+                                    </tr>';
+                }
+                    
+            }
+                
+            // El cierre del tbody y table debe ir FUERA del bucle principal si es una sola tabla
+            $tableCesion .= '</tbody>
+                        </table>';
+
+            // Imprimir la tabla en el PDF
+            $pdf->SetFont('helvetica', '', 10);
+            $pdf->writeHTMLCell(180, 0, '', '', $tableCesion, 0, 1, 0, true, 'J', true);
+        }
+        
+        $pdf->Ln(2.5);
+
+        /*    
         // --- 2. RELACIÓN DE SUPERFICIES ---
         $pdf->writeHTMLCell(180, 0, '', '', '<b>2. RELACIÓN DE SUPERFICIES</b>', 0, 1, 0, true, 'J', true);
         $pdf->Ln(2.5);
@@ -259,7 +532,7 @@ class RInformeArqui extends Report {
                        </table>';
         $pdf->writeHTMLCell(180, 0, '', '', $htmlTable3, 0, 1, 0, true, 'J', true);
         $pdf->Ln(4);
-
+        */
         // --- ACLARACIONES Y CONCLUSIÓN ---
         $pdf->writeHTMLCell(180, 0, '', '', '<b>ACLARACIONES: </b>'.$dataSource->getParameter('observacion'), 0, 1, 0, true, 'J', true);
         $pdf->Ln(2.5);

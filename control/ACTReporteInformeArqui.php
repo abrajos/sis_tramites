@@ -67,55 +67,33 @@ class ACTReporteInformeArqui extends ACTbase{
           $resultlistarCuerpoInformeArqui->imprimirRespuesta($resultlistarCuerpoInformeArqui-> generarMensajeJson());
           exit;
         }
-		/*
-		$resultDataCuerpoInformeArqui = $resultlistarCuerpoInformeArqui->getDatos();
-		
-		$id_tramite = $resultDataCuerpoInformeArqui[0]['id_tramite'];
-		$cite_tramite = $resultDataCuerpoInformeArqui[0]['cite_tramite'];
-		$id_tipo_tramite = $resultDataCuerpoInformeArqui[0]['id_tipo_tramite'];
-		$fecha_leg = $resultDataCuerpoInformeArqui[0]['fecha_leg'];
-		$inf_leg = $resultDataCuerpoInformeArqui[0]['inf_leg'];
-		$legal = $resultDataCuerpoInformeArqui[0]['legal'];
-		$fecha_top = $resultDataCuerpoInformeArqui[0]['fecha_top'];
-		$inf_top = $resultDataCuerpoInformeArqui[0]['inf_top'];
-		$topo = $resultDataCuerpoInformeArqui[0]['topo'];
-		$distrito = $resultDataCuerpoInformeArqui[0]['distrito'];
-		$zona = $resultDataCuerpoInformeArqui[0]['zona'];
-		$manzana = $resultDataCuerpoInformeArqui[0]['manzana'];
-		$lote = $resultDataCuerpoInformeArqui[0]['lote'];
-		$calle = $resultDataCuerpoInformeArqui[0]['calle'];
-		$avenida = $resultDataCuerpoInformeArqui[0]['avenida'];
-		$super_escritura = $resultDataCuerpoInformeArqui[0]['super_escritura'];
-		$super_mensura = $resultDataCuerpoInformeArqui[0]['super_mensura'];
-		$super_total = $resultDataCuerpoInformeArqui[0]['super_total'];
-		$long_rasante = $resultDataCuerpoInformeArqui[0]['long_rasante'];
-		$colindante_este = $resultDataCuerpoInformeArqui[0]['colindante_este'];
-		$colindante_norte = $resultDataCuerpoInformeArqui[0]['colindante_norte'];
-		$colindante_oeste = $resultDataCuerpoInformeArqui[0]['colindante_oeste'];
-		$colindante_sur = $resultDataCuerpoInformeArqui[0]['colindante_sur'];
-		$nro_boleta = $resultDataCuerpoInformeArqui[0]['nro_boleta'];
-		$nro_rmta = $resultDataCuerpoInformeArqui[0]['nro_rmta'];
-		$fecha_rmta = $resultDataCuerpoInformeArqui[0]['fecha_rmta'];
-		$tipo_aprobacion = $resultDataCuerpoInformeArqui[0]['tipo_aprobacion'];
-*/
 
-		/*$this->objFunc = $this->create('MODReporte');
+		$this->objFunc = $this->create('MODReporte');
+		$resultlistarInformesArqui = $this->objFunc->listarCuerpoInformeArqui($this->objParam);
+        
+        if($resultlistarInformesArqui->getTipo()=='ERROR'){
+          $resultlistarInformesArqui->imprimirRespuesta($resultlistarInformesArqui-> generarMensajeJson());
+          exit;
+        }
+
+		$this->objFunc = $this->create('MODReporte');
 		$resultListarPersonas = $this->objFunc->listarFormularioPersonasTradet($this->objParam);
         
         if($resultListarPersonas->getTipo()=='ERROR'){
           $resultListarPersonas->imprimirRespuesta($resultListarPersonas-> generarMensajeJson());
           exit;
-        }*/
+        }
+		
 		
 		//var_dump($resultListarVacacion->getDatos());exit;
 		
-		$mainDataSet = $resultlistarCuerpoInformeArqui->getDatos();
+		//$mainDataSet = $resultlistarCuerpoInformeArqui->getDatos();
 		//var_dump($resultListarVacacion->getDatos());exit;
 		
 		//$mainDataSet = $resultListarInformes->getDatos();
 		//$resultData2 = $resultlistarVacacion->getDatos();
 		//$mainDataSet[] = array("listarCuerpoInformeLegal" => $resultlistarCuerpoInformeLegal, );
-		
+		$mainDataSet[] = array("listarPersonas" => $resultListarPersonas, "listarInformes" => $resultlistarInformesArqui, "listarCuerpoinforme"=> $resultlistarCuerpoInformeArqui );
 		//var_dump($mainDataSet);exit;
 		
 		$dataSource->putParameter('num_informe', $num_informe);

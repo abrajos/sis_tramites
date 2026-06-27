@@ -284,24 +284,9 @@ class MODReporte extends MODbase {
         $this->captura('fecha_top', 'date');
         $this->captura('inf_top', 'varchar');
         $this->captura('topo', 'text');
-        $this->captura('distrito', 'varchar');
-        $this->captura('zona', 'varchar');
-        $this->captura('manzana', 'varchar');
-        $this->captura('lote', 'varchar');
-        $this->captura('calle', 'varchar');
-        $this->captura('avenida', 'varchar');
-        $this->captura('super_escritura', 'numeric');
-        $this->captura('super_mensura', 'numeric');
-        $this->captura('super_total', 'numeric');
-        $this->captura('long_rasante', 'numeric');
-        $this->captura('colindante_este', 'varchar');
-        $this->captura('colindante_norte', 'varchar');
-        $this->captura('colindante_oeste', 'varchar');
-        $this->captura('colindante_sur', 'varchar');
+        
         $this->captura('nro_boleta', 'integer');
-        $this->captura('nro_rmta', 'varchar');
-        $this->captura('fecha_rmta', 'date');
-        $this->captura('tipo_aprobacion', 'varchar');
+       
 
         $this->armarConsulta();
 		//echo $this->consulta;exit;

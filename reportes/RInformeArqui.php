@@ -96,6 +96,10 @@ class RInformeArqui extends Report {
 
         $pdf->AddPage('P', array(215.9, 330));
         $hMedium = 6.5;
+        $tablaDatos0 = $dataSource->getDataset();
+        //$tablaDatos1 = $tablaDatos0->getL
+        $contenedor = $tablaDatos0[0];
+        
         //var_dump($dataSource); exit();
         // --- SECCIÓN ENCABEZADO INTERNO (A:, Vía:, De:) ---
         $pdf->SetFontSize(10);
@@ -144,9 +148,16 @@ class RInformeArqui extends Report {
         /////////////////////////////////////////////////////////////
         // Nuevo data set agrupado
         /////////////////////////////////////////////////////////////
-        // 1. Obtener el array del dataset original
-        $tablaDatos = $dataSource->getDataset();
+        $objetoCuerpo = $contenedor['listarCuerpoinforme'];
+        $tablaDatos = $objetoCuerpo->datos;
+        // Obtener personas
+        $objetoPersonas = $contenedor['listarPersonas'];
+        $tablaPersonas = $objetoPersonas->datos;
+        //listarInformes
+        $objetoInformes = $contenedor['listarInformes'];
+        $tablaInformes = $objetoInformes->datos;
 
+        //var_dump($tablaDatos); exit();
         // 2. Inicializar los contenedores para tus nuevos grupos independientes
         $grupo_datos_tecnicos = [];
         $grupo_cesion_lote    = [];
@@ -248,7 +259,7 @@ class RInformeArqui extends Report {
         
         $names = "";
         $counter = 0;
-        foreach ($dataSource->getDataSet() as $row) {
+        foreach ($tablaPersonas as $row) {
             if ($row['tipo_persona'] == "propietario"){
                 if ($counter == 0) {
                     $names .= "<b>".$row['nombre_completo1']."</b> con C.I. N° <b>".$row['ci']." ".$row['expedicion']."</b>";
@@ -264,19 +275,23 @@ class RInformeArqui extends Report {
         $pdf->writeHTMLCell(180, 0, '', '', 'Correspondiente al inmueble ubicado en el Municipio de Colcapirhua; <b>Previo</b>: ', 0, 1, 0, true, 'J', true);
         $pdf->Ln(3);
 
+        // $tablaInformes
         // --- TABLA DE INFORMES TÉCNICOS ---
-        $htmlTable0 = '<table border="1" cellpadding="4" style="width: 100%; border-collapse: collapse;">
-                        <tr>
-                            <td style="text-align: right; background-color: #f5f5f5;" width="22%"><b>Inf. Legal N°:</b></td><td style="text-align: left;" width="12%">'.$dataSource->getParameter('inf_leg').'</td>
-                            <td style="text-align: right; background-color: #f5f5f5;" width="12%"><b>Fecha:</b></td><td width="12%">'.$dataSource->getParameter('fecha_leg').'</td>
-                            <td style="text-align: right; background-color: #f5f5f5;" width="15%"><b>A cargo de:</b></td><td width="28%">'.$dataSource->getParameter('legal').'</td>
+        $htmlTable0 = '<table border="1" cellpadding="4" style="width: 100%; border-collapse: collapse;">';
+        foreach ($tablaInformes as $row) {
+            $htmlTable0 .= '<tr>
+                            <td style="text-align: right; background-color: #f5f5f5;" width="22%"><b>Inf. Legal N°:</b></td><td style="text-align: left;" width="12%">'.$row['inf_leg'].'</td>
+                            <td style="text-align: right; background-color: #f5f5f5;" width="12%"><b>Fecha:</b></td><td width="12%">'.$row['fecha_leg'].'</td>
+                            <td style="text-align: right; background-color: #f5f5f5;" width="15%"><b>A cargo de:</b></td><td width="28%">'.$row['legal'].'</td>
                         </tr>
                         <tr>
-                            <td style="text-align: right; background-color: #f5f5f5;"><b>Inf. Topográfico N°:</b></td><td>'.$dataSource->getParameter('inf_top').'</td>
-                            <td style="text-align: right; background-color: #f5f5f5;"><b>Fecha:</b></td><td>'.$dataSource->getParameter('fecha_top').'</td>
-                            <td style="text-align: right; background-color: #f5f5f5;"><b>A cargo de:</b></td><td>'.$dataSource->getParameter('topo').'</td>
-                        </tr>
-                       </table>';
+                            <td style="text-align: right; background-color: #f5f5f5;"><b>Inf. Topográfico N°:</b></td><td>'.$row['inf_top'].'</td>
+                            <td style="text-align: right; background-color: #f5f5f5;"><b>Fecha:</b></td><td>'.$row['fecha_top'].'</td>
+                            <td style="text-align: right; background-color: #f5f5f5;"><b>A cargo de:</b></td><td>'.$row['topo'].'</td>
+                        </tr>';  
+        }
+                        
+        $htmlTable0 .= '</table>';
         $pdf->writeHTMLCell(180, 0, '', '', $htmlTable0, 0, 1, 0, true, 'J', true);
         $pdf->Ln(4);
 
@@ -399,17 +414,15 @@ class RInformeArqui extends Report {
        
         $pdf->writeHTMLCell(180, 0, '', '', $tableDT, 0, 1, 0, true, 'J', true);
         $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
-        
+        $pdf->writeHTMLCell(180, 0, '', '', '<b>5.- COLINDANCIAS ESPECIFICAS<b>', 0, 1, 0, true, 'J', true);
+        $pdf->Ln(3);
          ////////////////////////////////////////////////////////////////////
         // Adecuacion anexos por grupo de manzano, lote, via y construccion
         ////////////////////////////////////////////////////////////////////
         $datosLote = $resultadoFinal['dataset_grupos']['cesion_lotes'];
         //var_dump($datosLote);
         $tableCesion = '<table border="1" style="width: 100%; border-collapse: collapse;" cellpadding="4">
-                                <tbody>
-                                <tr>
-                                    <td colspan="3" style="text-align: left; background-color: #f2f2f2; font-weight: bold;">5.- COLINDANCIAS ESPECIFICAS</td>
-                                </tr>';
+                                <tbody>';
 
         if (!empty($datosLote) && is_array($datosLote)) {
             foreach ($datosLote as $nombreManzana => $lotes) {
@@ -534,14 +547,32 @@ class RInformeArqui extends Report {
         $pdf->Ln(4);
         */
         // --- ACLARACIONES Y CONCLUSIÓN ---
-        $pdf->writeHTMLCell(180, 0, '', '', '<b>ACLARACIONES: </b>'.$dataSource->getParameter('observacion'), 0, 1, 0, true, 'J', true);
+        $pdf->writeHTMLCell(180, 0, '', '', '<b>6.- ACLARACIONES: </b>'.$dataSource->getParameter('observacion'), 0, 1, 0, true, 'J', true);
         $pdf->Ln(2.5);
+        $indexCount = 7;
+        
         $pdf->writeHTMLCell(180, 0, '', '', '<b>EL PREDIO CUENTA CON '.$dataSource->getParameter('tipo_aprobacion'). ' CON R.M.T.A. N° '.$dataSource->getParameter('nro_rmta').' DE FECHA '.$dataSource->getParameter('fecha_rmta').'</b>', 0, 1, 0, true, 'J', true);
         $pdf->Ln(2.5);
         $pdf->writeHTMLCell(180, 0, '', '', 'Por tanto:', 0, 1, 0, true, 'J', true);
         $pdf->Ln(2.5);
         $pdf->writeHTMLCell(180, 0, '', '', 'En el Departamento de Normas Urbanas de la Dirección de Urbanismo y Catastro, revisado los informes adjuntos a la carpeta, se efectuó la verificación de los requisitos según reglamentación general de urbanismo y de subdivisión de propiedades urbanas, así como el reglamento de edificaciones en actual vigencia, por lo que se procedió al llenado de la Boleta de Liquidación No. '.$dataSource->getParameter('nro_boleta').' de aprobación de planos relativos a la propiedad citada para la prosecución del trámite administrativo.', 0, 1, 0, true, 'J', true);
         $pdf->Ln(2.5);
+
+        if ($dataSource->getParameter('doc_adjunto') != '' || $dataSource->getParameter('doc_adjunto') != NULL) {
+            $pdf->writeHTMLCell(180, 0, '', '', '<b>'.$indexCount.'.- ADJUNTOS: </b>'.$dataSource->getParameter('doc_adjunto'), 0, 1, 0, true, 'J', true);
+            $pdf->Ln(2.5);
+            $indexCount++;
+        }
+        if ($dataSource->getParameter('norma_aplica') != '' || $dataSource->getParameter('norma_aplica') != NULL) {
+            $pdf->writeHTMLCell(180, 0, '', '', '<b>'.$indexCount.'.- NORMA APLICADA: </b>'.$dataSource->getParameter('norma_aplica'), 0, 1, 0, true, 'J', true);
+            $pdf->Ln(2.5);
+            $indexCount++;
+        }
+        if ($dataSource->getParameter('infor_comple') != '' || $dataSource->getParameter('infor_comple') != NULL) {
+            $pdf->writeHTMLCell(180, 0, '', '', '<b>'.$indexCount.'.- INFORME COMPLEMENTARIO: </b>'.$dataSource->getParameter('infor_comple'), 0, 1, 0, true, 'J', true);
+            $pdf->Ln(2.5);
+        }
+
         $pdf->writeHTMLCell(180, 0, '', '', 'Dando cumplimiento al decreto municipal N° 002 de fecha 18 de marzo de 2016', 0, 1, 0, true, 'J', true);
         $pdf->Ln(2.5);
         $pdf->writeHTMLCell(180, 0, '', '', 'Es cuanto informo de la inspección realizada.', 0, 1, 0, true, 'J', true);

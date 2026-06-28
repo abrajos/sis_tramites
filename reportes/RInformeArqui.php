@@ -310,16 +310,68 @@ class RInformeArqui extends Report {
 
         $tableDT = '<table border="1" style="width: 100%; border-collapse: collapse;">
                         <tbody>
-                    ';
+                            <tr>
+                                <td colspan="3" style="text-align: left;"><b>DATOS TECNICOS</b></td>
+                            </tr>';
         $num = 1;    
         if (!empty($datosTecnicos) && is_array($datosTecnicos)) {
             foreach ($datosTecnicos as $fila){
-                $numberRow = 17;
+                $numberRow = 11;
+                $tableSuperficie = '';
+                $contadorSuperficie = 0;
+                if ($fila['super_escritura'] != '' || $fila['super_escritura'] != NULL) {
+                    $tableSuperficie .= '<tr>
+                                            <td style="text-align: right;"><b>Sup. Escritura: </b></td>
+                                            <td style="text-align: left;">' . $fila['super_escritura'] . ' M2</td>
+                                        </tr>';
+                    $contadorSuperficie++;
+                }
+                if ($fila['super_mensura'] != '' || $fila['super_mensura'] != NULL) {
+                    $tableSuperficie .= '<tr>
+                                            <td style="text-align: right;"><b>Sup. Mensura: </b></td>
+                                            <td style="text-align: left;">' . $fila['super_mensura'] . 'M2</td>
+                                        </tr>';
+                    $contadorSuperficie++;
+                }
+                if ($fila['super_excedente'] != '' || $fila['super_excedente'] != NULL) {
+                    $tableSuperficie .= '<tr>
+                                            <td style="text-align: right;"><b>Sup. Excedente: </b></td>
+                                            <td style="text-align: left;">' . $fila['super_excedente'] . '</td>
+                                        </tr>';
+                    $contadorSuperficie++;
+                }
+                if ($fila['super_inexistente'] != '' || $fila['super_inexistente'] != NULL) {
+                    $tableSuperficie .= '<tr>
+                                            <td style="text-align: right;"><b>Sup. Inexistente: </b></td>
+                                            <td style="text-align: left;">'. $fila['super_inexistente'] . '</td>
+                                        </tr>';
+                    $contadorSuperficie++;
+                }
+                if ($fila['super_total'] != '' || $fila['super_total'] != NULL) {
+                    $tableSuperficie .= '<tr>
+                                            <td style="text-align: right;"><b>Sup. Total: : </b></td>
+                                            <td colspan="2" style="text-align: left;">' . $fila['super_total'] . '</td>
+                                        </tr>';
+                    $contadorSuperficie++;
+                }
+                if ($contadorSuperficie > 0) {
+                    $numberRow = $numberRow + $contadorSuperficie + 1;
+                    $tableTittleMasSup =  '<tr>
+                                <td colspan="2" style="text-align: left;"><b>3.- SUPERFICIES</b></td>
+                            </tr>'.$tableSuperficie;
+                } else {
+                    $tableTittleMasSup =  '<tr>
+                                                <td colspan="2" style="text-align: left;"><b>3.- SUPERFICIES</b></td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2" style="text-align: left;">No existen datos adjuntos</td>
+                                            </tr>';
+                    $numberRow = $numberRow + 2;
+                }
+                
+                
                 
                 $tableDT .= '<tr>
-                                <td colspan="3" style="text-align: left;"><b>DATOS TECNICOS</b></td>
-                            </tr>
-                            <tr>
                                 <td rowspan="'.$numberRow.'" style="vertical-align: middle;" width="5%"><br><br><br>'.$num.'</td> 
                                 <td colspan="2" style="text-align: left;" width="95%"><b>2.- UBICACIÓN</b></td>
                             </tr>
@@ -342,29 +394,7 @@ class RInformeArqui extends Report {
                                 <td colspan="2" style="text-align: left;"><b>&nbsp;&nbsp;&nbsp;&nbsp;Avenida: </b>' . $fila['avenida'] . '</td>
                             </tr>';
                 //$table0 .= $table01;
-                $tableDT .=  '<tr>
-                                <td colspan="2" style="text-align: left;"><b>3.- SUPERFICIES</b></td>
-                            </tr>
-                            <tr>
-                                <td style="text-align: right;"><b>Sup. Escritura: </b>' . $fila['super_escritura'] . '</td>
-                                <td style="text-align: left;">' . $fila['super_mensura'] . ' M2</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align: right;"><b>Sup. Mensura: </b></td>
-                                <td style="text-align: left;"><b>Sup. Mensura: </b>' . $fila['super_mensura'] . 'M2</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align: right;"><b>Sup. Excedente: </b></td>
-                                <td style="text-align: left;">' . $fila['super_excedente'] . '</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align: right;"><b>Sup. Inexistente: </b></td>
-                                <td style="text-align: left;">'. $fila['super_inexistente'] . '</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align: right;"><b>Sup. Total: : </b></td>
-                                <td colspan="2" style="text-align: left;">' . $fila['super_total'] . '</td>
-                            </tr>';
+                $tableDT .=  $tableTittleMasSup;
                 $tableDT .=  '<tr>
                                     <td colspan="2" style="text-align: left;"><b>4.- COLINDANCIAS GENERALES</b></td>
                                 </tr>

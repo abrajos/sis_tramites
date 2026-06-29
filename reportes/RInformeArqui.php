@@ -304,103 +304,154 @@ class RInformeArqui extends Report {
             $pdf->writeHTMLCell(180, 0, '', '', 'Quien realizó la inscripción respectiva para la verificación de la relación de superficies, limites, rasantes y otros tipos de servicios con la siguiente relación de superficies, bajo el siguiente detalle: ', 0, 1, 0, true, 'J', true);
             $pdf->Ln(3);
         }
-
+        // DATOS TECNICOS ARRAY
         $datosTecnicos = $resultadoFinal['dataset_grupos']['datos_tecnicos'];
-        //var_dump($resultadoFinal); exit();
-
-        $tableDT = '<table border="1" style="width: 100%; border-collapse: collapse;">
+        /////////////////////////////////////////////////////////////////////////////////////
+        // DATOS DE UBICACION DE LOS DAOS TECNICOS
+        /////////////////////////////////////////////////////////////////////////////////////
+       /*
+        $tableUBI = '<table border="1" style="width: 100%; border-collapse: collapse;">
                         <tbody>
                             <tr>
                                 <td colspan="3" style="text-align: left;"><b>DATOS TECNICOS</b></td>
                             </tr>';
-        $num = 1;    
+        $num = 1;   
+        
+        */
+        /////////////////////////////////////////////////////////////////////////////////////
+        // DATOS DE COLINDANCIAS GENERALES DE LOS DAOS TECNICOS
+        /////////////////////////////////////////////////////////////////////////////////////
+        $pdf->writeHTMLCell(180, 0, '', '', '<b>2.- UBICACIÓN<b>', 0, 1, 0, true, 'J', true);
+        $pdf->Ln(2.5);
+        $tableUbicacion = '<table border="1" style="width: 100%; border-collapse: collapse;">
+                                <tbody>';
+
         if (!empty($datosTecnicos) && is_array($datosTecnicos)) {
-            foreach ($datosTecnicos as $fila){
-                $numberRow = 11;
-                $tableSuperficie = '';
-                $contadorSuperficie = 0;
-                if ($fila['super_escritura'] != '' || $fila['super_escritura'] != NULL) {
-                    $tableSuperficie .= '<tr>
-                                            <td style="text-align: right;"><b>Sup. Escritura: </b></td>
-                                            <td style="text-align: left;">' . $fila['super_escritura'] . ' M2</td>
-                                        </tr>';
-                    $contadorSuperficie++;
+            $num = 1;
+            foreach ($datosTecnicos as $fila) {
+                $tableUbicacion .= '<tr>
+                                        <td rowspan="6" style="text-align: center; vertical-align: middle;" width="8%">' . $num . '</td>
+                                        <td colspan="2" style="text-align: left;"  width="92%"><b>DATOS TECNICOS</b></td>
+                                    </tr>';
+                $tableUbicacion .= '<tr>
+                                        <td style="text-align: left;" width="45%"><b>&nbsp;&nbsp;&nbsp;&nbsp;Distrito: </b>' . $fila['distrito'] . '</td>
+                                        <td style="text-align: left;" width="47%"><b>Zona: </b>' . $fila['zona'] . '</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align: left;"><b>&nbsp;&nbsp;&nbsp;&nbsp;Manzano: </b>' . $fila['manzana'] . '</td>
+                                        <td style="text-align: left;"><b>Tipo de Calle: </b>' . $fila['tipo_calle'] . '</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align: left;"><b>&nbsp;&nbsp;&nbsp;&nbsp;Rasante Municipal: </b>' . $fila['rasante_municipal'] . '</td>
+                                        <td style="text-align: left;"><b>Longitud Rasante: </b>' . $fila['long_rasante'] . '</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" style="text-align: left;"><b>&nbsp;&nbsp;&nbsp;&nbsp;Calle: </b>' . $fila['calle'] . '</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" style="text-align: left;"><b>&nbsp;&nbsp;&nbsp;&nbsp;Avenida: </b>' . $fila['avenida'] . '</td>
+                                    </tr>';
+                $num++;
+
+            }
+        }
+
+        $tableUbicacion .= '</tbody></table>';
+        $pdf->writeHTMLCell(180, 0, '', '', $tableUbicacion, 0, 1, 0, true, 'J', true);
+        $pdf->Ln(2.5);
+         
+        /////////////////////////////////////////////////////////////////////////////////////
+        // DATOS DE SUPERFICIES DE LOS DATOS TECNICOS
+        /////////////////////////////////////////////////////////////////////////////////////
+        $pdf->writeHTMLCell(180, 0, '', '', '<b>3.- SUPERFICIE</b>', 0, 1, 0, true, 'J', true);
+        $pdf->Ln(2.5);
+
+        $tableTittleMasSup = '<table border="1" style="width: 60%; border-collapse: collapse;">
+                                <tbody>
+                                    <tr>
+                                        <td style="text-align: center; background-color: #f2f2f2;" width="8%"><b>N°</b></td>
+                                        <td style="text-align: center; background-color: #f2f2f2;" width="40%"><b>DETALLE</b></td>
+                                        <td style="text-align: center; background-color: #f2f2f2;" width="30%"><b>CANTIDAD</b></td>
+                                        <td style="text-align: center; background-color: #f2f2f2;" width="22%"><b>UNID.</b></td>
+                                    </tr>';
+
+        if (!empty($datosTecnicos) && is_array($datosTecnicos)) {
+            $num = 1;
+            foreach ($datosTecnicos as $fila) {
+                
+                // 1. Mapeamos los campos disponibles y válidos para este registro
+                $itemsValidos = [];
+                
+                if (isset($fila['super_escritura']) && $fila['super_escritura'] !== '' && $fila['super_escritura'] !== NULL && $fila['super_escritura'] != '0') {
+                    $itemsValidos[] = ['label' => 'Sup. Escritura: ', 'valor' => $fila['super_escritura']];
                 }
-                if ($fila['super_mensura'] != '' || $fila['super_mensura'] != NULL) {
-                    $tableSuperficie .= '<tr>
-                                            <td style="text-align: right;"><b>Sup. Mensura: </b></td>
-                                            <td style="text-align: left;">' . $fila['super_mensura'] . 'M2</td>
-                                        </tr>';
-                    $contadorSuperficie++;
+                if (isset($fila['super_mensura']) && $fila['super_mensura'] !== '' && $fila['super_mensura'] !== NULL && $fila['super_mensura'] != '0') {
+                    $itemsValidos[] = ['label' => 'Sup. Mensura: ', 'valor' => $fila['super_mensura']];
                 }
-                if ($fila['super_excedente'] != '' || $fila['super_excedente'] != NULL) {
-                    $tableSuperficie .= '<tr>
-                                            <td style="text-align: right;"><b>Sup. Excedente: </b></td>
-                                            <td style="text-align: left;">' . $fila['super_excedente'] . '</td>
-                                        </tr>';
-                    $contadorSuperficie++;
+                if (isset($fila['super_excedente']) && $fila['super_excedente'] !== '' && $fila['super_excedente'] !== NULL && $fila['super_excedente'] != '0') {
+                    $itemsValidos[] = ['label' => 'Sup. Excedente: ', 'valor' => $fila['super_excedente']];
                 }
-                if ($fila['super_inexistente'] != '' || $fila['super_inexistente'] != NULL) {
-                    $tableSuperficie .= '<tr>
-                                            <td style="text-align: right;"><b>Sup. Inexistente: </b></td>
-                                            <td style="text-align: left;">'. $fila['super_inexistente'] . '</td>
-                                        </tr>';
-                    $contadorSuperficie++;
+                if (isset($fila['super_inexistente']) && $fila['super_inexistente'] !== '' && $fila['super_inexistente'] !== NULL  && $fila['super_inexistente'] != '0') {
+                    $itemsValidos[] = ['label' => 'Sup. Inexistente: ', 'valor' => $fila['super_inexistente']];
                 }
-                if ($fila['super_total'] != '' || $fila['super_total'] != NULL) {
-                    $tableSuperficie .= '<tr>
-                                            <td style="text-align: right;"><b>Sup. Total: : </b></td>
-                                            <td colspan="2" style="text-align: left;">' . $fila['super_total'] . '</td>
-                                        </tr>';
-                    $contadorSuperficie++;
+                if (isset($fila['super_total']) && $fila['super_total'] !== '' && $fila['super_total'] !== NULL && $fila['super_total'] != '0') {
+                    $itemsValidos[] = ['label' => 'Sup. Total: ', 'valor' => $fila['super_total']];
                 }
-                if ($contadorSuperficie > 0) {
-                    $numberRow = $numberRow + $contadorSuperficie + 1;
-                    $tableTittleMasSup =  '<tr>
-                                <td colspan="2" style="text-align: left;"><b>3.- SUPERFICIES</b></td>
-                            </tr>'.$tableSuperficie;
-                } else {
-                    $tableTittleMasSup =  '<tr>
-                                                <td colspan="2" style="text-align: left;"><b>3.- SUPERFICIES</b></td>
-                                            </tr>
-                                            <tr>
-                                                <td colspan="2" style="text-align: left;">No existen datos adjuntos</td>
+
+                $totalFilasItem = count($itemsValidos);
+
+                // Si el registro tiene al menos una superficie válida, la dibujamos
+                if ($totalFilasItem > 0) {
+                    $totalFilasItem++;
+                    $tableTittleMasSup .= '<tr>
+                                                <td rowspan="' . $totalFilasItem . '" style="text-align: center; vertical-align: middle;" width="8%">' . $num . '</td>
+                                                <td colspan="3" style="text-align: left;" width="92%"><b>Manzana: ' . $fila['manzana'] . '</b></td>
                                             </tr>';
-                    $numberRow = $numberRow + 2;
+                    foreach ($itemsValidos as $index => $item) {
+                        $tableTittleMasSup .= '<tr>';
+                        /*
+                        // Solo en la primera fila del bloque agregamos el ID numérico con el rowspan exacto
+                        if ($index === 0) {
+                            $tableTittleMasSup .= '<td rowspan="' . $totalFilasItem . '" style="text-align: center; vertical-align: middle;" width="8%">' . $num . '</td>';
+                        }
+                         */
+                        
+                        // Mantenemos las proporciones exactas de las columnas (50% - 30% - 10%)
+                        $tableTittleMasSup .= '    <td style="text-align: right;" width="40%"><b>' . $item['label'] . '</b></td>';
+                        $tableTittleMasSup .= '    <td style="text-align: left;" width="30%">' . $item['valor'] . '</td>';
+                        $tableTittleMasSup .= '    <td style="text-align: left;" width="22%">M2</td>';
+                        $tableTittleMasSup .= '</tr>';
+                    }
+                    $num++;
                 }
-                
-                
-                
-                $tableDT .= '<tr>
-                                <td rowspan="'.$numberRow.'" style="vertical-align: middle;" width="5%"><br><br><br>'.$num.'</td> 
-                                <td colspan="2" style="text-align: left;" width="95%"><b>2.- UBICACIÓN</b></td>
-                            </tr>
-                            <tr>
-                                <td style="text-align: left;" width="45%"><b>&nbsp;&nbsp;&nbsp;&nbsp;Distrito: </b>' . $fila['distrito'] . '</td>
-                                <td style="text-align: left;" width="50%"><b>Zona: </b>' . $fila['zona'] . '</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align: left;"><b>&nbsp;&nbsp;&nbsp;&nbsp;Manzano: </b>' . $fila['manzana'] . '</td>
-                                <td style="text-align: left;"><b>Tipo de Calle: </b>' . $fila['tipo_calle'] . '</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align: left;"><b>&nbsp;&nbsp;&nbsp;&nbsp;Rasante Municipal: </b>' . $fila['rasante_municipal'] . '</td>
-                                <td style="text-align: left;"><b>Longitud Rasante: </b>' . $fila['long_rasante'] . '</td>
-                            </tr>
-                            <tr>
-                                <td colspan="2" style="text-align: left;"><b>&nbsp;&nbsp;&nbsp;&nbsp;Calle: </b>' . $fila['calle'] . '</td>
-                            </tr>
-                            <tr>
-                                <td colspan="2" style="text-align: left;"><b>&nbsp;&nbsp;&nbsp;&nbsp;Avenida: </b>' . $fila['avenida'] . '</td>
-                            </tr>';
-                //$table0 .= $table01;
-                $tableDT .=  $tableTittleMasSup;
-                $tableDT .=  '<tr>
-                                    <td colspan="2" style="text-align: left;"><b>4.- COLINDANCIAS GENERALES</b></td>
-                                </tr>
-                                <tr>
-                                    <td style="text-align: right;"><b>Colindante Oeste: </b></td>
-                                    <td style="text-align: left;">' . $fila['colindante_oeste'] . '</td>
+            }
+        }
+
+        $tableTittleMasSup .= '</tbody></table>';
+
+        $pdf->writeHTMLCell(180, 0, 50, '', $tableTittleMasSup, 0, 1, 0, true, 'J', true);
+        $pdf->Ln(2.5);
+
+    
+        /////////////////////////////////////////////////////////////////////////////////////
+        // DATOS DE COLINDANCIAS GENERALES DE LOS DATOS TECNICOS
+        /////////////////////////////////////////////////////////////////////////////////////
+        $pdf->writeHTMLCell(180, 0, '', '', '<b>4.- COLINDANCIAS GENERALES<b>', 0, 1, 0, true, 'J', true);
+        $pdf->Ln(2.5);
+
+        $tableColGral = '<table border="1" style="width: 80%; border-collapse: collapse;">
+                                <tbody>';
+
+        if (!empty($datosTecnicos) && is_array($datosTecnicos)) {
+            $num = 1;
+            foreach ($datosTecnicos as $fila) {
+                $tableColGral .= '<tr>
+                                        <td rowspan="5" style="text-align: center; vertical-align: middle;" width="8%">' . $num . '</td>
+                                        <td colspan="2" style="text-align: left;" width="92%"><b>Manzana: ' . $fila['manzana'] . '</b></td>
+                                    </tr>';
+                $tableColGral .= '<tr>
+                                    <td style="text-align: right;" width="35%"><b>Colindante Oeste: </b></td>
+                                    <td style="text-align: left;" width="57%">' . $fila['colindante_oeste'] . '</td>
                                 </tr>
                                 <tr>
                                     <td style="text-align: right;"><b>Colindante Sud: </b></td>
@@ -414,35 +465,20 @@ class RInformeArqui extends Report {
                                     <td style="text-align: right;"><b>Colindante Este: </b></td>
                                     <td style="text-align: left;">' . $fila['colindante_este'] . '</td>
                                 </tr>';
-                
-                /*$tableDT .= '<tr>
-                                <td colspan="2" style="text-align: left;"><b>5.- SERVICIOS BÁSICOS</b></td>
-                            </tr>
-                            <tr>
-                                <td style="text-align: left;"><b>&nbsp;&nbsp;&nbsp;&nbsp;Agua Potable: </b>' . $fila['agua_potable'] . '</td>
-                                <td style="text-align: left;"><b>Alcantarillado: </b>' . $fila['alcantarillado'] . '</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align: left;"><b>&nbsp;&nbsp;&nbsp;&nbsp;Alumbrado Publ.: </b>' . $fila['alumbrado_publico'] . '</td>
-                                <td style="text-align: left;"><b>Telefonía: </b>' . $fila['telefonia'] . '</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align: left;"><b>&nbsp;&nbsp;&nbsp;&nbsp;Vias: </b>' . $fila['vias'] . '</td>
-                                <td style="text-align: left;"><b>Transporte: </b>' . $fila['transporte'] . '</td>
-                            </tr>
-                            <tr>
-                                <td colspan="2" style="text-align: left;"><b>&nbsp;&nbsp;&nbsp;&nbsp;Equipamiento: </b>' . $fila['equipamiento'] . '</td>
-                            </tr>';
-                */
                 $num++;
+
             }
         }
-        $tableDT .= '</tbody>
-                    </table>';
 
-                    // Envolvemos el contenido HTML existente para darle el ancho del 60% y centrarlo
-       
-        $pdf->writeHTMLCell(180, 0, '', '', $tableDT, 0, 1, 0, true, 'J', true);
+        $tableColGral .= '</tbody></table>';
+        $pdf->writeHTMLCell(180, 0, 30, '', $tableColGral, 0, 1, 0, true, 'J', true);
+        $pdf->Ln(2.5);
+        
+
+
+
+
+
         $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
         $pdf->writeHTMLCell(180, 0, '', '', '<b>5.- COLINDANCIAS ESPECIFICAS<b>', 0, 1, 0, true, 'J', true);
         $pdf->Ln(3);
@@ -451,7 +487,7 @@ class RInformeArqui extends Report {
         ////////////////////////////////////////////////////////////////////
         $datosLote = $resultadoFinal['dataset_grupos']['cesion_lotes'];
         //var_dump($datosLote);
-        $tableCesion = '<table border="1" style="width: 100%; border-collapse: collapse;" cellpadding="4">
+        $tableCesion = '<table border="1" style="width: 80%; border-collapse: collapse;" cellpadding="4">
                                 <tbody>';
 
         if (!empty($datosLote) && is_array($datosLote)) {
@@ -472,9 +508,13 @@ class RInformeArqui extends Report {
                 
                 foreach ($lotes as $lote) {
                     $tableCesion .= '<tr>
-                                        <td rowspan="4" style="vertical-align: middle;" width="30%">'.$lote['nombre_lote'].'</td> 
-                                        <td style="text-align: left;" width="20%"><b>NORTE</b></td>
-                                        <td style="text-align: left;" width="50%"><b>'.$lote['co_norte'].'</b></td>
+                                        <td rowspan="5" style="vertical-align: middle;" width="30%">'.$lote['nombre_lote'].'</td> 
+                                        <td style="text-align: left;" width="20%"><b>SUPERFICIE:</b></td>
+                                        <td style="text-align: left;" width="50%"><b>'.$lote['superficie_lote'].' m2</b></td>
+                                    </tr>';
+                    $tableCesion .= '<tr>
+                                        <td style="text-align: left;"><b>NORTE</b></td>
+                                        <td style="text-align: left;"><b>'.$lote['co_norte'].'</b></td>
                                     </tr>';
                     $lotesCount++;
                     $tableCesion .= '<tr>
@@ -499,7 +539,7 @@ class RInformeArqui extends Report {
 
             // Imprimir la tabla en el PDF
             $pdf->SetFont('helvetica', '', 10);
-            $pdf->writeHTMLCell(180, 0, '', '', $tableCesion, 0, 1, 0, true, 'J', true);
+            $pdf->writeHTMLCell(180, 0, 30, '', $tableCesion, 0, 1, 0, true, 'J', true);
         }
         
         $pdf->Ln(2.5);

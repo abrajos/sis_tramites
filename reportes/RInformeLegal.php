@@ -146,6 +146,7 @@ class RInformeLegal extends Report
         $objetoMensaje = $listados['listarPersonas'];
         // 4. Accedemos a la propiedad pública o método de los datos (en tu var_dump dice ["datos"] público)
         $personas = $objetoMensaje->datos;
+        //var_dump($personas);exit();
         // 5. Ahora sí, recorremos las personas con un foreach
         // Inicializamos las variables para evitar errores de PHP Notice
         $count = 0;
@@ -994,6 +995,7 @@ class RInformeLegal extends Report
             $pdf->writeHTMLCell(180, 0, '', '', 'Es cuanto informo para fines consiguientes.', 0, 1, 0, true, 'J', true);
         } else {
             // 1. GENERACIÓN DE NOMBRE DINÁMICO (Para evitar repetir el foreach)
+
             $propietarios = [];
             foreach ($dataSource->getDataSet() as $row) {
                 if ($row['tipo_persona'] == "propietario") {

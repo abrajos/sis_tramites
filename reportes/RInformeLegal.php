@@ -1090,7 +1090,7 @@ class RInformeLegal extends Report
                     $propName = implode(", ", $propietarios) . " y " . $ultimo;
                 }
                 
-                $htmlConclGen = 'Realizado el informe legal, quien(es) es(son) propietario(s): ' . $propNameList . ' conforme la Escritura Pública de fecha ' . $dataSource->getParameter('fecha_testimonio') . ', cumple con los requisitos de la normativa vigente.';
+                $htmlConclGen = 'Realizado el informe legal, quien(es) es(son) propietario(s): ' . $propName . ' conforme la Escritura Pública de fecha ' . $dataSource->getParameter('fecha_testimonio') . ', cumple con los requisitos de la normativa vigente.';
                 
                 $pdf->writeHTMLCell(180, 0, '', '', $htmlConclGen, 0, 1, 0, true, 'J', true);
                 $pdf->Ln(4);

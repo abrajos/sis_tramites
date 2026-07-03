@@ -201,7 +201,8 @@ class RInformeLegal extends Report
 
         $pdf->Cell(90, $hMedium, 'Distrito: ' . $dataSource->getParameter('distrito'), 1, 0, 'L');
         $pdf->Cell(90, $hMedium, 'Manzano: ' . $dataSource->getParameter('manzana'), 1, 1, 'L');
-
+        // 3. Registro Derechos Reales
+        $pdf->Cell(180, $hMedium, 'Lote: ' . $dataSource->getParameter('lote'), 1, 1, 'L');
         // 3. Registro Derechos Reales
         $pdf->Cell(180, $hMedium, 'Registrado en Derechos Reales de: ' . $dataSource->getParameter('ddrr_registro'), 1, 1, 'L');
 

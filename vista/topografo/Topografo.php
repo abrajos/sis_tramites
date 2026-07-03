@@ -118,7 +118,7 @@ Phx.vista.Topografo=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
-				maxLength:100
+				maxLength:1000
 			},
 				type:'TextField',
 				filters:{pfiltro:'tradet.referencia_informe',type:'string'},
@@ -163,7 +163,7 @@ Phx.vista.Topografo=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
-				maxLength:800
+				maxLength:950
 			},
 				type:'TextArea',
 				filters:{pfiltro:'tradet.descripcion',type:'string'},

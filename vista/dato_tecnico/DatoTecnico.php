@@ -179,7 +179,7 @@ Phx.vista.DatoTecnico=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
-				maxLength:100
+				maxLength:1000
 			},
 				type:'TextField',
 				filters:{pfiltro:'dattec.avenida',type:'string'},
@@ -194,7 +194,7 @@ Phx.vista.DatoTecnico=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
-				maxLength:100
+				maxLength:1000
 			},
 				type:'TextField',
 				filters:{pfiltro:'dattec.calle',type:'string'},

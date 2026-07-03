@@ -90,7 +90,9 @@ class RInformeLegal extends Report
 
         $pdf->AddPage('P', array(215.9, 330)); // Tamaño Oficio
         $pdf->SetFontSize(10);
-        // var_dump($dataSource); exit();
+        
+        //var_dump($dataSource); exit();
+
         $pdf->SetFontSize(10);
         $pdf->SetFont('', 'B');
         $pdf->Cell($w = 15, $h = $hMedium, $txt = 'A: ', $border = 0, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
@@ -144,6 +146,7 @@ class RInformeLegal extends Report
         $objetoMensaje = $listados['listarPersonas'];
         // 4. Accedemos a la propiedad pública o método de los datos (en tu var_dump dice ["datos"] público)
         $personas = $objetoMensaje->datos;
+        //var_dump($personas);exit();
         // 5. Ahora sí, recorremos las personas con un foreach
         // Inicializamos las variables para evitar errores de PHP Notice
         $count = 0;
@@ -632,6 +635,20 @@ class RInformeLegal extends Report
                 $pdf->writeHTMLCell(180, 0, '', '', '<b>CONCLUSIONES Y RECOMENDACION.-</b>', 0, 1, 0, true, 'J', true);
                 $pdf->Ln(2.5);
 
+                // 1. Lógica de nombres de propietarios (Saneada)
+                $propietarios = explode("|", $propietariosList);
+                $propName = '';
+                $numProp = count($propietarios);
+
+                if ($numProp == 1) {
+                    $propName = trim($propietariosList);
+                } elseif ($numProp == 2) {
+                    $propName = trim($propietarios[0]) . " y " . trim($propietarios[1]);
+                } else {
+                    $ultimo = array_pop($propietarios);
+                    $propName = implode(", ", $propietarios) . " y " . $ultimo;
+                }
+
                 $conclusionHTML = 'Realizado el Informe legal, conforme los antecedentes líneas arriba, quien es propietario <b>' . $propName . '</b>, en la cual teniendo un ' . $dataSource->getParameter('conclusion') . ', se puede observar que se encuentra la Ubicado el predio Fuera del Área Urbano (FRU), la Resolución Municipal BI-Secretarial N° 01/2020 de 11/12/2020 de la resolución Municipal BI-Secretarial y con lo establecido en el Decreto Municipal 007/2016 de fecha 16/09/2016; por lo que NO corresponde la prosecución del trámite, para lo cual se <b>RECOMIENDA</b> efectuar la Resolución de Rechazo del trámite previo análisis, bajo el principio de buena fe que solicito el propietario.';
                 
                 $pdf->writeHTMLCell(180, 0, '', '', $conclusionHTML, 0, 1, 0, true, 'J', true);
@@ -666,6 +683,19 @@ class RInformeLegal extends Report
 
                 $pdf->writeHTMLCell(180, 0, '', '', '<b>CONCLUSIONES Y RECOMENDACION.-</b>', 0, 1, 0, true, 'J', true);
                 $pdf->Ln(2.5);
+
+                $propietarios = explode("|", $propietariosList);
+                $propName = '';
+                $numProp = count($propietarios);
+
+                if ($numProp == 1) {
+                    $propName = trim($propietariosList);
+                } elseif ($numProp == 2) {
+                    $propName = trim($propietarios[0]) . " y " . trim($propietarios[1]);
+                } else {
+                    $ultimo = array_pop($propietarios);
+                    $propName = implode(", ", $propietarios) . " y " . $ultimo;
+                }
 
                 $htmlConclusion = 'Realizado el Informe legal, conforme los antecedentes líneas arriba, quien es propietario <b>' . $propName . '</b>, en la cual teniendo un pronunciamiento de la Ene. En Sistemas de Información Geográfica Catastral, ' . $dataSource->getParameter('conclusion') . ' <b>Prohibición de Innovar</b>, emitido por autoridad competente; por lo que NO corresponde la prosecución del trámite, para lo cual se <b>RECOMIENDA</b> efectuar la Resolución de Rechazo del trámite previo análisis, bajo el principio de buena fe que solicito el propietario.';
 
@@ -777,6 +807,19 @@ class RInformeLegal extends Report
                 $pdf->writeHTMLCell(180, 0, '', '', '<b>CONCLUSIONES Y RECOMENDACION.-</b>', 0, 1, 0, true, 'J', true);
                 $pdf->Ln(2.5);
 
+                $propietarios = explode("|", $propietariosList);
+                $propName = '';
+                $numProp = count($propietarios);
+
+                if ($numProp == 1) {
+                    $propName = trim($propietariosList);
+                } elseif ($numProp == 2) {
+                    $propName = trim($propietarios[0]) . " y " . trim($propietarios[1]);
+                } else {
+                    $ultimo = array_pop($propietarios);
+                    $propName = implode(", ", $propietarios) . " y " . $ultimo;
+                }
+
                 $htmlConclDoble = 'Realizado el Informe legal, conforme los antecedentes líneas arriba, en la cual teniendo un pronunciamiento ' . $dataSource->getParameter('conclusion') . ', Informe Técnico de los inmuebles para los tramite urba-No 000070 y 0000472, se puede observar que en posesión en derecho propietario a la valoración de los tramites 472 y 720 en la cual los interesados deberán regularizar el mejor derecho propietario ante la instancia llamada por Ley, para lo cual se <b>RECOMIENDA</b> efectuar la Resolución de Rechazo del trámite previo análisis, bajo el principio de buena fe.';
 
                 $pdf->writeHTMLCell(180, 0, '', '', $htmlConclDoble, 0, 1, 0, true, 'J', true);
@@ -811,6 +854,19 @@ class RInformeLegal extends Report
                 $pdf->Cell(180, 7, 'CONCLUSIONES y RECOMENDACION.- ', 0, 1, 'L');
                 $pdf->SetFont('', 'N');
                 $pdf->Ln(2);
+
+                $propietarios = explode("|", $propietariosList);
+                $propName = '';
+                $numProp = count($propietarios);
+
+                if ($numProp == 1) {
+                    $propName = trim($propietariosList);
+                } elseif ($numProp == 2) {
+                    $propName = trim($propietarios[0]) . " y " . trim($propietarios[1]);
+                } else {
+                    $ultimo = array_pop($propietarios);
+                    $propName = implode(", ", $propietarios) . " y " . $ultimo;
+                }
 
                 $pdf->writeHTMLCell(180, 0, '', '', 'Realizado el Informe Legal, conforme los antecedentes líneas arriba, quien es propietario: ', 0, 1, 0, true, 'L', true);
                 $pdf->Ln(2);
@@ -939,6 +995,7 @@ class RInformeLegal extends Report
             $pdf->writeHTMLCell(180, 0, '', '', 'Es cuanto informo para fines consiguientes.', 0, 1, 0, true, 'J', true);
         } else {
             // 1. GENERACIÓN DE NOMBRE DINÁMICO (Para evitar repetir el foreach)
+
             $propietarios = [];
             foreach ($dataSource->getDataSet() as $row) {
                 if ($row['tipo_persona'] == "propietario") {
@@ -1020,7 +1077,20 @@ class RInformeLegal extends Report
                 $pdf->writeHTMLCell(180, 0, '', '', '<b>CONCLUSIONES Y RECOMENDACIÓN.-</b>', 0, 1, 0, true, 'L', true);
                 $pdf->Ln(2);
                 
-                $htmlConclGen = 'Realizado el informe legal, quien(es) es(son) propietario(s): ' . $propNameList . ' conforme la Escritura Pública de fecha ' . $dataSource->getParameter('fecha_testimonio') . ', cumple con los requisitos de la normativa vigente.';
+                $propietarios = explode("|", $propietariosList);
+                $propName = '';
+                $numProp = count($propietarios);
+
+                if ($numProp == 1) {
+                    $propName = trim($propietariosList);
+                } elseif ($numProp == 2) {
+                    $propName = trim($propietarios[0]) . " y " . trim($propietarios[1]);
+                } else {
+                    $ultimo = array_pop($propietarios);
+                    $propName = implode(", ", $propietarios) . " y " . $ultimo;
+                }
+                
+                $htmlConclGen = 'Realizado el informe legal, quien(es) es(son) propietario(s): ' . $propName . ' conforme la Escritura Pública de fecha ' . $dataSource->getParameter('fecha_testimonio') . ', cumple con los requisitos de la normativa vigente.';
                 
                 $pdf->writeHTMLCell(180, 0, '', '', $htmlConclGen, 0, 1, 0, true, 'J', true);
                 $pdf->Ln(4);

@@ -83,7 +83,7 @@ class RInformeLegal extends Report
         $pdf->setDataSource($this->getDataSource());
         $dataSource = $this->getDataSource();
         // Márgenes: Izquierdo=15, Superior=45 (espacio para Header), Derecho=15
-        $pdf->SetMargins(15, 45, 15);
+        $pdf->SetMargins(15, 35, 15);
         $pdf->SetAutoPageBreak(TRUE, 40); // 40mm de margen inferior para el QR/Footer
         $pdf->SetHeaderMargin(10);
         $pdf->SetFooterMargin(10);
@@ -91,7 +91,7 @@ class RInformeLegal extends Report
         $pdf->AddPage('P', array(215.9, 330)); // Tamaño Oficio
         $pdf->SetFontSize(10);
         
-        var_dump($dataSource); exit();
+        //var_dump($dataSource); exit();
 
         $pdf->SetFontSize(10);
         $pdf->SetFont('', 'B');

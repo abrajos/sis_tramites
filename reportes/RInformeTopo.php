@@ -90,7 +90,7 @@ class RInformeTopo extends Report
         $dataSource = $this->getDataSource();
 
         // Márgenes: Izquierdo=15, Superior=45 (espacio para Header), Derecho=15
-        $pdf->SetMargins(15, 40, 15);
+        $pdf->SetMargins(15, 35, 15);
         $pdf->SetAutoPageBreak(TRUE, 40); // 40mm de margen inferior para el QR/Footer
         $pdf->SetHeaderMargin(10);
         $pdf->SetFooterMargin(10);

@@ -86,7 +86,7 @@ class RInformeArqui extends Report {
 
         // --- ZONAS DE PROTECCIÓN (MÁRGENES CORREGIDOS) ---
         // Incrementamos el margen superior a 42 para que el contenido empiece limpiamente abajo de la línea 'B'
-        $pdf->SetMargins(16, 42, 16);
+        $pdf->SetMargins(16, 38, 16);
         $pdf->SetHeaderMargin(12);
         $pdf->SetFooterMargin(35);
 

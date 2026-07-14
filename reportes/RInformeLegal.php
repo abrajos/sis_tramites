@@ -231,6 +231,7 @@ class RInformeLegal extends Report
 
         // Asumiendo que $matriculaList contiene tus 4 registros originales...
         $resultadoAgrupado = array();
+        /*
         foreach ($matriculaList as $item) {
             $idMatricula = $item['nro_matricula'];
 
@@ -269,6 +270,8 @@ class RInformeLegal extends Report
                 }
             }
 
+
+
             // 2. Agrupamos los datos de la RMTA si existen
             if (!empty($item['nro_rmta'])) {
                 // Estructuramos el sub-objeto/arreglo de la RMTA
@@ -286,9 +289,94 @@ class RInformeLegal extends Report
                 }
             }
         }
+        */
+        
+
+        // =========================================================================
+        // PASO 1: Agrupar matrículas, asientos y rmtas (Tu ciclo original intacto)
+        // =========================================================================
+        $resultadoAgrupado = array();
+
+        foreach ($matriculaList as $item) {
+            $idMatricula = $item['nro_matricula'];
+
+            if (!isset($resultadoAgrupado[$idMatricula])) {
+                $resultadoAgrupado[$idMatricula] = array(
+                    'nro_matricula'       => $item['nro_matricula'],
+                    'superficie_matri'    => $item['superficie_matri'],
+                    'nro_testimonio'      => $item['nro_testimonio'],
+                    'nro_notario'         => $item['nro_notario'],
+                    'nombre_notario'      => $item['nombre_notario'],
+                    'fecha_testimonio'    => $item['fecha_testimonio'],
+                    'decreto_registrador' => $item['decreto_registrador'],
+                    'fecha_decreto'       => $item['fecha_decreto'],
+                    'complemento_matri'   => $item['complemento_matri'],
+                    'asientos'            => array(),
+                    'rmtas'               => array(),
+                    'contador'            => 0
+                );
+            }
+
+            if (!empty($item['nro_asiento'])) {
+                $nuevoAsiento = array(
+                    'nro_asiento'   => $item['nro_asiento'],
+                    'fecha_asiento' => $item['fecha_asiento'],
+                    'motivo'        => $item['motivo']
+                );
+                if (!in_array($nuevoAsiento, $resultadoAgrupado[$idMatricula]['asientos'])) {
+                    $resultadoAgrupado[$idMatricula]['asientos'][] = $nuevoAsiento;
+                }
+            }
+
+            if (!empty($item['nro_rmta'])) {
+                $nuevaRmta = array(
+                    'tipo_rmta'        => $item['tipo_rmta'],
+                    'nro_rmta'         => $item['nro_rmta'],
+                    'fecha_rmta'       => $item['fecha_rmta'],
+                    'tipo_aprobacion'  => $item['tipo_aprobacion'],
+                    'complemento_rmta' => $item['complemento_rmta']
+                );
+                if (!in_array($nuevaRmta, $resultadoAgrupado[$idMatricula]['rmtas'])) {
+                    $resultadoAgrupado[$idMatricula]['rmtas'][] = $nuevaRmta;
+                }
+            }
+        }
+
+
+        // =========================================================================
+        // PASO 2: CORREGIDO - Ordenar asientos por FECHA (De menor a mayor)
+        // =========================================================================
+        foreach ($resultadoAgrupado as $idMatricula => $datos) {
+            if (!empty($resultadoAgrupado[$idMatricula]['asientos'])) {
+                usort($resultadoAgrupado[$idMatricula]['asientos'], function($a, $b) {
+                    // Convertimos las fechas a timestamp para una comparación exacta
+                    return strtotime($a['fecha_asiento']) <=> strtotime($b['fecha_asiento']);
+                });
+            }
+        }
+
+
+        // =========================================================================
+        // PASO 3: Ordenar las MATRÍCULAS entre sí (Prelación por primer asiento)
+        // =========================================================================
+        uasort($resultadoAgrupado, function($a, $b) {
+            // Al estar ordenados los asientos del paso anterior, el índice [0] es 100% el más antiguo.
+            $fechaA = !empty($a['asientos']) ? $a['asientos'][0]['fecha_asiento'] : null;
+            $fechaB = !empty($b['asientos']) ? $b['asientos'][0]['fecha_asiento'] : null;
+
+            if ($fechaA === null && $fechaB === null) return 0;
+            if ($fechaA === null) return 1;
+            if ($fechaB === null) return -1;
+
+            return strtotime($fechaA) <=> strtotime($fechaB);
+        });
+
+        //var_dump($resultadoAgrupado); exit();
+        
         // Al final, reindexamos el array con array_values() para que vuelva a ser una lista continua [0, 1, 2...]
         $matriculaNewList = array_values($resultadoAgrupado);
         $counMatricula = $matriculaNewList;
+        //var_dump($matriculaNewList); exit();
         $auxiliar = 0;
         foreach ($counMatricula as $matricula) {
             $nro_matricula = $matricula['nro_matricula'];
@@ -343,6 +431,9 @@ class RInformeLegal extends Report
             $matriculaNewList[$auxiliar]["contador"] = $totalDatosLlenos; 
             $auxiliar++;
         }
+
+        //var_dump($matriculaNewList); exit();
+
 
         $table0 = '<table border="1" style="border-collapse: collapse; width: 100%; text-align: center;">
                     <thead>

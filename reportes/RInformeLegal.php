@@ -1050,11 +1050,25 @@ class RInformeLegal extends Report
             $pdf->Ln(8);
             $pdf->writeHTMLCell(180, 0, '', '', '<b>CONCLUSIONES Y RECOMENDACIÓN.-</b>', 0, 1, 0, true, 'J', true);
             $pdf->Ln(2);
-            $pdf->writeHTMLCell(180, 0, '', '', 'Se concluye que el (los):', 0, 1, 0, true, 'J', true);
+            $pdf->writeHTMLCell(180, 0, '', '', 'Se concluye que:', 0, 1, 0, true, 'J', true);
             $pdf->Ln(2);
-
+            $cuerpoConcl = '';
             // 4. Cuerpo de la Conclusión (Uso intensivo de negritas)
-            $cuerpoConcl = '<b>' . $propName . '</b>, legítimo(s) propietario(s) de un predio con una extensión de <b>' . $dataSource->getParameter('superficie_leg') . ' m2</b>; registrado en Derechos Reales conforme Testimonio de fecha <b>' . $dataSource->getParameter('fecha_testimonio') . '</b>, ante la Notaría N° ' . $dataSource->getParameter('nro_notario') . ' (' . $dataSource->getParameter('nombre_notario') . ').';
+            if ($dataSource->getParameter('nombre_notario') == '7') {
+                $cuerpoConcl = '<b>' . $propName . '</b>, legítimo(s) propietario(s) de un predio con una extensión de <b>' . $dataSource->getParameter('superficie_leg') . ' m2</b>; registrado en Derechos Reales.';
+            } else {
+                $cuerpoConcl .= '<b>' . $propName . '</b>, legítimo(s) propietario(s) de un predio con una extensión de <b>' . $dataSource->getParameter('superficie_leg') . ' m2</b>; registrado en Derechos Reales.';
+                if ($dataSource->getParameter('nombre_notario') != '') {
+                    $cuerpoConcl .= 'conforme Testimonio de fecha <b>'.$dataSource->getParameter('fecha_testimonio').'</b>';
+                } else {
+                    if ($dataSource->getParameter('nro_notario') != '') {
+                        $cuerpoConcl .= ', ante la Notaría N° ' . $dataSource->getParameter('nro_notario') . ' (' . $dataSource->getParameter('nombre_notario') . ').';
+                    }
+                }
+                
+            }
+            
+            
             
             $pdf->writeHTMLCell(180, 0, '', '', $cuerpoConcl, 0, 1, 0, true, 'J', true);
             $pdf->Ln(3);
@@ -1183,10 +1197,14 @@ class RInformeLegal extends Report
                 }
 
                 //var_dump("Name: ".$propName); exit;
-
+                $htmlConclGen = '';
+                if ($dataSource->getParameter('id_tipo_tramite') == '7') {
+                    $htmlConclGen = 'Realizado el informe legal, quien(es) es(son) propietario(s): ' . $propName . ', cumple(n) con los requisitos de la normativa vigente.';
+                } else {
+                    $htmlConclGen = 'Realizado el informe legal, quien(es) es(son) propietario(s): ' . $propName . ' conforme la Escritura Pública de fecha ' . $dataSource->getParameter('fecha_testimonio') . ', cumple con los requisitos de la normativa vigente.';
+                }
                 //var_dump("este es el nombre: ".$propName);exit();
-
-                $htmlConclGen = 'Realizado el informe legal, quien(es) es(son) propietario(s): ' . $propName . ' conforme la Escritura Pública de fecha ' . $dataSource->getParameter('fecha_testimonio') . ', cumple con los requisitos de la normativa vigente.';
+                
                 
                 $pdf->writeHTMLCell(180, 0, '', '', $htmlConclGen, 0, 1, 0, true, 'J', true);
                 $pdf->Ln(4);

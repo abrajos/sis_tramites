@@ -112,7 +112,20 @@ class ACTReporteInforme extends ACTbase{
           $resultListarLotes->imprimirRespuesta($resultListarLotes-> generarMensajeJson());
           exit;
         }*/
-		$mainDataSet = $resultListarCuerpoInforme->getDatos();
+
+		$this->objFunc = $this->create('MODReporte');
+		$resultListarPersonas = $this->objFunc->listarFormularioPersonasTradet($this->objParam);
+        
+        if($resultListarPersonas->getTipo()=='ERROR'){
+          $resultListarPersonas->imprimirRespuesta($resultListarPersonas-> generarMensajeJson());
+          exit;
+        }
+
+		$resultPersonas = $resultListarPersonas->getDatos();
+
+		$resultCuerpoIn = $resultListarCuerpoInforme->getDatos();
+
+		$mainDataSet[] = array ("ListarPersonas" => $resultListarPersonas, "ListarCuerpoInforme"=> $resultListarCuerpoInforme);
 		//var_dump($mainDataSet);exit;
 		
 		$dataSource->putParameter('num_informe', $num_informe);

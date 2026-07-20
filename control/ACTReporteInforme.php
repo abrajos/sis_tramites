@@ -53,6 +53,7 @@ class ACTReporteInforme extends ACTbase{
 		$nombre_tramite = $resultData[0]['nombre_tramite'];
 		$observacion = $resultData[0]['observacion'];
 		$conclusion = $resultData[0]['conclusion'];
+		$id_tipo_tramite = $resultData[0]['id_tipo_tramite'];
 		
 		$this->objFunc = $this->create('MODReporte');
 		$resultListarCuerpoInforme = $this->objFunc->listarCuerpoInforme($this->objParam);
@@ -143,6 +144,7 @@ class ACTReporteInforme extends ACTbase{
 		$dataSource->putParameter('nombre_tramite', $nombre_tramite);
 		$dataSource->putParameter('observacion', $observacion);
 		$dataSource->putParameter('conclusion', $conclusion);
+		$dataSource->putParameter('id_tipo_tramite', $id_tipo_tramite);
 		
 		//ListarCuerpoInforme
 		/*

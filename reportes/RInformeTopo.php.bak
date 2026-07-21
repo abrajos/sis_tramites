@@ -100,20 +100,7 @@ class RInformeTopo extends Report
 
         //var_dump($dataSource); exit();
 
-        // 1. Obtener el array del dataset usando el método getter de DataSource
-        $dataset = $dataSource->getDataset();
-
-        // 2. Acceder al objeto Mensaje con la clave 'ListarPersonas'
-        $mensajePersonas = $dataset[0]['ListarPersonas'];
-
-        // 3. Obtener el arreglo de personas (datos es una propiedad pública en la clase Mensaje)
-        $personas = $mensajePersonas->datos;
-
-        // Imprimir resultado
-        //print_r($personas); exit();
-
-
-        //var_dump($dataSource); exit();
+        $dataset = $dataSource->getDataset(); 
         // 2. Apuntamos a la posición [0] (Tanto personas como matrículas están aquí adentro)
         //var_dump($dataset); exit();
 
@@ -157,48 +144,7 @@ class RInformeTopo extends Report
         $pdf->SetFont('', 'N');
         $pdf->writeHTMLCell(180, 0, '', '', 'Señor Arquitecto', 0, 1, 0, true, 'J', true);
         $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
-
-        $count = 0;
-        $propietariosList = ""; 
-        $nombre_completo = "";
-        //var_dump($personas); exit();
-        foreach ($personas as $persona) {
-            $tipo_persona = $persona['tipo_persona'];
-            if ($tipo_persona == "propietario") {
-                // Lógica para armar el string plano de propietarios
-                if ($count == 0) {
-                    $nombre_completo = $persona['nombre_completo1'];
-                    $propietariosList = $persona['nombre_completo1'];
-                } else {
-                    $propietariosList .= "|" . $persona['nombre_completo1'];
-                }
-                $count++;
-            }
-        }
-        //var_dump($propietariosList);
-        // 1. Lógica de nombres de propietarios (Saneada)
-        $propietarios = explode("|", $propietariosList);
-        $propName = '';
-        $numProp = count($propietarios);
-        
-        if ($numProp == 1) {
-            $propName = trim($propietariosList);
-        } elseif ($numProp == 2) {
-            $propName = trim($propietarios[0]) . " y " . trim($propietarios[1]);
-        } else {
-            $ultimo = array_pop($propietarios);
-            $propName = implode(", ", $propietarios) . " y " . $ultimo;
-        }
-        
-        //var_dump($dataSource->getParameter('id_tipo_tramite')); exit();
-        $firstBlock = 'Se procede a la inspección y verificación técnica del expediente del trámite administrativo N°  '.$dataSource->getParameter('cite_tramite');
-        if ($dataSource->getParameter('id_tipo_tramite') == "3") {
-            $firstBlock .= ', que pertenece a: <b>'. $propName.'</b>';
-        }
-        $firstBlock .= '<br>Con referencia a la aprobación de: <b>'. strtoupper($dataSource->getParameter('nombre_tramite')).'</b>';
-
-        $pdf->writeHTMLCell(180, 0, '', '', $firstBlock , 0, 1, 0, true, 'J', true);
-        
+        $pdf->writeHTMLCell(180, 0, '', '', 'Se procede a la inspección y verificación técnica del expediente del trámite administrativo N°  ' . $dataSource->getParameter('cite_tramite') . ', Con referencia a la aprobación de: ' . strtoupper($dataSource->getParameter('nombre_tramite')), 0, 1, 0, true, 'J', true);
         $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!
         $pdf->writeHTMLCell(180, 0, '', '', 'Corresponde informar que el predio se encuentra dentro de la jurisdicción de Colcapirhua ubicado en:', 0, 1, 0, true, 'J', true);
         $pdf->Ln(2.5); // ⬅️ ¡Aquí está el cambio!

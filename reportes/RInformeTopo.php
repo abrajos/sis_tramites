@@ -207,8 +207,12 @@ class RInformeTopo extends Report
         // Nuevo data set agrupado
         /////////////////////////////////////////////////////////////
         // 1. Obtener el array del dataset original
-        $tablaDatos = $dataSource->getDataset();
+        $dataSetList = $dataSource->getDataset();
+        //var_dump($tablaDatos); exit();
+        $mensajePersonas = $dataSetList[0]['ListarCuerpoInforme'];
 
+        // 3. Obtener el arreglo de personas (datos es una propiedad pública en la clase Mensaje)
+        $tablaDatos = $mensajePersonas->datos;
         // 2. Inicializar los contenedores para tus nuevos grupos independientes
         $grupo_datos_tecnicos = [];
         $grupo_cesion_lote    = [];

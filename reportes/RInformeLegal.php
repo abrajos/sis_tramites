@@ -21,6 +21,17 @@ class CustomReport extends TCPDF
         return $this->dataSource;
     }
 
+    // 1. Definimos la función de comparación por separado
+    public function compararPorFecha($a, $b) {
+        $timeA = strtotime($a['fecha_asiento']);
+        $timeB = strtotime($b['fecha_asiento']);
+
+        if ($timeA == $timeB) {
+            return 0;
+        }
+        return ($timeA < $timeB) ? -1 : 1;
+    }
+
     public function Header() {
         $dataSource = $this->getDataSource();
         
@@ -342,10 +353,12 @@ class RInformeLegal extends Report
             }
         }
 
-
+        
         // =========================================================================
         // PASO 2: CORREGIDO - Ordenar asientos por FECHA (De menor a mayor)
         // =========================================================================
+        // PHP7 8.2
+        /*
         foreach ($resultadoAgrupado as $idMatricula => $datos) {
             if (!empty($resultadoAgrupado[$idMatricula]['asientos'])) {
                 usort($resultadoAgrupado[$idMatricula]['asientos'], function($a, $b) {
@@ -354,6 +367,40 @@ class RInformeLegal extends Report
                 });
             }
         }
+        
+        
+        */
+
+        // PHP7 .4
+        /*
+        foreach ($resultadoAgrupado as &$datos) {
+            if (!empty($datos['asientos'])) {
+                usort($datos['asientos'], fn($a, $b) => 
+                    strtotime($a['fecha_asiento']) <=> strtotime($b['fecha_asiento'])
+                );
+            }
+        }
+        unset($datos);
+         */
+
+        // PHP7 5.2
+        // 2. Usamos la función en el bucle
+        foreach ($resultadoAgrupado as $idMatricula => $datos) {
+            if (!empty($resultadoAgrupado[$idMatricula]['asientos'])) {
+                usort($resultadoAgrupado[$idMatricula]['asientos'], function($a, $b) {
+                    // Convertimos las fechas a timestamp (forzando string por si viene null)
+                    $fechaA = isset($a['fecha_asiento']) ? strtotime($a['fecha_asiento']) : 0;
+                    $fechaB = isset($b['fecha_asiento']) ? strtotime($b['fecha_asiento']) : 0;
+
+                    if ($fechaA == $fechaB) {
+                        return 0;
+                    }
+                    return ($fechaA < $fechaB) ? -1 : 1;
+                });
+            }
+        }
+
+        
 
 
         // =========================================================================

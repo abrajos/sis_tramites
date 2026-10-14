@@ -19,6 +19,14 @@ Phx.vista.Topografo=Ext.extend(Phx.gridInterfaz,{
 		this.init();
 		this.load({params:{start:0, limit:this.tam_pag}});
 		//this.iniciarEventos();
+
+		this.addButton('archivo', {
+                    argument: {imprimir: 'archivo'},
+                    text: '<i class="fa fa-thumbs-o-up fa-2x"></i> archivo', /*iconCls:'' ,*/
+                    disabled: false,
+                    handler: this.archivo
+                });
+
 		this.addButton('Derivar', {
 				text : 'Derivar',
 				iconCls : 'badelante',
@@ -26,12 +34,12 @@ Phx.vista.Topografo=Ext.extend(Phx.gridInterfaz,{
 				handler : this.BDerivar,
 				tooltip : '<b>Derivar</b><br/>Deriva al funcionario asignado'
 			});
-		this.addButton('datosTecnicos', {
+		/*this.addButton('datosTecnicos', {
                 argument: {imprimir: 'datosTecnicos'},
                 text: '<i class="fa fa-thumbs-o-up fa-2x"></i> Datos Tecnicos', /*iconCls:'' ,*/
-                disabled: false,
+                /*disabled: false,
                 handler: this.datosTecnicos
-            });
+            });*/
 		/*this.addButton('lote', {
                 argument: {imprimir: 'lote'},
                 text: '<i class="fa fa-thumbs-o-up fa-2x"></i> Lotes ',
@@ -39,7 +47,7 @@ Phx.vista.Topografo=Ext.extend(Phx.gridInterfaz,{
                 handler: this.lote
             });*/
 
-		this.addButton('imprimirInfor', {
+	/*	this.addButton('imprimirInfor', {
 				text: 'Imprimir Informe',
 				iconCls: 'bprint',
 				disabled: false,
@@ -52,7 +60,7 @@ Phx.vista.Topografo=Ext.extend(Phx.gridInterfaz,{
 				disabled: true,
 				handler: this.tramiteCorregido,
 				tooltip: '<b>Vuelve al estado de inactivo</b><br/>Se corrigio el tramite'
-			});	
+			});	*/
 			 console.log(config);
 	},
 			
@@ -430,7 +438,7 @@ Phx.vista.Topografo=Ext.extend(Phx.gridInterfaz,{
 	bdel:false,
 	bsave:false,
 	bnew:false,
-	east:{
+	/*east:{
         url:'../../../sis_tramites/vista/informe/Informe.php',
         title:'Informe',
         height:'80%',
@@ -443,25 +451,7 @@ Phx.vista.Topografo=Ext.extend(Phx.gridInterfaz,{
 		var data = this.getSelectedData();
 		  var tb =this.tbar;
         
-       /* if(data.estado_tramite=="TOPOGRAFO" ){
-              
-				      this.getBoton('datosTecnicos').enable();
-		          }
-        else{
-              
-              this.getBoton('datosTecnicos').disable();
-          };
-        
-             */           
-		/*    if(data.id_funcionario>0 ){
-				
-			   	this.getBoton('Derivar').enable();
-		  } else {		
-			  		this.getBoton('edit').enable();
-			  		this.getBoton('Derivar').disable();
-		  	
-		  };
-		  	*/
+    
 	 if(data.estado_reg=="corregir"){
          
 		 this.getBoton('edit').disable();
@@ -497,7 +487,7 @@ Phx.vista.Topografo=Ext.extend(Phx.gridInterfaz,{
            
            
 		  return tb
-    },
+    },*/
     onButtonNew: function () {
         Phx.vista.Topografo.superclass.onButtonNew.call(this);
         this.getComponente('id_tramite').setValue(this.maestro.id_tramite);
@@ -512,7 +502,7 @@ Phx.vista.Topografo=Ext.extend(Phx.gridInterfaz,{
         this.load({params: {start: 0, limit: 50}})
     },*/
 
-	BDerivar : function() {
+	/*BDerivar : function() {
 
 		var rec = this.sm.getSelected();
 		var id_tramite_detalle = this.sm.getSelected().data.id_tramite_detalle;
@@ -528,15 +518,15 @@ Phx.vista.Topografo=Ext.extend(Phx.gridInterfaz,{
 				id_funcionario_deriv  : id_funcionario_deriv
 				/*id_correspondencia : id_correspondencia,
 				id_origen          : this.maestro.id_origen*/
-				},
+				/*},
 				success : this.successDerivar,
 				failure : this.conexionFailure,
 				timeout : this.timeout,
 				scope : this
 				});
 				}
-	},
-	successDerivar : function(resp) {
+	},*/
+	/*successDerivar : function(resp) {
 
 		Phx.CP.loadingHide();
 		var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
@@ -547,9 +537,9 @@ Phx.vista.Topografo=Ext.extend(Phx.gridInterfaz,{
    
     this.reload();
     
-	},
+	},*/
 
-	datosTecnicos: function () {
+	/*datosTecnicos: function () {
 		var rec = this.getSelectedData();
 		//jos168this.getComponente('id_tramite_detalle').setValue(this.id_tramite_detalle);
 		//enviamos el id seleccionado para cual el archivo se deba subir
@@ -570,7 +560,7 @@ Phx.vista.Topografo=Ext.extend(Phx.gridInterfaz,{
 				height: 700
 			}, rec, this.idContenedor, 'DatoTecnico');
 
-	},
+	},*/
 /*	lote: function () {
 		var rec = this.getSelectedData();
 		//enviamos el id seleccionado para cual el archivo se deba subir
@@ -593,7 +583,7 @@ Phx.vista.Topografo=Ext.extend(Phx.gridInterfaz,{
 
 	},*/
 
-	BInforme:function () {
+	/*BInforme:function () {
 			var rec = this.getSelectedData();
 			Phx.CP.loadingShow();
 			console.log(rec);
@@ -611,8 +601,8 @@ Phx.vista.Topografo=Ext.extend(Phx.gridInterfaz,{
 				scope: this
 			});
 	
-		},
-		tramiteCorregido : function () {
+		},*/
+		/*tramiteCorregido : function () {
    		//AJAX tiene q revisar revisar si hay una ficha para llamar, si hay una ficha anterior en atencion por el mismo usuario o si no hay fichas para atender
    		//si no hay fichas para atender lanzar alerta
    		//si ya hay una ficha en atencion para el usuario devovler esa ficha
@@ -646,7 +636,31 @@ Phx.vista.Topografo=Ext.extend(Phx.gridInterfaz,{
 				this.reload();
 				
 			// this.onReloadPage(reg.ROOT.datos);
-		},	
+		},	*/
+
+		archivo: function () {
+
+
+		var rec = this.getSelectedData();
+
+		//enviamos el id seleccionado para cual el archivo se deba subir
+		rec.datos_extras_id = rec.id_tramite;
+		//enviamos el nombre de la tabla
+		rec.datos_extras_tabla = 'tdocumento';
+		//enviamos el codigo ya que una tabla puede tener varios archivos diferentes como ci,pasaporte,contrato,slider,fotos,etc
+		rec.datos_extras_codigo = 'documen';
+
+		//esto es cuando queremos darle una ruta personalizada
+		//rec.datos_extras_ruta_personalizada = './../../../uploaded_files/favioVideos/videos/';
+
+		Phx.CP.loadWindows('../../../sis_parametros/vista/archivo/Archivo.php',
+			'Archivo',
+			{
+				width: 900,
+				height: 400
+			}, rec, this.idContenedor, 'Archivo');
+
+		},
 	}
 )
 </script>

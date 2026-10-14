@@ -23,7 +23,12 @@ Phx.vista.Resolucion=Ext.extend(Phx.gridInterfaz,{
 		this.load({params:{start:0, limit:this.tam_pag}});
 
 		
-
+		this.addButton('archivo', {
+                    argument: {imprimir: 'archivo'},
+                    text: '<i class="fa fa-thumbs-o-up fa-2x"></i> archivo', /*iconCls:'' ,*/
+                    disabled: false,
+                    handler: this.archivo
+                });
 		
 		this.addButton('imprimirRes', {
 				text: 'Imprimir Resolucion',
@@ -429,11 +434,18 @@ Phx.vista.Resolucion=Ext.extend(Phx.gridInterfaz,{
 	bsave:false,
 	bnew:false,
 
-	/*south:{
-		url:'../../../sis_tramites/vista/tramite_detalle/TramiteDetalle.php',
-        title:'Detalle Tramite',
+	east:{
+        url:'../../../sis_tramites/vista/informe/Informe.php',
+        title:'Resolucion',
+        height:'100%',
+        cls:'Informe'
+   		},
+	/*
+	south:{
+		url:'../../../sis_tramites/vista/tramite_detalle_reso/TramiteDetalleReso.php',
+        title:'Detalle Tramites',
         height:'50%',
-        cls:'TramiteDetalle'
+        cls:'TramiteDetalleReso'
    		},*/
 	/*tabsouth:[{
         url:'../../../sis_tramites/vista/tramite_detalle/TramiteDetalle.php',
@@ -464,7 +476,7 @@ Phx.vista.Resolucion=Ext.extend(Phx.gridInterfaz,{
 	],*/
 
    preparaMenu:function(n){
-      	Phx.vista.Tramite.superclass.preparaMenu.call(this,n);
+      	Phx.vista.Resolucion.superclass.preparaMenu.call(this,n);
       	  var data = this.getSelectedData();
 		  var tb =this.tbar;
         console.log(data);
@@ -535,6 +547,30 @@ Phx.vista.Resolucion=Ext.extend(Phx.gridInterfaz,{
 		this.getComponente('num_resolucion').setVisible(true);
     
     	},
+
+		archivo: function () {
+
+
+			var rec = this.getSelectedData();
+
+			//enviamos el id seleccionado para cual el archivo se deba subir
+			rec.datos_extras_id = rec.id_tramite;
+			//enviamos el nombre de la tabla
+			rec.datos_extras_tabla = 'ttramite';
+			//enviamos el codigo ya que una tabla puede tener varios archivos diferentes como ci,pasaporte,contrato,slider,fotos,etc
+			rec.datos_extras_codigo = 'RESO';
+
+			//esto es cuando queremos darle una ruta personalizada
+			//rec.datos_extras_ruta_personalizada = './../../../uploaded_files/favioVideos/videos/';
+
+			Phx.CP.loadWindows('../../../sis_parametros/vista/archivo/Archivo.php',
+				'Archivo',
+				{
+					width: 900,
+					height: 400
+				}, rec, this.idContenedor, 'Archivo');
+
+			},
 	}
 )
 </script>

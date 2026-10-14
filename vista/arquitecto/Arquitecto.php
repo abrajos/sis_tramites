@@ -19,6 +19,14 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
 		this.init();
 		this.load({params:{start:0, limit:this.tam_pag}});
 		//this.iniciarEventos();
+
+		this.addButton('archivo', {
+                    argument: {imprimir: 'archivo'},
+                    text: '<i class="fa fa-thumbs-o-up fa-2x"></i> archivo', /*iconCls:'' ,*/
+                    disabled: false,
+                    handler: this.archivo
+                });
+
 		this.addButton('Derivar', {
 				text : 'Derivar',
 				iconCls : 'badelante',
@@ -26,7 +34,7 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
 				handler : this.BDerivar,
 				tooltip : '<b>Derivar</b><br/>Deriva al funcionario asignado'
 			});
-		this.addButton('boleta', {
+		/*this.addButton('boleta', {
                 argument: {imprimir: 'boleta'},
                 text: '<i class="fa fa-thumbs-o-up fa-2x"></i> Boleta Liquidación', 
                 disabled: false,
@@ -35,7 +43,7 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
 			this.addButton('datosTecnicos', {
                 argument: {imprimir: 'datosTecnicos'},
                 text: '<i class="fa fa-thumbs-o-up fa-2x"></i> Datos Tecnicos', /*iconCls:'' ,*/
-                disabled: false,
+               /* disabled: false,
                 handler: this.datosTecnicos
             });
 		this.addButton('imprimirInfor', {
@@ -51,7 +59,7 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
 				disabled: true,
 				handler: this.tramiteCorregido,
 				tooltip: '<b>Vuelve al estado de inactivo</b><br/>Se corrigio el tramite'
-			});
+			});*/
 			 console.log(config);
 	},
 			
@@ -429,13 +437,13 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
 	bdel:false,
 	bsave:false,
 	bnew:false,
-	east:{
+	/*east:{
         url:'../../../sis_tramites/vista/informe/Informe.php',
         title:'Informe',
         height:'50%',
         cls:'Informe'
-   		},
-	preparaMenu: function (tb) {
+   		},*/
+	/*preparaMenu: function (tb) {
         // llamada funcion clace padre
         Phx.vista.Arquitecto.superclass.preparaMenu.call(this, tb)
 		
@@ -460,7 +468,7 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
 			  		this.getBoton('Derivar').disable();
 		  	
 		  };
-		  	*/
+		  	*//*
 		if(data.estado_reg=="corregir"){
          
 		 	this.getBoton('edit').disable();
@@ -494,7 +502,7 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
            
            
 		  return tb
-    },
+    },*/
     onButtonNew: function () {
         Phx.vista.Arquitecto.superclass.onButtonNew.call(this);
         this.getComponente('id_tramite_detalle').setValue(this.maestro.id_tramite_detalle);
@@ -509,7 +517,7 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
         this.load({params: {start: 0, limit: 50}})
     },*/
 
-	BDerivar : function() {
+	/*BDerivar : function() {
 
 		var rec = this.sm.getSelected();
 		var id_tramite_detalle = this.sm.getSelected().data.id_tramite_detalle;
@@ -525,15 +533,15 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
 				id_funcionario_deriv  : id_funcionario_deriv
 				/*id_correspondencia : id_correspondencia,
 				id_origen          : this.maestro.id_origen*/
-				},
+			/*	},
 				success : this.successDerivar,
 				failure : this.conexionFailure,
 				timeout : this.timeout,
 				scope : this
 				});
 				}
-	},
-	successDerivar : function(resp) {
+	},*/
+/*	successDerivar : function(resp) {
 
 		Phx.CP.loadingHide();
 		var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
@@ -544,9 +552,9 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
    
     this.reload();
     
-	},
+	},*/
 
-	boleta: function () {
+/*	boleta: function () {
 		var rec = this.getSelectedData();
 		//this.getComponente('id_tramite_detalle').setValue(this.id_tramite_detalle);
 		//enviamos el id seleccionado para cual el archivo se deba subir
@@ -567,9 +575,9 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
 				height: 400
 			}, rec, this.idContenedor, 'BoletaLiquida');
 
-	},
+	},*/
 
-	datosTecnicos: function () {
+	/*datosTecnicos: function () {
 		var rec = this.getSelectedData();
 		//jos168this.getComponente('id_tramite_detalle').setValue(this.id_tramite_detalle);
 		//enviamos el id seleccionado para cual el archivo se deba subir
@@ -590,8 +598,8 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
 				height: 400
 			}, rec, this.idContenedor, 'DatoTecnico');
 
-	},
-
+	},*/
+/*
 	BInforme:function () {
 			var rec = this.getSelectedData();
 			Phx.CP.loadingShow();
@@ -610,8 +618,8 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
 				scope: this
 			});
 	
-		},
-		tramiteCorregido : function () {
+		},*/
+		/*tramiteCorregido : function () {
    		//AJAX tiene q revisar revisar si hay una ficha para llamar, si hay una ficha anterior en atencion por el mismo usuario o si no hay fichas para atender
    		//si no hay fichas para atender lanzar alerta
    		//si ya hay una ficha en atencion para el usuario devovler esa ficha
@@ -634,7 +642,7 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
    		//Cargar el formulario con los datos de la ficha devuelta en el ajax
 		}
 
-	},
+	},*//*
 	successRep:function(resp){
 			
 			//console.log(Phx.vista);
@@ -645,8 +653,31 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
 			this.reload();
 			
 		// this.onReloadPage(reg.ROOT.datos);
-		},
+		},*/
 
+		archivo: function () {
+
+
+		var rec = this.getSelectedData();
+
+		//enviamos el id seleccionado para cual el archivo se deba subir
+		rec.datos_extras_id = rec.id_tramite;
+		//enviamos el nombre de la tabla
+		rec.datos_extras_tabla = 'ttramite';
+		//enviamos el codigo ya que una tabla puede tener varios archivos diferentes como ci,pasaporte,contrato,slider,fotos,etc
+		rec.datos_extras_codigo = 'ARQUI';
+
+		//esto es cuando queremos darle una ruta personalizada
+		//rec.datos_extras_ruta_personalizada = './../../../uploaded_files/favioVideos/videos/';
+
+		Phx.CP.loadWindows('../../../sis_parametros/vista/archivo/Archivo.php',
+			'Archivo',
+			{
+				width: 900,
+				height: 400
+			}, rec, this.idContenedor, 'Archivo');
+
+		},
 	}
 )
 </script>

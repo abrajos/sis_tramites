@@ -51,7 +51,7 @@ Phx.vista.Informe=Ext.extend(Phx.gridInterfaz,{
 		{
 			config:{
 				name: 'num_informe',
-				fieldLabel: 'Número informe',
+				fieldLabel: 'Número Resolucion',
 				allowBlank: false,
 				anchor: '80%',
 				gwidth: 100,
@@ -66,7 +66,7 @@ Phx.vista.Informe=Ext.extend(Phx.gridInterfaz,{
 		{
 			config: {
 				name: 'id_funcionario',
-				fieldLabel: 'De:',
+				fieldLabel: 'Plantilla:',
 				allowBlank: true,
 				emptyText: 'Elija una opción...',
 				store: new Ext.data.JsonStore({
@@ -108,27 +108,27 @@ Phx.vista.Informe=Ext.extend(Phx.gridInterfaz,{
 		},
 		{
 			config: {
-				name: 'id_funcionario_via',
-				fieldLabel: 'Via ',
+				name: 'id_plantilla',
+				fieldLabel: 'Platilla ',
 				allowBlank: true,
 				emptyText: 'Elija una opción...',
 				store: new Ext.data.JsonStore({
-					url: '../../sis_organigrama/control/Funcionario/listarFuncionario',
-					id: 'id_funcionario',
+					url: '../../sis_tramites/control/Plantilla/listarPlantilla',
+					id: 'id_plantilla',
 					root: 'datos',
 					sortInfo: {
-						field: 'PERSON.nombre_completo2',
+						field: 'PLANTI.nombre',
 						direction: 'ASC'
 					},
 					totalProperty: 'total',
-					fields: ['id_funcionario', 'desc_person', 'codigo'],
+					fields: ['id_plantilla', 'nombre', 'auxiliar'],
 					remoteSort: true,
-					baseParams: {par_filtro: 'PERSON.nombre_completo2'}
+					baseParams: {par_filtro: 'PLANTI.nombre'}
 				}),
-				valueField: 'id_funcionario',
-				displayField: 'desc_person',
-				gdisplayField: 'funcionariovia',
-				hiddenName: 'id_funcionario',
+				valueField: 'id_plantilla',
+				displayField: 'nombre',
+				gdisplayField: 'nombre',
+				hiddenName: 'id_plantilla',
 				forceSelection: false,
 				typeAhead: false,
 				triggerAction: 'all',
@@ -140,19 +140,19 @@ Phx.vista.Informe=Ext.extend(Phx.gridInterfaz,{
 				gwidth: 250,
 				minChars: 2,
 				renderer : function(value, p, record) {
-					return String.format('{0}', record.data['funcionariovia']);
+					return String.format('{0}', record.data['nombre']);
 				}
 			},
 			type: 'ComboBox',
 			id_grupo: 0,
-			filters: {pfiltro: 'PERSON.nombre_completo2',type: 'string'},
+			filters: {pfiltro: 'PLANTI.nombre',type: 'string'},
 			grid: true,
 			form: true
 		},
 		{
 			config: {
 				name: 'id_funcionario_a',
-				fieldLabel: 'A',
+				fieldLabel: 'Quien Firma',
 				allowBlank: false,
 				emptyText: 'Elija una opción...',
 				store: new Ext.data.JsonStore({
@@ -220,7 +220,7 @@ Phx.vista.Informe=Ext.extend(Phx.gridInterfaz,{
 				filters:{pfiltro:'infor.observacion',type:'string'},
 				id_grupo:1,
 				grid:true,
-				form:true
+				form:false
 		},
 		
 		{
@@ -236,7 +236,7 @@ Phx.vista.Informe=Ext.extend(Phx.gridInterfaz,{
 				filters:{pfiltro:'infor.conclusion',type:'string'},
 				id_grupo:1,
 				grid:true,
-				form:true
+				form:false
 		},
 		{
 			config:{
@@ -251,7 +251,7 @@ Phx.vista.Informe=Ext.extend(Phx.gridInterfaz,{
 				filters:{pfiltro:'infor.doc_adjunto',type:'string'},
 				id_grupo:1,
 				grid:true,
-				form:true
+				form:false
 		},
 		{
 			config:{
@@ -266,7 +266,7 @@ Phx.vista.Informe=Ext.extend(Phx.gridInterfaz,{
 				filters:{pfiltro:'infor.norma_aplica',type:'string'},
 				id_grupo:1,
 				grid:true,
-				form:true
+				form:false
 		},
 		{
 			config:{
@@ -281,7 +281,7 @@ Phx.vista.Informe=Ext.extend(Phx.gridInterfaz,{
 				filters:{pfiltro:'infor.infor_comple',type:'string'},
 				id_grupo:1,
 				grid:true,
-				form:true
+				form:false
 		},	
 		{
 			config:{

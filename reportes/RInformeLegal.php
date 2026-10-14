@@ -21,6 +21,17 @@ class CustomReport extends TCPDF
         return $this->dataSource;
     }
 
+    // 1. Definimos la función de comparación por separado
+    public function compararPorFecha($a, $b) {
+        $timeA = strtotime($a['fecha_asiento']);
+        $timeB = strtotime($b['fecha_asiento']);
+
+        if ($timeA == $timeB) {
+            return 0;
+        }
+        return ($timeA < $timeB) ? -1 : 1;
+    }
+
     public function Header() {
         $dataSource = $this->getDataSource();
         
@@ -342,10 +353,12 @@ class RInformeLegal extends Report
             }
         }
 
-
+        
         // =========================================================================
         // PASO 2: CORREGIDO - Ordenar asientos por FECHA (De menor a mayor)
         // =========================================================================
+        // PHP7 8.2
+        /*
         foreach ($resultadoAgrupado as $idMatricula => $datos) {
             if (!empty($resultadoAgrupado[$idMatricula]['asientos'])) {
                 usort($resultadoAgrupado[$idMatricula]['asientos'], function($a, $b) {
@@ -354,11 +367,46 @@ class RInformeLegal extends Report
                 });
             }
         }
+        
+        
+        */
+
+        // PHP7 .4
+        /*
+        foreach ($resultadoAgrupado as &$datos) {
+            if (!empty($datos['asientos'])) {
+                usort($datos['asientos'], fn($a, $b) => 
+                    strtotime($a['fecha_asiento']) <=> strtotime($b['fecha_asiento'])
+                );
+            }
+        }
+        unset($datos);
+         */
+
+        // PHP7 5.2
+        // 2. Usamos la función en el bucle
+        foreach ($resultadoAgrupado as $idMatricula => $datos) {
+            if (!empty($resultadoAgrupado[$idMatricula]['asientos'])) {
+                usort($resultadoAgrupado[$idMatricula]['asientos'], function($a, $b) {
+                    // Convertimos las fechas a timestamp (forzando string por si viene null)
+                    $fechaA = isset($a['fecha_asiento']) ? strtotime($a['fecha_asiento']) : 0;
+                    $fechaB = isset($b['fecha_asiento']) ? strtotime($b['fecha_asiento']) : 0;
+
+                    if ($fechaA == $fechaB) {
+                        return 0;
+                    }
+                    return ($fechaA < $fechaB) ? -1 : 1;
+                });
+            }
+        }
+
+        
 
 
         // =========================================================================
         // PASO 3: Ordenar las MATRÍCULAS entre sí (Prelación por primer asiento)
         // =========================================================================
+        /*
         uasort($resultadoAgrupado, function($a, $b) {
             // Al estar ordenados los asientos del paso anterior, el índice [0] es 100% el más antiguo.
             $fechaA = !empty($a['asientos']) ? $a['asientos'][0]['fecha_asiento'] : null;
@@ -369,6 +417,28 @@ class RInformeLegal extends Report
             if ($fechaB === null) return -1;
 
             return strtotime($fechaA) <=> strtotime($fechaB);
+        });
+        */
+
+        uasort($resultadoAgrupado, function($a, $b) {
+            // Obtener la fecha del primer asiento si existe
+            $fechaA = !empty($a['asientos']) ? $a['asientos'][0]['fecha_asiento'] : null;
+            $fechaB = !empty($b['asientos']) ? $b['asientos'][0]['fecha_asiento'] : null;
+
+            // Control de nulos
+            if ($fechaA === null && $fechaB === null) return 0;
+            if ($fechaA === null) return 1;  // Los registros sin fecha se van al final
+            if ($fechaB === null) return -1;
+
+            // Convertir a timestamps
+            $timeA = strtotime($fechaA);
+            $timeB = strtotime($fechaB);
+
+            // Comparación tradicional (Reemplaza al operador <=>)
+            if ($timeA == $timeB) {
+                return 0;
+            }
+            return ($timeA < $timeB) ? -1 : 1;
         });
 
         //var_dump($resultadoAgrupado); exit();

@@ -646,9 +646,9 @@ Phx.vista.Topografo=Ext.extend(Phx.gridInterfaz,{
 		//enviamos el id seleccionado para cual el archivo se deba subir
 		rec.datos_extras_id = rec.id_tramite;
 		//enviamos el nombre de la tabla
-		rec.datos_extras_tabla = 'tdocumento';
+		rec.datos_extras_tabla = 'ttramite';
 		//enviamos el codigo ya que una tabla puede tener varios archivos diferentes como ci,pasaporte,contrato,slider,fotos,etc
-		rec.datos_extras_codigo = 'documen';
+		rec.datos_extras_codigo = 'TOPO';
 
 		//esto es cuando queremos darle una ruta personalizada
 		//rec.datos_extras_ruta_personalizada = './../../../uploaded_files/favioVideos/videos/';

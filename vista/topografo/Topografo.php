@@ -30,7 +30,7 @@ Phx.vista.Topografo=Ext.extend(Phx.gridInterfaz,{
 		this.addButton('Derivar', {
 				text : 'Derivar',
 				iconCls : 'badelante',
-				disabled : true,
+				disabled : false,
 				handler : this.BDerivar,
 				tooltip : '<b>Derivar</b><br/>Deriva al funcionario asignado'
 			});

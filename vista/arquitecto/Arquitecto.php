@@ -517,7 +517,7 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
         this.load({params: {start: 0, limit: 50}})
     },*/
 
-	/*BDerivar : function() {
+	BDerivar : function() {
 
 		var rec = this.sm.getSelected();
 		var id_tramite_detalle = this.sm.getSelected().data.id_tramite_detalle;
@@ -533,15 +533,15 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
 				id_funcionario_deriv  : id_funcionario_deriv
 				/*id_correspondencia : id_correspondencia,
 				id_origen          : this.maestro.id_origen*/
-			/*	},
+				},
 				success : this.successDerivar,
 				failure : this.conexionFailure,
 				timeout : this.timeout,
 				scope : this
 				});
 				}
-	},*/
-/*	successDerivar : function(resp) {
+	},
+	successDerivar : function(resp) {
 
 		Phx.CP.loadingHide();
 		var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
@@ -552,7 +552,7 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
    
     this.reload();
     
-	},*/
+	},
 
 /*	boleta: function () {
 		var rec = this.getSelectedData();

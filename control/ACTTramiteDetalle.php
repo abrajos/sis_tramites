@@ -16,6 +16,7 @@ class ACTTramiteDetalle extends ACTbase{
 
 		if($this->objParam->getParametro('id_tramite')!=''){
 			$this->objParam->addFiltro("tradet.id_tramite = ".$this->objParam->getParametro('id_tramite'));	
+			$this->objParam->addFiltro("tradet.estado_reg in ("."''activo'', ''derivado'', ''corregir'', ''corregido'', ''finalizado'')");	
 		}
 
 		if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
@@ -83,6 +84,8 @@ class ACTTramiteDetalle extends ACTbase{
 
 	//	if($this->objParam->getParametro('estado_tramite')!=''){
 			$this->objParam->addFiltro("tradet.estado_tramite = "."''TOPOGRAFO''");	
+			$this->objParam->addFiltro("tradet.estado_reg in ("."''activo'', ''derivado'', ''corregir'', ''corregido'')");	
+			
 		//}
 
 		if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
@@ -102,7 +105,8 @@ class ACTTramiteDetalle extends ACTbase{
 		$this->objParam->defecto('dir_ordenacion','asc');
 
 	//	if($this->objParam->getParametro('estado_tramite')!=''){
-			$this->objParam->addFiltro("tradet.estado_tramite = "."''ARQUITECTO''");	
+			$this->objParam->addFiltro("tradet.estado_tramite = "."''ARQUITECTO''");
+			$this->objParam->addFiltro("tradet.estado_reg in ("."''activo'', ''derivado'', ''corregir'', ''corregido'')");		
 		//}
 
 		if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
@@ -123,6 +127,7 @@ class ACTTramiteDetalle extends ACTbase{
 
 	//	if($this->objParam->getParametro('estado_tramite')!=''){
 			$this->objParam->addFiltro("tradet.estado_tramite = "."''ABOGADO''");	
+			$this->objParam->addFiltro("tradet.estado_reg in ("."''activo'', ''derivado'', ''corregir'', ''corregido'')");	
 		//}
 
 		if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){

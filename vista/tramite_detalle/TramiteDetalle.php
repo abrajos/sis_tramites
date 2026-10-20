@@ -26,12 +26,12 @@ Phx.vista.TramiteDetalle=Ext.extend(Phx.gridInterfaz,{
 				handler : this.BDerivar,
 				tooltip : '<b>Derivar</b><br/>Deriva al funcionario asignado'
 			});
-		this.addButton('datosTecnicos', {
+		/*this.addButton('datosTecnicos', {
                 argument: {imprimir: 'datosTecnicos'},
                 text: '<i class="fa fa-thumbs-o-up fa-2x"></i> Datos Tecnicos', /*iconCls:'' ,*/
-                disabled: false,
+               /* disabled: false,
                 handler: this.datosTecnicos
-            });
+            });*/
 		this.addButton('corregir',{
 				text: 'Corregir',
 				iconCls: 'bchecklist',
@@ -84,17 +84,17 @@ Phx.vista.TramiteDetalle=Ext.extend(Phx.gridInterfaz,{
 		{
 			config:{
 				name: 'referencia_informe',
-				fieldLabel: 'Referencia Informe',
-				allowBlank: true,
-				anchor: '80%',
+				fieldLabel: 'Tramite ',
 				gwidth: 100,
-				maxLength:100
-			},
-				type:'TextField',
-				filters:{pfiltro:'tradet.referencia_informe',type:'string'},
-				id_grupo:1,
-				grid:false,
-				form:false
+                    items: [
+                        {boxLabel: 'En Curso', name: 'trg-auto', inputValue: 'en_curso', checked: true},
+                        {boxLabel: 'Observado', name: 'trg-auto', inputValue: 'observado'}
+                    ]
+                },
+                type: 'RadioGroupField',
+                id_grupo: 1,
+                grid: true,
+                form: true
 		},
 		{
 			config:{
@@ -129,7 +129,7 @@ Phx.vista.TramiteDetalle=Ext.extend(Phx.gridInterfaz,{
 		{
 			config:{
 				name: 'descripcion',
-				fieldLabel: 'Para Resolución',
+				fieldLabel: 'Observación',
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
@@ -138,8 +138,8 @@ Phx.vista.TramiteDetalle=Ext.extend(Phx.gridInterfaz,{
 				type:'TextArea',
 				filters:{pfiltro:'tradet.descripcion',type:'string'},
 				id_grupo:1,
-				grid:false,
-				form:false
+				grid:true,
+				form:true
 		},
 		{
 			config: {
@@ -408,21 +408,21 @@ Phx.vista.TramiteDetalle=Ext.extend(Phx.gridInterfaz,{
 		var data = this.getSelectedData();
 		  var tb =this.tbar;
 		
-		  if(data.estado_reg=="inactivo" ){
+		  if(data.estado_reg=="derivado" ){
               
 			  this.getBoton('corregir').enable();
 		  } else{
 			this.getBoton('corregir').disable();
 		  };
         
-        if(data.estado_tramite=="TOPOGRAFO" ){
+       /* if(data.estado_tramite=="TOPOGRAFO" ){
               
 				      this.getBoton('datosTecnicos').enable();
 		          }
         else{
               
               this.getBoton('datosTecnicos').disable();
-          };
+          };*/
         
                         
 		    if(data.id_funcionario>0 ){
@@ -438,7 +438,7 @@ Phx.vista.TramiteDetalle=Ext.extend(Phx.gridInterfaz,{
          
 				      this.getBoton('edit').disable();
 			   	    this.getBoton('Derivar').disable();
-              this.getBoton('datosTecnicos').disable();
+             // this.getBoton('datosTecnicos').disable();
 		          }
           else {
           
@@ -503,7 +503,7 @@ Phx.vista.TramiteDetalle=Ext.extend(Phx.gridInterfaz,{
     
 	},
 
-	datosTecnicos: function () {
+	/*datosTecnicos: function () {
 		var rec = this.getSelectedData();
 		this.getComponente('id_tramite').setValue(this.maestro.id_tramite);
 		//enviamos el id seleccionado para cual el archivo se deba subir
@@ -524,7 +524,7 @@ Phx.vista.TramiteDetalle=Ext.extend(Phx.gridInterfaz,{
 				height: 400
 			}, rec, this.idContenedor, 'DatoTecnico');
 
-	},
+	},*/
 
 	corregirtramite : function () {
    		//AJAX tiene q revisar revisar si hay una ficha para llamar, si hay una ficha anterior en atencion por el mismo usuario o si no hay fichas para atender

@@ -53,14 +53,14 @@ Phx.vista.Topografo=Ext.extend(Phx.gridInterfaz,{
 				disabled: false,
 				handler: this.BInforme,
 				tooltip: '<b>Imprimir Informe</b><br/>Impresión del Informe'
-			});	
+			});	*/
 		this.addButton('corregido',{
 				text: 'Corregido',
 				iconCls: 'bchecklist',
 				disabled: true,
 				handler: this.tramiteCorregido,
 				tooltip: '<b>Vuelve al estado de inactivo</b><br/>Se corrigio el tramite'
-			});	*/
+			});	
 			 console.log(config);
 	},
 			
@@ -122,17 +122,17 @@ Phx.vista.Topografo=Ext.extend(Phx.gridInterfaz,{
 		{
 			config:{
 				name: 'referencia_informe',
-				fieldLabel: 'Referencia Informe',
-				allowBlank: true,
-				anchor: '80%',
+				fieldLabel: 'Tramite ',
 				gwidth: 100,
-				maxLength:1000
-			},
-				type:'TextField',
-				filters:{pfiltro:'tradet.referencia_informe',type:'string'},
-				id_grupo:1,
-				grid:false,
-				form:false
+                    items: [
+                        {boxLabel: 'En Curso', name: 'trg-auto', inputValue: 'en_curso', checked: true},
+                        {boxLabel: 'Observado', name: 'trg-auto', inputValue: 'observado'}
+                    ]
+                },
+                type: 'RadioGroupField',
+                id_grupo: 1,
+                grid: true,
+                form: true
 		},
 		{
 			config:{
@@ -167,7 +167,7 @@ Phx.vista.Topografo=Ext.extend(Phx.gridInterfaz,{
 		{
 			config:{
 				name: 'descripcion',
-				fieldLabel: 'Para Resolución',
+				fieldLabel: 'Observación',
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
@@ -176,8 +176,8 @@ Phx.vista.Topografo=Ext.extend(Phx.gridInterfaz,{
 				type:'TextArea',
 				filters:{pfiltro:'tradet.descripcion',type:'string'},
 				id_grupo:1,
-				grid:false,
-				form:false
+				grid:true,
+				form:true
 		},
 		{
 			config: {
@@ -602,7 +602,7 @@ Phx.vista.Topografo=Ext.extend(Phx.gridInterfaz,{
 			});
 	
 		},*/
-		/*tramiteCorregido : function () {
+		tramiteCorregido : function () {
    		//AJAX tiene q revisar revisar si hay una ficha para llamar, si hay una ficha anterior en atencion por el mismo usuario o si no hay fichas para atender
    		//si no hay fichas para atender lanzar alerta
    		//si ya hay una ficha en atencion para el usuario devovler esa ficha
@@ -636,7 +636,7 @@ Phx.vista.Topografo=Ext.extend(Phx.gridInterfaz,{
 				this.reload();
 				
 			// this.onReloadPage(reg.ROOT.datos);
-		},	*/
+		},	
 
 		archivo: function () {
 

@@ -52,14 +52,14 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
 				disabled: false,
 				handler: this.BInforme,
 				tooltip: '<b>Imprimir Informe</b><br/>Impresión del Informe'
-			});		
+			});	*/	
 		this.addButton('corregido',{
 				text: 'Corregido',
 				iconCls: 'bchecklist',
 				disabled: true,
 				handler: this.tramiteCorregido,
 				tooltip: '<b>Vuelve al estado de inactivo</b><br/>Se corrigio el tramite'
-			});*/
+			});
 			 console.log(config);
 	},
 			
@@ -121,17 +121,17 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
 		{
 			config:{
 				name: 'referencia_informe',
-				fieldLabel: 'Referencia Informe',
-				allowBlank: true,
-				anchor: '80%',
+				fieldLabel: 'Tramite ',
 				gwidth: 100,
-				maxLength:100
-			},
-				type:'TextField',
-				filters:{pfiltro:'tradet.referencia_informe',type:'string'},
-				id_grupo:1,
-				grid:false,
-				form:false
+                    items: [
+                        {boxLabel: 'En Curso', name: 'trg-auto', inputValue: 'en_curso', checked: true},
+                        {boxLabel: 'Observado', name: 'trg-auto', inputValue: 'observado'}
+                    ]
+                },
+                type: 'RadioGroupField',
+                id_grupo: 1,
+                grid: true,
+                form: true
 		},
 		{
 			config:{
@@ -166,7 +166,7 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
 		{
 			config:{
 				name: 'descripcion',
-				fieldLabel: 'Para Resolución',
+				fieldLabel: 'Observación',
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
@@ -175,8 +175,8 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
 				type:'TextArea',
 				filters:{pfiltro:'tradet.descripcion',type:'string'},
 				id_grupo:1,
-				grid:false,
-				form:false
+				grid:true,
+				form:true
 		},
 		{
 			config: {
@@ -443,7 +443,7 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
         height:'50%',
         cls:'Informe'
    		},*/
-	/*preparaMenu: function (tb) {
+	preparaMenu: function (tb) {
         // llamada funcion clace padre
         Phx.vista.Arquitecto.superclass.preparaMenu.call(this, tb)
 		
@@ -468,7 +468,7 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
 			  		this.getBoton('Derivar').disable();
 		  	
 		  };
-		  	*//*
+		  	*/
 		if(data.estado_reg=="corregir"){
          
 		 	this.getBoton('edit').disable();
@@ -484,7 +484,7 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
 		 	
 	   };
 		
-         if(data.estado_reg=="inactivo"){
+         if(data.estado_reg=="derivado"){
          
 			this.getBoton('edit').disable();
 			this.getBoton('Derivar').disable();
@@ -498,11 +498,19 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
 			//this.getBoton('trmta').enable();
           };
 		  	
-		  
+		if(data.estado_reg=="corregido"){
+         
+		 	this.getBoton('archivo').disable();
+		 		 }
+			else {
+			
+			this.getBoton('archivo').enable();
+			
+	   };
            
            
 		  return tb
-    },*/
+    },
     onButtonNew: function () {
         Phx.vista.Arquitecto.superclass.onButtonNew.call(this);
         this.getComponente('id_tramite_detalle').setValue(this.maestro.id_tramite_detalle);
@@ -619,7 +627,7 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
 			});
 	
 		},*/
-		/*tramiteCorregido : function () {
+		tramiteCorregido : function () {
    		//AJAX tiene q revisar revisar si hay una ficha para llamar, si hay una ficha anterior en atencion por el mismo usuario o si no hay fichas para atender
    		//si no hay fichas para atender lanzar alerta
    		//si ya hay una ficha en atencion para el usuario devovler esa ficha
@@ -642,7 +650,7 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
    		//Cargar el formulario con los datos de la ficha devuelta en el ajax
 		}
 
-	},*//*
+	},
 	successRep:function(resp){
 			
 			//console.log(Phx.vista);
@@ -653,7 +661,7 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
 			this.reload();
 			
 		// this.onReloadPage(reg.ROOT.datos);
-		},*/
+		},
 
 		archivo: function () {
 

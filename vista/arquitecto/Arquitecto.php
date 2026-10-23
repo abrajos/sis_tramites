@@ -486,8 +486,8 @@ Phx.vista.Arquitecto=Ext.extend(Phx.gridInterfaz,{
 		
          if(data.estado_reg=="derivado"){
          
-			this.getBoton('edit').disable();
-			this.getBoton('Derivar').disable();
+			this.getBoton('edit').enable();
+			this.getBoton('Derivar').enable();
 			this.getBoton('corregido').disable();
            // this.getBoton('trmta').disable();
 		    }
